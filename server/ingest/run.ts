@@ -2,6 +2,8 @@ import { storeWork } from '../library/store'
 import { getbibleBible } from './bible/getbible'
 import { fixtureBible } from './bible/fixture'
 import { suttacentralDhammapada } from './dhammapada/suttacentral'
+import { gutenbergMeditations } from './meditations/gutenberg'
+import { standardebooksTaoTeChing } from './taote/standardebooks'
 import type { NormalizedWork } from './model'
 
 export type IngestResult = { id: string; title: string; verses: number }
@@ -17,6 +19,8 @@ const buildBible = (): Promise<NormalizedWork> =>
 const WORK_BUILDERS: WorkBuilder[] = [
   { id: 'bibel-1917', build: buildBible },
   { id: 'dhammapada', build: suttacentralDhammapada },
+  { id: 'sjalvbetraktelser', build: gutenbergMeditations },
+  { id: 'tao-te-ching', build: standardebooksTaoTeChing },
 ]
 
 /** Kör ingest för valda verk (eller alla) och skriver dem till databasen. */

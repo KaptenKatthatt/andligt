@@ -36,27 +36,41 @@ const buildPrompt = (lines: string[]): string => {
   return `Du översätter andlig litteratur till svenska. Översätt varje numrerad rad nedan. Behåll exakt samma numrering och lika många rader — en översatt rad per numrerad rad, inga tillägg, ingen kommentar.\n\n${numbered}`
 }
 
-// Översätt ett block rader (en rad in → en rad ut).
-const translateBlock = async (lines: string[]): Promise<string[]> => {
-  const raw = await callOllama(buildPrompt(lines))
-  return raw
-    .split('\n')
-    .map((line) => line.replace(/^\s*\d+[.)]\s?/, '').trim())
-    .filter((line) => line.length > 0)
-}
-
-/**
- * Översätter rader till svenska. Returnerar `null` om ingen översättning skedde
- * — antingen för att den är avstängd, eller för att anropet misslyckades / gav
- * fel radantal. Anroparen behåller då originaltexten och markerar verket som
- * ej översatt, så engelska aldrig märks som färdig svensk översättning.
- */
-export const translateLines = async (lines: string[]): Promise<string[] | null> => {
-  if (!translationEnabled() || lines.length === 0) return null
+// Ett Ollama-anrop för ett litet block rader. null om anropet misslyckas eller
+// ger fel radantal (så inget par förskjuts).
+const translateBlock = async (lines: string[]): Promise<string[] | null> => {
   try {
-    const out = await translateBlock(lines)
+    const raw = await callOllama(buildPrompt(lines))
+    const out = raw
+      .split('\n')
+      .map((line) => line.replace(/^\s*\d+[.)]\s?/, '').trim())
+      .filter((line) => line.length > 0)
     return out.length === lines.length ? out : null
   } catch {
     return null
   }
+}
+
+export type Translation = { lines: string[]; translated: boolean }
+
+/**
+ * Översätter rader till svenska i småbatchar (så långa stycken inte spränger
+ * modellens tokengräns). Misslyckas en batch behålls dess källtext och
+ * `translated` blir false — så engelska aldrig märks som färdig översättning.
+ * Med TRANSLATE=off returneras källtexten oförändrad (translated=false).
+ */
+export const translateMany = async (lines: string[], batchSize = 8): Promise<Translation> => {
+  if (!translationEnabled() || lines.length === 0) return { lines, translated: false }
+  const out: string[] = []
+  let translated = true
+  for (let i = 0; i < lines.length; i += batchSize) {
+    const batch = lines.slice(i, i + batchSize)
+    const done = await translateBlock(batch)
+    if (done) out.push(...done)
+    else {
+      out.push(...batch)
+      translated = false
+    }
+  }
+  return { lines: out, translated }
 }
