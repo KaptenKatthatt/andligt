@@ -40,6 +40,6 @@ app.get('*', (c) =>
   indexHtml ? c.html(indexHtml) : c.text('SPA:t är inte byggt (kör `npm run build`).', 404),
 )
 
-serve({ fetch: app.fetch, port: config.port }, (info) => {
-  console.log(`Visdomsatlasen lyssnar på http://localhost:${info.port}`)
+serve({ fetch: app.fetch, port: config.port, hostname: config.host }, (info) => {
+  console.log(`Visdomsatlasen lyssnar på ${info.address}:${info.port}`)
 })

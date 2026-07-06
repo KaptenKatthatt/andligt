@@ -5,6 +5,9 @@ const cwd = process.cwd()
 /** Central runtime configuration, read once from the environment. */
 export const config = {
   port: Number(process.env['PORT'] ?? 8080),
+  // Bind-adress. Utelämnad ⇒ alla gränssnitt (0.0.0.0), vilket krävs för att
+  // Dockers port-mappning ska nå servern. Sätt bara för att binda ett visst nät.
+  host: process.env['HOST'],
   // SQLite-filen. Monteras som volym på VPS:en (som newsAgg), aldrig i git.
   dbPath: process.env['DATABASE_URL'] ?? path.resolve(cwd, 'data', 'visdomsatlasen.db'),
   // Byggda SPA-filerna som servern levererar tillsammans med API:t.
