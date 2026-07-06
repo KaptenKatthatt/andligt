@@ -11,6 +11,9 @@ import { epictetusDiscourses } from './epictetus/discourses'
 import { senecaDialogues } from './seneca/dialogues'
 import { poeticEdda } from './edda/poetic'
 import { proseEdda } from './edda/prose'
+import { bhagavadGita } from './gita/gutenberg'
+import { analects } from './analects/standardebooks'
+import { platoApology } from './plato/apology'
 import type { NormalizedWork } from './model'
 
 export type IngestResult = {
@@ -43,6 +46,9 @@ const WORK_BUILDERS: WorkBuilder[] = [
   { id: 'seneca-dialoger', translatable: true, build: senecaDialogues },
   { id: 'poetiska-eddan', translatable: true, build: poeticEdda },
   { id: 'prosaiska-eddan', translatable: true, build: proseEdda },
+  { id: 'bhagavad-gita', translatable: true, build: bhagavadGita },
+  { id: 'analekterna', translatable: true, build: analects },
+  { id: 'forsvarstalet', translatable: true, build: platoApology },
 ]
 
 // Ett verk i taget; ett fel på ett verk stjälper inte de andra utan loggas.
