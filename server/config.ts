@@ -10,9 +10,11 @@ export const config = {
   // Byggda SPA-filerna som servern levererar tillsammans med API:t.
   staticDir: process.env['STATIC_DIR'] ?? path.resolve(cwd, 'dist'),
   auth: {
-    user: process.env['ATLAS_USER'],
-    pass: process.env['ATLAS_PASS'],
+    // Faller tillbaka på newsAggs variabelnamn, så samma .env kan återanvändas.
+    user: process.env['ATLAS_USER'] ?? process.env['NEWSAGG_USER'],
+    pass: process.env['ATLAS_PASS'] ?? process.env['NEWSAGG_PASS'],
   },
   // Bearer-token som låter cron/ingest-skript nå /api/ingest utan basic auth.
-  ingestToken: process.env['INGEST_TOKEN'],
+  // newsAggs UPDATE_TOKEN duger som fallback.
+  ingestToken: process.env['INGEST_TOKEN'] ?? process.env['UPDATE_TOKEN'],
 } as const
