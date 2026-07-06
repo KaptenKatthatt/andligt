@@ -14,8 +14,9 @@ Appen har två slags innehåll som lever sida vid sida:
 
 - **Atlasen** – kuraterade essäer, personer, tidslinje och citat, skrivna som
   typade TypeScript-moduler i `src/content/`. Små, handskrivna, sammanlänkade.
-- **Biblioteket** – *hela* källtexter (Bibeln 1917 och, efter hand, stoiska,
-  buddhistiska och taoistiska verk). De bor i en SQLite-databas som en liten
+- **Biblioteket** – *hela* källtexter. Nu: **Bibeln 1917** (public domain) och
+  **Dhammapada** (SuttaCentral, CC0, svensk översättning via Ollama). På väg in:
+  stoiska och taoistiska verk. De bor i en SQLite-databas som en liten
   Node-backend serverar, och de cachas i din enhet för läsning offline.
 
 ## Teknik
@@ -121,7 +122,15 @@ BIBLE_SOURCE=fixture npm run ingest   # från fixture-filen
 
 Fler traditioner läggs till genom att registrera en builder i
 `server/ingest/run.ts`. Icke-svenska public domain-texter översätts till svenska
-med Ollama vid ingest.
+med Ollama vid ingest (`server/ingest/translate.ts`); sätt `TRANSLATE=off` för
+att hoppa över översättningen vid lokal verifiering.
+
+Inlagda verk:
+
+- **Bibeln 1917** – `server/ingest/bible/` (getbible, public domain).
+- **Dhammapada** – `server/ingest/dhammapada/` (SuttaCentral bilara-data, CC0):
+  hela 423 verser i 26 vaggas, engelska (Bhikkhu Sujato) + pali som originaltext,
+  översatt till svenska via Ollama.
 
 ### Offline
 
@@ -218,7 +227,8 @@ originaltext och sök.
 
 ## Förslag på nästa steg
 
-- Fylla på stoicism, buddhism och taoism (adaptrar + Ollama-översättning).
+- Fylla på stoicism och taoism (adaptrar + Ollama-översättning); Bibeln och
+  Dhammapada är inne.
 - Länka atlasens ämnen direkt in i biblioteksverserna.
 - Export/import av anteckningar (JSON).
 - PNG-ikoner och skärmbilder i manifestet för bättre installationsupplevelse.
