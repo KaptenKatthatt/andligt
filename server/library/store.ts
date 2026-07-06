@@ -15,7 +15,7 @@ const insertBookVerses = (workId: string, bookId: string, book: NormalizedBook):
   return chapters.size
 }
 
-const replaceWork = (work: NormalizedWork): void => {
+const replaceWork = (work: NormalizedWork): number => {
   const { meta } = work
   // Byt ut verket i sin helhet — idempotent omkörning ger samma resultat.
   sqlite.prepare(`DELETE FROM verses WHERE work_id = ?`).run(meta.id)
@@ -48,11 +48,11 @@ const replaceWork = (work: NormalizedWork): void => {
       verseCount: verseTotal,
     })
     .run()
+  return verseTotal
 }
 
 /** Skriver ett normaliserat verk till databasen i en transaktion. */
 export const storeWork = (work: NormalizedWork): number => {
   const tx = sqlite.transaction(() => replaceWork(work))
-  tx()
-  return work.books.reduce((n, b) => n + b.verses.length, 0)
+  return tx()
 }

@@ -10,7 +10,7 @@ const collectChapterUrls = async (): Promise<string[]> => {
     const { books } = await fetchWork(work.id)
     for (const book of books) {
       const id = encodeURIComponent(book.id)
-      for (let n = 1; n <= book.chapterCount; n += 1) {
+      for (const n of book.chapters) {
         urls.push(`/api/library/books/${id}/chapters/${n}`)
       }
     }

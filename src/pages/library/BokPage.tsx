@@ -17,7 +17,7 @@ export const BokPage = ({ workId, bookSlug }: { workId: string; bookSlug: string
       </div>
     )
   }
-  const chapters = Array.from({ length: book.chapterCount }, (_, i) => i + 1)
+  const chapters = book.chapters
   return (
     <div className="screenSub">
       <TopBar />

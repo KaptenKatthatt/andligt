@@ -1,6 +1,6 @@
 import { fetchJson } from '../../lib/fetchJson'
 import { mapPool } from '../../lib/concurrency'
-import { translateLines, translationEnabled } from '../translate'
+import { translateLines } from '../translate'
 import { DHAMMAPADA_VAGGAS, type Vagga } from './vaggas'
 import type { NormalizedBook, NormalizedVerse, NormalizedWork, WorkMeta } from '../model'
 
@@ -35,7 +35,9 @@ const collectVerses = (seg: Segments): Map<number, string> => {
   return out
 }
 
-const buildVagga = async (vagga: Vagga): Promise<NormalizedVerse[]> => {
+type VaggaResult = { verses: NormalizedVerse[]; translated: boolean }
+
+const buildVagga = async (vagga: Vagga): Promise<VaggaResult> => {
   const [enSeg, pliSeg] = await Promise.all([
     fetchJson(enUrl(vagga.range)) as Promise<Segments>,
     fetchJson(pliUrl(vagga.range)) as Promise<Segments>,
@@ -43,13 +45,19 @@ const buildVagga = async (vagga: Vagga): Promise<NormalizedVerse[]> => {
   const en = collectVerses(enSeg)
   const pli = collectVerses(pliSeg)
   const nums = [...en.keys()].sort((a, b) => a - b)
-  const swedish = await translateLines(nums.map((n) => en.get(n) ?? ''))
-  return nums.map((n, i) => ({
-    chapter: vagga.index,
-    verse: n,
-    text: swedish[i] ?? en.get(n) ?? '',
-    origText: pli.get(n),
-  }))
+  const enTexts = nums.map((n) => en.get(n) ?? '')
+  // null ⇒ ingen översättning skedde (avstängd eller misslyckad) ⇒ behåll engelska.
+  const swedish = await translateLines(enTexts)
+  const text = swedish ?? enTexts
+  return {
+    translated: swedish !== null,
+    verses: nums.map((n, i) => ({
+      chapter: vagga.index,
+      verse: n,
+      text: text[i] ?? enTexts[i] ?? '',
+      origText: pli.get(n),
+    })),
+  }
 }
 
 const metaFor = (translated: boolean): WorkMeta => ({
@@ -70,11 +78,13 @@ const metaFor = (translated: boolean): WorkMeta => ({
 /** Hämtar hela Dhammapada (26 vaggas) och normaliserar den till ett verk. */
 export const suttacentralDhammapada = async (): Promise<NormalizedWork> => {
   const perVagga = await mapPool(DHAMMAPADA_VAGGAS, 4, buildVagga)
+  // Märk som översatt bara om varje vagga faktiskt översattes.
+  const translated = perVagga.length > 0 && perVagga.every((r) => r.translated)
   const book: NormalizedBook = {
     slug: 'dhammapada',
     name: 'Dhammapada',
     abbrev: 'Dhp',
-    verses: perVagga.flat(),
+    verses: perVagga.flatMap((r) => r.verses),
   }
-  return { meta: metaFor(translationEnabled()), books: [book] }
+  return { meta: metaFor(translated), books: [book] }
 }

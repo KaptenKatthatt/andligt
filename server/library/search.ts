@@ -10,12 +10,13 @@ export type SearchHit = {
   snippet: string
 }
 
-// Bygg en säker FTS5-fråga: token blir prefix-matchning (`ord*`), och alla
-// FTS-operatortecken tas bort så användarinput aldrig kan bryta syntaxen.
+// Bygg en säker FTS5-fråga: behåll bara bokstäver/siffror som token (allt annat
+// blir mellanslag), så inget FTS5-operatortecken (. + { } " * ( ) : ^ -) kan nå
+// MATCH och bryta syntaxen. Varje token blir prefix-matchning (`ord*`).
 const toFtsQuery = (raw: string): string =>
   raw
     .toLowerCase()
-    .replace(/["*():^-]/g, ' ')
+    .replace(/[^\p{L}\p{N}]+/gu, ' ')
     .split(/\s+/)
     .filter((t) => t.length > 0)
     .map((t) => `${t}*`)
@@ -38,5 +39,11 @@ const SEARCH_SQL = `
 export const searchVerses = (query: string, limit = 40): SearchHit[] => {
   const match = toFtsQuery(query)
   if (match.length === 0) return []
-  return sqlite.prepare(SEARCH_SQL).all(match, limit) as SearchHit[]
+  try {
+    return sqlite.prepare(SEARCH_SQL).all(match, limit) as SearchHit[]
+  } catch {
+    // Skulle en oväntad token ändå slippa igenom neutraliseras felet till noll
+    // träffar i stället för ett 500-svar.
+    return []
+  }
 }

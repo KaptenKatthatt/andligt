@@ -5,7 +5,7 @@
 const ollamaUrl = (): string => process.env['OLLAMA_URL'] ?? 'http://127.0.0.1:11434/api/generate'
 const ollamaModel = (): string => process.env['OLLAMA_MODEL'] ?? 'gemma4:31b-cloud'
 
-export const translationEnabled = (): boolean => process.env['TRANSLATE'] !== 'off'
+const translationEnabled = (): boolean => process.env['TRANSLATE'] !== 'off'
 
 // Ta bort ett eventuellt <think>-block (även oavslutat) innan svaret används.
 const stripThink = (text: string): string =>
@@ -36,23 +36,27 @@ const buildPrompt = (lines: string[]): string => {
   return `Du översätter andlig litteratur till svenska. Översätt varje numrerad rad nedan. Behåll exakt samma numrering och lika många rader — en översatt rad per numrerad rad, inga tillägg, ingen kommentar.\n\n${numbered}`
 }
 
-// Översätt ett block rader (en rad in → en rad ut). Faller tillbaka på
-// originalet om modellen ändrar radantalet, så inget par förskjuts.
+// Översätt ett block rader (en rad in → en rad ut).
 const translateBlock = async (lines: string[]): Promise<string[]> => {
   const raw = await callOllama(buildPrompt(lines))
-  const out = raw
+  return raw
     .split('\n')
     .map((line) => line.replace(/^\s*\d+[.)]\s?/, '').trim())
     .filter((line) => line.length > 0)
-  return out.length === lines.length ? out : lines
 }
 
-/** Översätter rader till svenska, eller returnerar dem oförändrade om avstängt. */
-export const translateLines = async (lines: string[]): Promise<string[]> => {
-  if (!translationEnabled() || lines.length === 0) return lines
+/**
+ * Översätter rader till svenska. Returnerar `null` om ingen översättning skedde
+ * — antingen för att den är avstängd, eller för att anropet misslyckades / gav
+ * fel radantal. Anroparen behåller då originaltexten och markerar verket som
+ * ej översatt, så engelska aldrig märks som färdig svensk översättning.
+ */
+export const translateLines = async (lines: string[]): Promise<string[] | null> => {
+  if (!translationEnabled() || lines.length === 0) return null
   try {
-    return await translateBlock(lines)
+    const out = await translateBlock(lines)
+    return out.length === lines.length ? out : null
   } catch {
-    return lines
+    return null
   }
 }

@@ -27,6 +27,9 @@ export type Book = {
   chapterCount: number
 }
 
+// Boken med sina faktiska kapitelnummer (kan ha luckor / inte börja på 1).
+export type BookWithChapters = Book & { chapters: number[] }
+
 export type Verse = {
   id: number
   workId: string
@@ -71,7 +74,7 @@ export const slugOfBook = (workId: string, id: string): string =>
 export const fetchWorks = (): Promise<{ works: WorkSummary[] }> =>
   getJson('/api/library/works')
 
-export const fetchWork = (id: string): Promise<{ work: Work; books: Book[] }> =>
+export const fetchWork = (id: string): Promise<{ work: Work; books: BookWithChapters[] }> =>
   getJson(`/api/library/works/${encodeURIComponent(id)}`)
 
 export const fetchChapter = (id: string, chapter: number): Promise<ChapterView> =>

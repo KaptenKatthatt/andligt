@@ -27,17 +27,18 @@ app.route('/api/ingest', ingestRouter)
 const staticRoot = path.relative(process.cwd(), config.staticDir) || '.'
 app.use('/*', serveStatic({ root: staticRoot }))
 
-const readIndex = (): string | null => {
+// Läs index.html en gång vid start (den är oföränderlig efter bygget) i stället
+// för vid varje obesvarad request. Null om SPA:t inte är byggt.
+const indexHtml = ((): string | null => {
   try {
     return readFileSync(path.join(config.staticDir, 'index.html'), 'utf-8')
   } catch {
     return null
   }
-}
-app.get('*', (c) => {
-  const html = readIndex()
-  return html ? c.html(html) : c.text('SPA:t är inte byggt (kör `npm run build`).', 404)
-})
+})()
+app.get('*', (c) =>
+  indexHtml ? c.html(indexHtml) : c.text('SPA:t är inte byggt (kör `npm run build`).', 404),
+)
 
 serve({ fetch: app.fetch, port: config.port }, (info) => {
   console.log(`Visdomsatlasen lyssnar på http://localhost:${info.port}`)

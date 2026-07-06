@@ -1,23 +1,45 @@
 import { and, asc, eq, gt, lt, desc } from 'drizzle-orm'
-import { db } from '../db'
+import { db, sqlite } from '../db'
 import { books, verses, works } from '../db/schema'
 import type { Book, Verse, Work } from '../db/schema'
 
 export type WorkSummary = Work & { bookCount: number }
+// Boken med sina faktiska kapitelnummer, så vyerna inte antar 1..N i följd.
+export type BookWithChapters = Book & { chapters: number[] }
 
 export const listWorks = (): WorkSummary[] => {
   const rows = db.select().from(works).orderBy(asc(works.position), asc(works.title)).all()
-  return rows.map((w) => {
-    const bookCount = db.select().from(books).where(eq(books.workId, w.id)).all().length
-    return { ...w, bookCount }
-  })
+  // Räkna böcker per verk i en enda fråga i stället för en per verk.
+  const counts = new Map<string, number>()
+  for (const b of db.select({ workId: books.workId }).from(books).all()) {
+    counts.set(b.workId, (counts.get(b.workId) ?? 0) + 1)
+  }
+  return rows.map((w) => ({ ...w, bookCount: counts.get(w.id) ?? 0 }))
 }
 
-export const getWork = (id: string): { work: Work; books: Book[] } | null => {
+// Faktiska kapitelnummer per bok (kan ha luckor eller inte börja på 1).
+const chapterNumbers = (workId: string): Map<string, number[]> => {
+  const rows = sqlite
+    .prepare(
+      `SELECT book_id AS bookId, chapter FROM verses WHERE work_id = ?
+       GROUP BY book_id, chapter ORDER BY chapter`,
+    )
+    .all(workId) as { bookId: string; chapter: number }[]
+  const map = new Map<string, number[]>()
+  for (const row of rows) {
+    const list = map.get(row.bookId) ?? []
+    list.push(row.chapter)
+    map.set(row.bookId, list)
+  }
+  return map
+}
+
+export const getWork = (id: string): { work: Work; books: BookWithChapters[] } | null => {
   const work = db.select().from(works).where(eq(works.id, id)).get()
   if (!work) return null
   const list = db.select().from(books).where(eq(books.workId, id)).orderBy(asc(books.position)).all()
-  return { work, books: list }
+  const chapters = chapterNumbers(id)
+  return { work, books: list.map((b) => ({ ...b, chapters: chapters.get(b.id) ?? [] })) }
 }
 
 const neighbourChapter = (bookId: string, chapter: number, dir: 'prev' | 'next'): number | null => {
