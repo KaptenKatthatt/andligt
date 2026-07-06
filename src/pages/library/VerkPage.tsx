@@ -46,7 +46,7 @@ export const VerkPage = ({ workId }: { workId: string }) => {
           {data.work.author} · {data.work.translation} · {data.work.license}
         </p>
       </header>
-      {data.books.length > 5 && (
+      {(data.books.length > 5 || filter.length > 0) && (
         <input
           className={styles.searchInput}
           type="search"
@@ -60,7 +60,9 @@ export const VerkPage = ({ workId }: { workId: string }) => {
         {books.map((book) => (
           <BookRow key={book.id} workId={workId} book={book} />
         ))}
-        {books.length === 0 && <p className={styles.stateNote}>Ingen bok matchar ”{filter}”.</p>}
+        {needle.length > 0 && books.length === 0 && (
+          <p className={styles.stateNote}>Ingen bok matchar ”{filter}”.</p>
+        )}
       </div>
     </div>
   )

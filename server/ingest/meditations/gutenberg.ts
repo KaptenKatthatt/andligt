@@ -1,5 +1,5 @@
 import { fetchText } from '../../lib/fetchText'
-import { translateChapters, type RawChapter } from '../lib/chapters'
+import { buildTranslatedWork, type RawChapter } from '../lib/chapters'
 import type { NormalizedWork, WorkMeta } from '../model'
 
 // Marcus Aurelius Självbetraktelser, George Longs engelska översättning (public
@@ -8,26 +8,45 @@ import type { NormalizedWork, WorkMeta } from '../model'
 const URL = 'https://raw.githubusercontent.com/GITenberg/Meditations_2680/master/2680.txt'
 const ORDINALS = 'FIRST|SECOND|THIRD|FOURTH|FIFTH|SIXTH|SEVENTH|EIGHTH|NINTH|TENTH|ELEVENTH|TWELFTH'
 const HEADER = new RegExp(`^THE (?:${ORDINALS}) BOOK\\s*$`, 'm')
+const SECTION = /^([IVXLCDM]+)\.\s/
 
-const parseSections = (chunk: string): string[] =>
+const ROMAN: Record<string, number> = { I: 1, V: 5, X: 10, L: 50, C: 100, D: 500, M: 1000 }
+const romanToInt = (s: string): number => {
+  let total = 0
+  for (let i = 0; i < s.length; i += 1) {
+    const cur = ROMAN[s[i] ?? ''] ?? 0
+    const next = ROMAN[s[i + 1] ?? ''] ?? 0
+    total += cur < next ? -cur : cur
+  }
+  return total
+}
+
+const parseSections = (chunk: string): { num: number; text: string }[] =>
   chunk
-    .split(/\n\s*\n(?=[IVXLC]+\.\s)/)
+    .split(/\n\s*\n(?=[IVXLCDM]+\.\s)/)
     .map((s) => s.trim())
-    .filter((s) => /^[IVXLC]+\.\s/.test(s))
-    .map((s) => s.replace(/^[IVXLC]+\.\s*/, '').replace(/\s+/g, ' ').trim())
+    .map((s) => SECTION.exec(s))
+    .filter((m): m is RegExpExecArray => m !== null)
+    .map((m) => ({ num: romanToInt(m[1] ?? ''), text: m.input.replace(SECTION, '').replace(/\s+/g, ' ').trim() }))
 
 const parseMeditations = (raw: string): RawChapter[] => {
   const text = raw.replace(/\r/g, '')
   const start = text.indexOf('THE FIRST BOOK')
-  const end = text.indexOf('*** END OF')
-  const body = text.slice(start < 0 ? 0 : start, end < 0 ? text.length : end)
-  return body
+  const rest = text.slice(start < 0 ? 0 : start)
+  // Bok XII följs av APPENDIX/NOTES (Longs noter) — klipp där så de inte tas med.
+  const endMatch = /\n(?:THE APPENDIX|APPENDIX|NOTES)\s*\n/.exec(rest)
+  const body = endMatch ? rest.slice(0, endMatch.index) : rest
+  const chapters = body
     .split(HEADER)
     .slice(1)
     .map((chunk, i) => ({
       chapter: i + 1,
-      verses: parseSections(chunk).map((source, j) => ({ verse: j + 1, source, orig: source })),
+      verses: parseSections(chunk).map((sec) => ({ verse: sec.num, source: sec.text })),
     }))
+  if (chapters.length !== 12) {
+    throw new Error(`Självbetraktelser: förväntade 12 böcker, fick ${chapters.length}`)
+  }
+  return chapters
 }
 
 const metaFor = (translated: boolean): WorkMeta => ({
@@ -47,7 +66,6 @@ const metaFor = (translated: boolean): WorkMeta => ({
 
 export const gutenbergMeditations = async (): Promise<NormalizedWork> => {
   const chapters = parseMeditations(await fetchText(URL))
-  const { verses, translated } = await translateChapters(chapters, 3)
-  const book = { slug: 'sjalvbetraktelser', name: 'Självbetraktelser', abbrev: 'Självbetr.', verses }
-  return { meta: metaFor(translated), books: [book] }
+  const book = { slug: 'sjalvbetraktelser', name: 'Självbetraktelser', abbrev: 'Självbetr.' }
+  return buildTranslatedWork(chapters, book, metaFor, 3)
 }

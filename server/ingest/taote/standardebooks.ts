@@ -1,6 +1,6 @@
 import { fetchText } from '../../lib/fetchText'
 import { cleanHtml } from '../lib/html'
-import { translateChapters, type RawChapter } from '../lib/chapters'
+import { buildTranslatedWork, type RawChapter } from '../lib/chapters'
 import type { NormalizedWork, WorkMeta } from '../model'
 
 // Tao Te Ching, James Legges översättning (public domain) via Standard Ebooks.
@@ -19,10 +19,10 @@ const parseTao = (xhtml: string): RawChapter[] => {
     const paragraphs = [...body.matchAll(/<p\b[^>]*>([\s\S]*?)<\/p>/g)]
       .map((p) => cleanHtml(p[1] ?? ''))
       .filter((t) => t.length > 0)
-    chapters.push({
-      chapter,
-      verses: paragraphs.map((source, i) => ({ verse: i + 1, source, orig: source })),
-    })
+    chapters.push({ chapter, verses: paragraphs.map((source, i) => ({ verse: i + 1, source })) })
+  }
+  if (chapters.length !== 81) {
+    throw new Error(`Tao Te Ching: förväntade 81 kapitel, fick ${chapters.length}`)
   }
   return chapters
 }
@@ -44,7 +44,6 @@ const metaFor = (translated: boolean): WorkMeta => ({
 
 export const standardebooksTaoTeChing = async (): Promise<NormalizedWork> => {
   const chapters = parseTao(await fetchText(URL))
-  const { verses, translated } = await translateChapters(chapters, 4)
-  const book = { slug: 'tao-te-ching', name: 'Tao Te Ching', abbrev: 'TTK', verses }
-  return { meta: metaFor(translated), books: [book] }
+  const book = { slug: 'tao-te-ching', name: 'Tao Te Ching', abbrev: 'TTK' }
+  return buildTranslatedWork(chapters, book, metaFor, 4)
 }

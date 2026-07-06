@@ -1,8 +1,8 @@
 import { fetchJson } from '../../lib/fetchJson'
 import { mapPool } from '../../lib/concurrency'
-import { translateChapters, type RawChapter } from '../lib/chapters'
+import { buildTranslatedWork, type RawChapter } from '../lib/chapters'
 import { DHAMMAPADA_VAGGAS, type Vagga } from './vaggas'
-import type { NormalizedBook, NormalizedWork, WorkMeta } from '../model'
+import type { NormalizedWork, WorkMeta } from '../model'
 
 // Dhammapada från SuttaCentrals bilara-data (CC0): engelska (Bhikkhu Sujato) +
 // pali (Mahāsaṅgīti). Översätts till svenska via Ollama vid ingest.
@@ -69,7 +69,6 @@ const metaFor = (translated: boolean): WorkMeta => ({
 /** Hämtar hela Dhammapada (26 vaggas), översätter och normaliserar den. */
 export const suttacentralDhammapada = async (): Promise<NormalizedWork> => {
   const chapters = await mapPool(DHAMMAPADA_VAGGAS, 4, fetchVagga)
-  const { verses, translated } = await translateChapters(chapters, 4)
-  const book: NormalizedBook = { slug: 'dhammapada', name: 'Dhammapada', abbrev: 'Dhp', verses }
-  return { meta: metaFor(translated), books: [book] }
+  const book = { slug: 'dhammapada', name: 'Dhammapada', abbrev: 'Dhp' }
+  return buildTranslatedWork(chapters, book, metaFor, 4)
 }
