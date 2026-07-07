@@ -45,7 +45,9 @@ jobs:
           username: ${{ secrets.HETZNER_USER }}
           key: ${{ secrets.HETZNER_SSH_KEY }}
           script: |
+            set -euo pipefail
             echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            docker image prune -f || true
             docker pull ${{ env.IMAGE }}
             docker stop visdomsatlasen || true
             docker rm visdomsatlasen || true
