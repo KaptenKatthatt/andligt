@@ -1,12 +1,42 @@
-import { Link } from '@tanstack/react-router'
+import { Link, useNavigate } from '@tanstack/react-router'
+import { BookmarkButton } from '../../components/BookmarkButton'
 import { ReadingSettingsButton } from '../../components/ReadingSettingsButton'
 import { TopBar } from '../../components/TopBar'
 import { useAsync } from '../../lib/useAsync'
 import { bookId, fetchChapter } from '../../lib/api'
+import { chapterKey, useAtlas } from '../../lib/store'
 import { StateNote } from './StateNote'
 import styles from './KapitelPage.module.css'
 
 type Props = { workId: string; bookSlug: string; chapter: string }
+
+/** Bokmärke + "Aa" i kapitelläsarens topbar. Kräver boknamnet för att kunna
+ * spara ett bokmärke som Samling kan visa, så den lever i den laddade grenen. */
+const KapitelActions = ({
+  workId,
+  bookSlug,
+  chapter,
+  bookName,
+}: {
+  workId: string
+  bookSlug: string
+  chapter: number
+  bookName: string
+}) => {
+  const { chapterBookmarks, toggleChapterBookmark } = useAtlas()
+  const marked = !!chapterBookmarks[chapterKey(workId, bookSlug, chapter)]
+  return (
+    <div className={styles.actions}>
+      <BookmarkButton
+        marked={marked}
+        onToggle={() =>
+          toggleChapterBookmark({ workId, bookSlug, chapter, bookName, savedAt: Date.now() })
+        }
+      />
+      <ReadingSettingsButton />
+    </div>
+  )
+}
 
 const NavLink = ({
   workId,
@@ -34,18 +64,31 @@ const NavLink = ({
 export const KapitelPage = ({ workId, bookSlug, chapter }: Props) => {
   const n = Number(chapter)
   const id = bookId(workId, bookSlug)
+  const navigate = useNavigate()
+  const goUp = () =>
+    navigate({ to: '/bibliotek/$workId/$bookSlug', params: { workId, bookSlug } })
   const { data, loading, error } = useAsync(() => fetchChapter(id, n), [id, n])
   if (!data) {
     return (
       <div className="screenReader">
-        <TopBar right={<ReadingSettingsButton />} />
+        <TopBar right={<ReadingSettingsButton />} onBack={goUp} />
         <StateNote loading={loading} error={error} />
       </div>
     )
   }
   return (
     <div className="screenReader">
-      <TopBar right={<ReadingSettingsButton />} />
+      <TopBar
+        right={
+          <KapitelActions
+            workId={workId}
+            bookSlug={bookSlug}
+            chapter={n}
+            bookName={data.book.name}
+          />
+        }
+        onBack={goUp}
+      />
       <header className={styles.head}>
         <div className="kicker">{data.book.name}</div>
         <h1 className={styles.chapterTitle}>Kapitel {data.chapter}</h1>
