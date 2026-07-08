@@ -1,5 +1,5 @@
 import { Link, useNavigate } from '@tanstack/react-router'
-import { BookmarkIcon } from '../../components/Icons'
+import { BookmarkButton } from '../../components/BookmarkButton'
 import { ReadingSettingsButton } from '../../components/ReadingSettingsButton'
 import { TopBar } from '../../components/TopBar'
 import { useAsync } from '../../lib/useAsync'
@@ -27,17 +27,12 @@ const KapitelActions = ({
   const marked = !!chapterBookmarks[chapterKey(workId, bookSlug, chapter)]
   return (
     <div className={styles.actions}>
-      <button
-        type="button"
-        onClick={() =>
+      <BookmarkButton
+        marked={marked}
+        onToggle={() =>
           toggleChapterBookmark({ workId, bookSlug, chapter, bookName, savedAt: Date.now() })
         }
-        aria-label="Bokmärke"
-        aria-pressed={marked}
-        className="iconBtn"
-      >
-        <BookmarkIcon filled={marked} />
-      </button>
+      />
       <ReadingSettingsButton />
     </div>
   )
