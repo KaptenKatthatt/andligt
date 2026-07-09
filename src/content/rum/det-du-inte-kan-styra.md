@@ -29,8 +29,8 @@ redaktion:
 Någonting väntar på dig. Ett besked, ett svar, en annan människas beslut.
 Du har gjort vad du kan, och ändå fortsätter tankarna att arbeta.
 
-Den här känslan är inte ny. För snart två tusen år sedan byggde en frigiven
-slav hela sin undervisning kring den.
+Kanske finns det inget mer att göra just nu. Kanske var det aldrig ditt
+att avgöra. Var går den gränsen?
 
 ## Kärna
 
