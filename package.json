@@ -13,10 +13,11 @@
     "test": "vitest run",
     "check:types": "tsc -b",
     "check:lint": "eslint .",
+    "check:content": "tsx scripts/validate-content.ts",
     "check:coverage": "type-coverage -p tsconfig.app.json --at-least 100 && type-coverage -p tsconfig.server.json --at-least 100",
     "check:length": "fallow health --complexity",
     "check:dead": "fallow dead-code",
-    "check": "npm run check:types && npm run check:lint && npm run test && npm run check:coverage && npm run check:length && npm run check:dead"
+    "check": "npm run check:types && npm run check:lint && npm run test && npm run check:content && npm run check:coverage && npm run check:length && npm run check:dead"
   },
   "dependencies": {
     "@fontsource/atkinson-hyperlegible": "^5.2.8",
@@ -30,6 +31,7 @@
     "hono": "^4.12.28",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
+    "yaml": "^2.9.0",
     "zod": "^4.4.3"
   },
   "devDependencies": {
