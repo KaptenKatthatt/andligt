@@ -353,6 +353,14 @@ It must not be described as:
 
 It is simply a bookmark placed inside a book.
 
+The save action lives at the end of the room, after the source reference.
+The reader should not encounter it until the reading is finished.
+
+The reading top bar contains no bookmark icon. Chapter bookmarks belong to
+the Library texts only, where they mark where the reader stopped — like a
+bookmark in a physical Bible, or on a Kindle. Rooms are read whole and are
+saved whole.
+
 ---
 
 ## Visual Design
