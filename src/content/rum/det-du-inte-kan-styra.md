@@ -1,26 +1,26 @@
 ---
-id: room-det-du-inte-kan-styra
+id: rum-det-du-inte-kan-styra
 slug: det-du-inte-kan-styra
-title: Det du inte kan styra
-summary: En tanke om skillnaden mellan det som beror på dig och det som inte gör det.
-primaryQuestionId: fraga-vad-kan-du-styra
-themeIds: [tema-lugn]
-thoughtToCarry: Det som inte beror på dig behöver inte bäras av dig.
-reflectionQuestions:
+titel: Det du inte kan styra
+sammanfattning: En tanke om skillnaden mellan det som beror på dig och det som inte gör det.
+primärFråga: fraga-vad-kan-du-styra
+teman: [tema-lugn]
+tankeAttBära: Det som inte beror på dig behöver inte bäras av dig.
+reflektionsfrågor:
   - Vad händer när du försöker styra det som ligger utanför din makt?
   - Finns det något du kan lämna olöst i dag?
-sources:
-  - sourceId: kalla-enchiridion
-    reference: avsnitt 1
-    usage: adaptation
-    primary: true
-    editorialNote: Bearbetning av öppningsavsnittets distinktion; inga direkta citat.
-readingTimeMinutes: 4
-status: draft
-createdAt: 2026-07-09
-updatedAt: 2026-07-09
-editorial:
-  writer: Claude (utkast — kalibreringsrum, ej granskat)
+källor:
+  - källa: kalla-enchiridion
+    referens: avsnitt 1
+    bruk: bearbetning
+    primär: true
+    redaktionellNot: Bearbetning av öppningsavsnittets distinktion; inga direkta citat.
+lästidMinuter: 4
+status: utkast
+skapad: 2026-07-09
+uppdaterad: 2026-07-09
+redaktion:
+  skribent: Claude (utkast — kalibreringsrum, ej granskat)
   version: 1
 ---
 

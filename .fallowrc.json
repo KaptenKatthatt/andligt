@@ -4,7 +4,7 @@
     "src/main.{ts,tsx,js,jsx}",
     "server/index.ts",
     "scripts/ingest.ts",
-    "scripts/validate-content.ts"
+    "scripts/validera-innehall.ts"
   ],
   "duplicates": {
     "minOccurrences": 3
