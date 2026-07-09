@@ -211,27 +211,24 @@ Prefer questions such as:
 
 ### 7. Source
 
-The source is shown at the bottom with low visual emphasis.
+The source is shown at the bottom as a single quiet reference: the name of
+the author — or, when no author fits, the work — in italics and underlined
+so it reads as a link.
 
-Examples:
-
-```text
-Källa: Predikaren 3
-Bearbetad och kondenserad för reflektion.
-```
-
-Or:
+Example:
 
 ```text
-Källa: Enchiridion, avsnitt 1
-Svensk redaktionell återgivning.
+Epiktetos
 ```
+
+Tapping the name opens the full source information: work, passage,
+editorial treatment, translation status and uncertainty.
 
 The source must always be present.
 
 It must never be hidden.
 
-However, it should not shape the user’s first encounter with the idea.
+However, everything beyond the name is shown only on request.
 
 ### 8. Optional Context
 
