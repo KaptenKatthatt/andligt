@@ -1,14 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import {
-  allaRum,
-  hittaKalla,
-  hittaRum,
-  hittaStandardRum,
-  hittaTema,
-  kallnamn,
-  stycken,
-  troskelTeman,
-} from './innehall'
+import { allaRum, hittaKalla, hittaRum, hittaTema, kallnamn, stycken, troskelTeman } from './innehall'
 
 describe('innehållsladdaren', () => {
   it('laddar exempelrummet från markdown', () => {
@@ -39,13 +30,6 @@ describe('tröskeln', () => {
       'Människan',
     ])
     expect(troskelTeman.every((tema) => tema.status !== 'arkiverad')).toBe(true)
-  })
-
-  it('hittar standardrummet för teman som har ett', () => {
-    const lugn = troskelTeman.find((tema) => tema.slug === 'lugn')
-    expect(lugn && hittaStandardRum(lugn)?.slug).toBe('det-du-inte-kan-styra')
-    const mening = troskelTeman.find((tema) => tema.slug === 'mening')
-    expect(mening && hittaStandardRum(mening)).toBeUndefined()
   })
 })
 

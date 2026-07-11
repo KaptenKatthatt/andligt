@@ -1,7 +1,9 @@
 import { Link, useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
 import type { Tema } from '../content/redaktion/schema'
-import { hittaStandardRum, troskelTeman } from '../lib/innehall'
+import { allaRum, troskelTeman } from '../lib/innehall'
+import { valjRum } from '../lib/rumsval'
+import { useAtlas } from '../lib/store'
 import styles from './HemPage.module.css'
 
 /** Tröskeln (home-and-entry.md): en fråga, några teman, ett val — sedan
@@ -9,9 +11,10 @@ import styles from './HemPage.module.css'
  * innehåll; tröskeln är likadan varje gång och börjar alltid i nuet. */
 export const HemPage = () => {
   const navigate = useNavigate()
+  const { senastLastaRum } = useAtlas()
   const [tomtVal, setTomtVal] = useState(false)
   const valjTema = (tema: Tema) => {
-    const rum = hittaStandardRum(tema)
+    const rum = valjRum(tema, allaRum, senastLastaRum)
     if (rum) void navigate({ to: '/rum/$slug', params: { slug: rum.slug } })
     else setTomtVal(true)
   }

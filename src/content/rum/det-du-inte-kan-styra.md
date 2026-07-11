@@ -18,10 +18,27 @@ källor:
 lästidMinuter: 4
 status: utkast
 skapad: 2026-07-09
-uppdaterad: 2026-07-09
+uppdaterad: 2026-07-11
 redaktion:
-  skribent: Claude (utkast — kalibreringsrum, ej granskat)
-  version: 1
+  skribent: Claude (kalibreringsrum)
+  källgranskare: Claude (förgranskning — publiceringsbeslut hos redaktören)
+  språkgranskare: Claude (förgranskning — publiceringsbeslut hos redaktören)
+  granskad: 2026-07-11
+  noteringar: >-
+    Förgranskad mot alla fyra checklistorna. Källverifiering: bearbetningen
+    stämmer mot Enchiridion avsnitt 1 i bibliotekets text (George Long) —
+    "Of things some are in our power, and others are not. In our power are
+    opinion, movement towards a thing, desire, aversion ... not in our power
+    are the body, property, reputation, offices". Omdömen/avsikter/handlingar
+    respektive kroppen/andras tankar är trogen bearbetning; "beskedet som ännu
+    inte kommit" är modern exemplifiering, täckt av bruket bearbetning och
+    utan citatmarkering. Historisk kontext kontrollerad: född slav ca år 50,
+    frigiven, undervisade i Nikopolis, skrev inget själv, Arrianos nedtecknade.
+    Ton, rytm, en fråga, en tanke, 2 reflektionsfrågor, ca 4 min — inom
+    ramarna. Inga direkta citat, inga emojis. För publicering måste även
+    tema-lugn, fraga-vad-kan-du-styra och kalla-enchiridion publiceras
+    (valideringen tillåter inte publicerat rum med opublicerade relationer).
+  version: 2
 ---
 
 ## Öppning

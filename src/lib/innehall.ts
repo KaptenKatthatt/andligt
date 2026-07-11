@@ -41,11 +41,6 @@ export const troskelTeman: Tema[] = allaTeman
       a.etikett.localeCompare(b.etikett, 'sv'),
   )
 
-/** Temats redaktionella standardrum (roadmap fas 4). Rumsvalet i fas 5
- * ersätter detta med en urvalsmängd och upprepningsundvikande. */
-export const hittaStandardRum = (tema: Tema): Rum | undefined =>
-  tema.standardRum === undefined ? undefined : allaRum.find((rum) => rum.id === tema.standardRum)
-
 const allaKallor: Kalla[] = samla(
   tillFiler(import.meta.glob<string>('../content/kallor/*.md', { query: '?raw', import: 'default', eager: true })),
   (fil) => tolkaPostfil(kallaSchema, fil),

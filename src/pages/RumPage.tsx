@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { NotesSheet } from '../components/NotesSheet'
 import { ReadingSettingsButton } from '../components/ReadingSettingsButton'
 import { TopBar } from '../components/TopBar'
@@ -132,6 +132,12 @@ const Rumsavslut = ({ rum }: { rum: Rum }) => {
  * som utkast tills rumsvalet (fas 5) filtrerar på status. */
 export const RumPage = ({ slug }: { slug: string }) => {
   const rum = hittaRum(slug)
+  const { registreraLastRum } = useAtlas()
+  const rumId = rum?.id
+  // Historiken låter rumsvalet undvika omedelbar upprepning (fas 5).
+  useEffect(() => {
+    if (rumId !== undefined) registreraLastRum(rumId)
+  }, [rumId, registreraLastRum])
   if (!rum) return <NotFoundNote subject="Rummet" />
   const tema = hittaTema(rum.teman[0] ?? '')
   return (
