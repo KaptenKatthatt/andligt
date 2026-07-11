@@ -180,6 +180,8 @@ const useAtlasActions = (setState: SetAtlasState): AtlasActions => {
     [setState],
   )
   const registreraLastRum = useCallback(
+    // Cappen speglar rumsvalets fönster men är bara lagringsstädning —
+    // själva urvalsregeln (vad som räknas som nyligen) bor i rumsval.ts.
     (id: string) =>
       setState((s) => ({
         ...s,

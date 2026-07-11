@@ -127,17 +127,19 @@ const Rumsavslut = ({ rum }: { rum: Rum }) => {
 }
 
 /** Läsrummet (reading-room.md): en text, en tanke, ett naturligt slut.
- * Inga rekommendationer, inget nästa rum. Rutten nås ännu inte från något
- * gränssnitt (tröskeln kommer i fas 4); rum som inte är publicerade märks
- * som utkast tills rumsvalet (fas 5) filtrerar på status. */
+ * Inga rekommendationer, inget nästa rum. Tröskeln öppnar hit via rumsvalet,
+ * som bara väljer publicerade rum; utkast nås märkta via direkt länk och
+ * fungerar som redaktionens granskningsvy. */
 export const RumPage = ({ slug }: { slug: string }) => {
   const rum = hittaRum(slug)
   const { registreraLastRum } = useAtlas()
-  const rumId = rum?.id
-  // Historiken låter rumsvalet undvika omedelbar upprepning (fas 5).
+  // Historiken låter rumsvalet undvika omedelbar upprepning. Bara publicerade
+  // rum registreras — utkast som förhandsgranskas via direkt länk ska inte
+  // tränga ut publicerade rum ur det lilla fönstret.
+  const publiceratRumId = rum?.status === 'publicerad' ? rum.id : undefined
   useEffect(() => {
-    if (rumId !== undefined) registreraLastRum(rumId)
-  }, [rumId, registreraLastRum])
+    if (publiceratRumId !== undefined) registreraLastRum(publiceratRumId)
+  }, [publiceratRumId, registreraLastRum])
   if (!rum) return <NotFoundNote subject="Rummet" />
   const tema = hittaTema(rum.teman[0] ?? '')
   return (

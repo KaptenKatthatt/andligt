@@ -21,8 +21,8 @@ skapad: 2026-07-09
 uppdaterad: 2026-07-11
 redaktion:
   skribent: Claude (kalibreringsrum)
-  källgranskare: Claude (förgranskning — publiceringsbeslut hos redaktören)
-  språkgranskare: Claude (förgranskning — publiceringsbeslut hos redaktören)
+  källgranskare: Claude (förgranskning)
+  språkgranskare: Claude (förgranskning)
   granskad: 2026-07-11
   noteringar: >-
     Förgranskad mot alla fyra checklistorna. Källverifiering: bearbetningen
@@ -38,6 +38,8 @@ redaktion:
     ramarna. Inga direkta citat, inga emojis. För publicering måste även
     tema-lugn, fraga-vad-kan-du-styra och kalla-enchiridion publiceras
     (valideringen tillåter inte publicerat rum med opublicerade relationer).
+    Publiceringen godkänd av redaktören Jonas Olson 2026-07-11 efter egen
+    läsning av rummet — AI avgör aldrig ensam vad som publiceras.
   version: 2
 ---
 

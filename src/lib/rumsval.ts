@@ -26,12 +26,16 @@ const avstand = (id: string, senastLasta: string[]): number => {
 export const valjRum = (tema: Tema, rum: Rum[], senastLasta: string[]): Rum | null => {
   const mangd = valbaraRum(tema.id, rum)
   if (mangd.length === 0) return null
-  const nyligen = new Set(senastLasta.slice(0, HISTORIKLANGD))
+  // Ett enda fönster styr både "nyligen läst" och längst-sedan-ordningen,
+  // så poster utanför fönstret aldrig påverkar valet. Urvalsregeln äger
+  // fönstret; storens cap är bara lagringsstädning.
+  const historik = senastLasta.slice(0, HISTORIKLANGD)
+  const nyligen = new Set(historik)
   const standard = mangd.find((ettRum) => ettRum.id === tema.standardRum)
   if (standard && !nyligen.has(standard.id)) return standard
   const kandidater = mangd.filter((ettRum) => !nyligen.has(ettRum.id))
   const urval = kandidater.length > 0 ? kandidater : mangd
   return urval.reduce((basta, ettRum) =>
-    avstand(ettRum.id, senastLasta) > avstand(basta.id, senastLasta) ? ettRum : basta,
+    avstand(ettRum.id, historik) > avstand(basta.id, historik) ? ettRum : basta,
   )
 }
