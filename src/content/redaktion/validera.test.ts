@@ -188,6 +188,41 @@ describe('valideraInnehall', () => {
     expect(fel.some((f) => f.includes('passage-a') && f.includes('kalla-x'))).toBe(true)
   })
 
+  it('hindrar publicerade frågor från att länka opublicerade teman och frågor', () => {
+    // Frågan är publicerad men temat den pekar på (tema-a) är utkast.
+    const opubliceratTema = valideraInnehall(
+      grund({
+        rum: [rum({ teman: ['tema-b'] })],
+        teman: [tema({ status: 'utkast' }), tema({ id: 'tema-b', slug: 'tema-b' })],
+      }),
+    )
+    expect(
+      opubliceratTema.some((f) => f.includes('fraga-a') && f.includes('opublicerad(t) tema')),
+    ).toBe(true)
+    const opubliceradRelaterad = valideraInnehall(
+      grund({
+        frågor: [
+          fråga({ relateradeFrågor: ['fraga-b'] }),
+          fråga({ id: 'fraga-b', slug: 'fraga-b', status: 'utkast' }),
+        ],
+      }),
+    )
+    expect(
+      opubliceradRelaterad.some(
+        (f) => f.includes('fraga-a') && f.includes('opublicerad(t) relaterad fråga'),
+      ),
+    ).toBe(true)
+    // Utkastfrågor är fria att peka på opublicerat.
+    const utkastfråga = valideraInnehall(
+      grund({
+        rum: [rum({ teman: ['tema-a'], primärFråga: 'fraga-a' })],
+        teman: [tema(), tema({ id: 'tema-b', slug: 'tema-b', status: 'utkast' })],
+        frågor: [fråga({ status: 'utkast', teman: ['tema-b'] })],
+      }),
+    )
+    expect(utkastfråga).toEqual([])
+  })
+
   it('kräver att källors traditioner finns och hindrar publicerad källa från att länka opublicerad tradition', () => {
     const traditionen = { id: 'tradition-a', slug: 'tradition-a', namn: 'Tradition A' }
     const okänd = valideraInnehall(

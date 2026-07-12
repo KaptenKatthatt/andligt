@@ -7,6 +7,7 @@ import type { ReadMode } from '../content/model'
 import { AmnePage } from '../pages/AmnePage'
 import { AtlasPage } from '../pages/AtlasPage'
 import { BibliotekHemPage } from '../pages/bibliotek/BibliotekHemPage'
+import { FragaPage } from '../pages/bibliotek/FragaPage'
 import { KallaPostPage } from '../pages/bibliotek/KallaPostPage'
 import { RumlistaPage } from '../pages/bibliotek/RumlistaPage'
 import { TemaPage } from '../pages/bibliotek/TemaPage'
@@ -123,6 +124,14 @@ const bibliotekRoute = createRoute({
   component: BibliotekHemPage,
 })
 
+const fragaRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/bibliotek/fraga/$slug',
+  component: function FragaRoute() {
+    return <FragaPage slug={fragaRoute.useParams().slug} />
+  },
+})
+
 const temaRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/bibliotek/tema/$slug',
@@ -217,6 +226,7 @@ const routeTree = rootRoute.addChildren([
   installningarRoute,
   sokRoute,
   bibliotekRoute,
+  fragaRoute,
   temaRoute,
   rumlistaRoute,
   kallaPostRoute,

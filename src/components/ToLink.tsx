@@ -18,8 +18,8 @@ const screenPath = (id: string) => {
 
 // Bibliotekets mål hålls i en egen gren så huvudswitchen inte växer förbi
 // komplexitetsgränsen när fler redaktionella sidor tillkommer.
-type BibliotekTo = Extract<To, { kind: 'rum' | 'tema' | 'kallpost' }>
-const BIBLIOTEKSMAL = new Set<string>(['rum', 'tema', 'kallpost'])
+type BibliotekTo = Extract<To, { kind: 'rum' | 'tema' | 'kallpost' | 'fraga' }>
+const BIBLIOTEKSMAL = new Set<string>(['rum', 'tema', 'kallpost', 'fraga'])
 const arBibliotekTo = (to: To): to is BibliotekTo => BIBLIOTEKSMAL.has(to.kind)
 
 const BibliotekLink = ({ to, ...shared }: Props & { to: BibliotekTo }) => {
@@ -30,6 +30,8 @@ const BibliotekLink = ({ to, ...shared }: Props & { to: BibliotekTo }) => {
       return <Link to="/bibliotek/tema/$slug" params={{ slug: to.slug }} {...shared} />
     case 'kallpost':
       return <Link to="/bibliotek/kalla/$slug" params={{ slug: to.slug }} {...shared} />
+    case 'fraga':
+      return <Link to="/bibliotek/fraga/$slug" params={{ slug: to.slug }} {...shared} />
   }
 }
 

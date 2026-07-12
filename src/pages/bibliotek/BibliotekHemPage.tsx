@@ -1,35 +1,44 @@
 import { Link } from '@tanstack/react-router'
-import type { ReactNode } from 'react'
 import { ToLink } from '../../components/ToLink'
 import {
+  bibliotekFragor,
   bibliotekKallor,
   bibliotekRum,
   bibliotekTeman,
   bibliotekTraditioner,
 } from '../../lib/bibliotek'
-import { allaKallor, allaRum, allaTeman, allaTraditioner, kallnamn } from '../../lib/innehall'
+import {
+  allaFragor,
+  allaKallor,
+  allaRum,
+  allaTeman,
+  allaTraditioner,
+  kallnamn,
+} from '../../lib/innehall'
 import { valbaraRum } from '../../lib/rumsval'
 import styles from './Bibliotek.module.css'
+import { Rad, Sektion } from './Biblioteksdelar'
 
 const rumsantal = (antal: number): string => (antal === 1 ? 'Ett rum' : `${antal} rum`)
 
-// Radens innehåll — själva länken varierar (statisk route eller ToLink).
-const Rad = ({ titel, sub }: { titel: string; sub?: string }) => (
-  <>
-    <span>
-      <span className={styles.radTitel}>{titel}</span>
-      {sub !== undefined && <span className={styles.radSub}>{sub}</span>}
-    </span>
-    <span className={styles.chev}>›</span>
-  </>
-)
-
-const Sektion = ({ rubrik, children }: { rubrik: string; children: ReactNode }) => (
-  <div className={styles.sektion}>
-    <div className="kicker sectionKicker">{rubrik}</div>
-    {children}
-  </div>
-)
+// Frågorna står överst — biblioteket ordnas efter mänsklig erfarenhet,
+// inte efter verk eller upphovsmän (library.md, Primary Organization).
+const Fragesektion = () => {
+  const frågor = bibliotekFragor(allaFragor)
+  return (
+    <Sektion rubrik="Frågor">
+      {frågor.length === 0 ? (
+        <p className={styles.tomt}>Inga frågor ännu.</p>
+      ) : (
+        frågor.map((fråga) => (
+          <ToLink key={fråga.id} to={{ kind: 'fraga', slug: fråga.slug }} className={styles.rad}>
+            <Rad titel={fråga.text} />
+          </ToLink>
+        ))
+      )}
+    </Sektion>
+  )
+}
 
 const Temasektion = () => {
   const teman = bibliotekTeman(allaTeman)
@@ -100,6 +109,7 @@ export const BibliotekHemPage = () => (
     <p className={styles.lede}>
       För den som vill leta vidare på egen hand — bland frågor, teman, rum och källor.
     </p>
+    <Fragesektion />
     <Temasektion />
     <Rumsektion />
     <Kallsektion />

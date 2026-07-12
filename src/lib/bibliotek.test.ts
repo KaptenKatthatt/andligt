@@ -1,6 +1,14 @@
 import { describe, expect, it } from 'vitest'
-import type { Rum, Tema, Tradition } from '../content/redaktion/schema'
-import { bibliotekRum, bibliotekTeman, bibliotekTraditioner, rumForKalla } from './bibliotek'
+import type { Fraga, Kalla, Rum, Tema, Tradition } from '../content/redaktion/schema'
+import {
+  bibliotekRum,
+  bibliotekTeman,
+  bibliotekTraditioner,
+  fragorForTema,
+  kallorForFraga,
+  rumForFraga,
+  rumForKalla,
+} from './bibliotek'
 
 // Fabricerade poster: bara fälten biblioteket läser behöver vara meningsfulla.
 const rum = (titel: string, status: Rum['status'] = 'publicerad', över: Partial<Rum> = {}): Rum => ({
@@ -72,6 +80,91 @@ describe('bibliotekRum', () => {
       rum('arkivet', 'arkiverad'),
     ]
     expect(bibliotekRum(alla).map((r) => r.titel)).toEqual(['att vänta', 'över tröskeln'])
+  })
+})
+
+const fråga = (text: string, över: Partial<Fraga> = {}): Fraga => ({
+  id: `fraga-${text}`,
+  slug: text,
+  text,
+  teman: ['tema-x'],
+  status: 'publicerad',
+  ...över,
+})
+
+describe('rumForFraga', () => {
+  it('sätter rum med frågan som primär först, sedan relaterade — bara publicerade', () => {
+    const alla = [
+      rum('önskan', 'publicerad', { primärFråga: 'fraga-b', relateradeFrågor: ['fraga-a'] }),
+      rum('besked', 'publicerad', { primärFråga: 'fraga-a' }),
+      rum('utkastet', 'utkast', { primärFråga: 'fraga-a' }),
+      rum('annat', 'publicerad', { primärFråga: 'fraga-b' }),
+      rum('avstånd', 'publicerad', { primärFråga: 'fraga-a' }),
+    ]
+    expect(rumForFraga('fraga-a', alla).map((r) => r.titel)).toEqual([
+      'avstånd',
+      'besked',
+      'önskan',
+    ])
+  })
+
+  it('räknar inte samma rum två gånger när frågan är både primär och relaterad', () => {
+    const alla = [
+      rum('dubblerat', 'publicerad', { primärFråga: 'fraga-a', relateradeFrågor: ['fraga-a'] }),
+    ]
+    expect(rumForFraga('fraga-a', alla).map((r) => r.titel)).toEqual(['dubblerat'])
+  })
+})
+
+describe('fragorForTema', () => {
+  it('släpper bara igenom publicerade frågor taggade med temat, i svensk ordning', () => {
+    const alla = [
+      fråga('Vad är sant?', { teman: ['tema-a'] }),
+      fråga('Är detta viktigt?', { teman: ['tema-a'] }),
+      fråga('Utkastfråga?', { teman: ['tema-a'], status: 'utkast' }),
+      fråga('Annat tema?', { teman: ['tema-b'] }),
+    ]
+    // Svensk ordning: Ä sorterar efter V, inte som A.
+    expect(fragorForTema('tema-a', alla).map((f) => f.text)).toEqual([
+      'Vad är sant?',
+      'Är detta viktigt?',
+    ])
+  })
+})
+
+describe('kallorForFraga', () => {
+  const källa = (id: string, status: Kalla['status'] = 'publicerad'): Kalla => ({
+    id,
+    slug: id,
+    titel: id,
+    typ: 'bok',
+    rättigheter: 'public-domain',
+    status,
+  })
+
+  it('härleder unika publicerade källor ur frågans rum', () => {
+    const alla = [
+      rum('första', 'publicerad', {
+        primärFråga: 'fraga-a',
+        källor: [{ källa: 'kalla-a', bruk: 'bearbetning', primär: true }],
+      }),
+      rum('andra', 'publicerad', {
+        primärFråga: 'fraga-a',
+        källor: [
+          { källa: 'kalla-a', bruk: 'citat', primär: true },
+          { källa: 'kalla-b', bruk: 'historisk-kontext', primär: false },
+        ],
+      }),
+      rum('ovidkommande', 'publicerad', {
+        primärFråga: 'fraga-b',
+        källor: [{ källa: 'kalla-c', bruk: 'citat', primär: true }],
+      }),
+    ]
+    const källor = [källa('kalla-a'), källa('kalla-b'), källa('kalla-c')]
+    expect(kallorForFraga('fraga-a', alla, källor).map((k) => k.id)).toEqual([
+      'kalla-a',
+      'kalla-b',
+    ])
   })
 })
 

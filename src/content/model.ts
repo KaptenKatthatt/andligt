@@ -13,6 +13,7 @@ export type To =
   | { kind: 'rum'; slug: string }
   | { kind: 'tema'; slug: string }
   | { kind: 'kallpost'; slug: string }
+  | { kind: 'fraga'; slug: string }
 
 export type LinkSegment = { t: string; to: To }
 export type Segment = string | LinkSegment

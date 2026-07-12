@@ -4,9 +4,11 @@
 // i check-kedjan — fel här ska därför inte inträffa, men sväljs lugnt och
 // loggas i stället för att fälla appen.
 import {
+  fragaSchema,
   kallaSchema,
   temaSchema,
   traditionSchema,
+  type Fraga,
   type Kalla,
   type Rum,
   type Tema,
@@ -43,6 +45,11 @@ export const troskelTeman: Tema[] = allaTeman
       a.etikett.localeCompare(b.etikett, 'sv'),
   )
 
+export const allaFragor: Fraga[] = samla(
+  tillFiler(import.meta.glob<string>('../content/fragor/*.md', { query: '?raw', import: 'default', eager: true })),
+  (fil) => tolkaPostfil(fragaSchema, fil),
+)
+
 export const allaKallor: Kalla[] = samla(
   tillFiler(import.meta.glob<string>('../content/kallor/*.md', { query: '?raw', import: 'default', eager: true })),
   (fil) => tolkaPostfil(kallaSchema, fil),
@@ -61,6 +68,12 @@ export const hittaTema = (id: string): Tema | undefined =>
 
 export const hittaTemaViaSlug = (slug: string): Tema | undefined =>
   allaTeman.find((tema) => tema.slug === slug)
+
+export const hittaFraga = (id: string): Fraga | undefined =>
+  allaFragor.find((fråga) => fråga.id === id)
+
+export const hittaFragaViaSlug = (slug: string): Fraga | undefined =>
+  allaFragor.find((fråga) => fråga.slug === slug)
 
 export const hittaKalla = (id: string): Kalla | undefined =>
   allaKallor.find((källa) => källa.id === id)

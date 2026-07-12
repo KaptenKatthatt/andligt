@@ -103,15 +103,26 @@ const temafel = (tema: Tema, uppslag: Uppslag): string[] => {
   return fel
 }
 
-const fragefel = (fråga: Fraga, uppslag: Uppslag): string[] => {
-  const fel: string[] = []
-  for (const temaId of fråga.teman)
-    if (!uppslag.teman.has(temaId)) fel.push(`fråga ${fråga.id}: tema "${temaId}" finns inte`)
-  for (const relateradId of fråga.relateradeFrågor ?? [])
-    if (!uppslag.frågor.has(relateradId))
-      fel.push(`fråga ${fråga.id}: relaterad fråga "${relateradId}" finns inte`)
-  return fel
+// Samma grindprincip som rummen: en publicerad fråga är en synlig ingång
+// i biblioteket och får inte leda till opublicerat innehåll.
+const fragereferens = (
+  fråga: Fraga,
+  typ: string,
+  id: string,
+  post: { status: string } | undefined,
+): string[] => {
+  if (!post) return [`fråga ${fråga.id}: ${typ} "${id}" finns inte`]
+  if (publicerad(fråga.status) && !publicerad(post.status))
+    return [`fråga ${fråga.id}: publicerad fråga länkar opublicerad(t) ${typ} "${id}"`]
+  return []
 }
+
+const fragefel = (fråga: Fraga, uppslag: Uppslag): string[] => [
+  ...fråga.teman.flatMap((id) => fragereferens(fråga, 'tema', id, uppslag.teman.get(id))),
+  ...(fråga.relateradeFrågor ?? []).flatMap((id) =>
+    fragereferens(fråga, 'relaterad fråga', id, uppslag.frågor.get(id)),
+  ),
+]
 
 const vandringsfel = (mängd: Innehallsmangd, uppslag: Uppslag): string[] =>
   mängd.vandringar.flatMap((vandring) => {
