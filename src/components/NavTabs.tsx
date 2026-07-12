@@ -27,7 +27,6 @@ export const NavTabs = () => {
           to={tab.to}
           className={current === tab.to ? `${styles.tab} ${styles.active}` : styles.tab}
         >
-          <span className={styles.dot} />
           <span>{tab.label}</span>
         </Link>
       ))}
