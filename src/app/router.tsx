@@ -6,10 +6,11 @@ import {
 import type { ReadMode } from '../content/model'
 import { AmnePage } from '../pages/AmnePage'
 import { AtlasPage } from '../pages/AtlasPage'
-import { BibliotekPage } from '../pages/library/BibliotekPage'
+import { BibliotekHemPage } from '../pages/bibliotek/BibliotekHemPage'
 import { BibliotekSokPage } from '../pages/library/BibliotekSokPage'
 import { BokPage } from '../pages/library/BokPage'
 import { KapitelPage } from '../pages/library/KapitelPage'
+import { VerklistaPage } from '../pages/library/VerklistaPage'
 import { VerkPage } from '../pages/library/VerkPage'
 import { HemPage } from '../pages/HemPage'
 import { InstallningarPage } from '../pages/InstallningarPage'
@@ -112,15 +113,24 @@ const sokRoute = createRoute({
   component: SokPage,
 })
 
+// Bibliotekets landning (omgörningen, fas 6): frågor, teman, rum, källor.
 const bibliotekRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/bibliotek',
-  component: BibliotekPage,
+  component: BibliotekHemPage,
+})
+
+// Verkläsaren bor under det statiska segmentet `verk`, så landningens
+// undersidor aldrig kan skuggas av ett verks id.
+const verklistaRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/bibliotek/verk',
+  component: VerklistaPage,
 })
 
 const verkRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/bibliotek/$workId',
+  path: '/bibliotek/verk/$workId',
   component: function VerkRoute() {
     // key ⇒ komponenten monteras om per verk, så filterfältet inte hänger kvar
     // när man byter till ett annat verk (TanStack återanvänder annars instansen).
@@ -131,7 +141,7 @@ const verkRoute = createRoute({
 
 const bokRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/bibliotek/$workId/$bookSlug',
+  path: '/bibliotek/verk/$workId/$bookSlug',
   component: function BokRoute() {
     const params = bokRoute.useParams()
     return <BokPage workId={params.workId} bookSlug={params.bookSlug} />
@@ -182,6 +192,7 @@ const routeTree = rootRoute.addChildren([
   installningarRoute,
   sokRoute,
   bibliotekRoute,
+  verklistaRoute,
   verkRoute,
   bokRoute,
   kapitelRoute,
