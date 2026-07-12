@@ -1,8 +1,13 @@
 import { Link } from '@tanstack/react-router'
 import type { ReactNode } from 'react'
 import { ToLink } from '../../components/ToLink'
-import { bibliotekRum, bibliotekTeman } from '../../lib/bibliotek'
-import { allaRum, allaTeman } from '../../lib/innehall'
+import {
+  bibliotekKallor,
+  bibliotekRum,
+  bibliotekTeman,
+  bibliotekTraditioner,
+} from '../../lib/bibliotek'
+import { allaKallor, allaRum, allaTeman, allaTraditioner, kallnamn } from '../../lib/innehall'
 import { valbaraRum } from '../../lib/rumsval'
 import styles from './Bibliotek.module.css'
 
@@ -51,6 +56,38 @@ const Rumsektion = () => (
   </Sektion>
 )
 
+const Kallsektion = () => (
+  <Sektion rubrik="Källor">
+    {bibliotekKallor(allaKallor).map((källa) => (
+      <ToLink key={källa.id} to={{ kind: 'kallpost', slug: källa.slug }} className={styles.rad}>
+        <Rad titel={källa.titel} sub={kallnamn(källa)} />
+      </ToLink>
+    ))}
+    <Link to="/bibliotek/verk" className={styles.rad}>
+      <Rad titel="Hela texter" sub="Källtexterna i sin helhet, att läsa och söka i" />
+    </Link>
+  </Sektion>
+)
+
+// Traditioner är en sekundär ingång utan egna sidor än (roadmap fas 6:
+// stödposter). Sektionen visas först när publicerade traditioner finns.
+const Traditionssektion = () => {
+  const traditioner = bibliotekTraditioner(allaTraditioner)
+  if (traditioner.length === 0) return null
+  return (
+    <Sektion rubrik="Traditioner">
+      {traditioner.map((tradition) => (
+        <div key={tradition.id} className={styles.stillaRad}>
+          <span className={styles.radTitel}>{tradition.namn}</span>
+          {tradition.beskrivning && (
+            <span className={styles.radSub}>{tradition.beskrivning}</span>
+          )}
+        </div>
+      ))}
+    </Sektion>
+  )
+}
+
 /**
  * Bibliotekets landningssida (library.md) — den medvetna ingången till
  * utforskning. Sekundär till läsrummet; lugn, ändlig, utan engagemangsmått.
@@ -65,11 +102,8 @@ export const BibliotekHemPage = () => (
     </p>
     <Temasektion />
     <Rumsektion />
-    <Sektion rubrik="Källor">
-      <Link to="/bibliotek/verk" className={styles.rad}>
-        <Rad titel="Hela texter" sub="Källtexterna i sin helhet, att läsa och söka i" />
-      </Link>
-    </Sektion>
+    <Kallsektion />
+    <Traditionssektion />
     <Sektion rubrik="Sparat">
       <Link to="/samling" className={styles.rad}>
         <Rad titel="Sparat" sub="Det du sparat och antecknat" />

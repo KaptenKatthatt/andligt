@@ -7,6 +7,7 @@ import type { ReadMode } from '../content/model'
 import { AmnePage } from '../pages/AmnePage'
 import { AtlasPage } from '../pages/AtlasPage'
 import { BibliotekHemPage } from '../pages/bibliotek/BibliotekHemPage'
+import { KallaPostPage } from '../pages/bibliotek/KallaPostPage'
 import { RumlistaPage } from '../pages/bibliotek/RumlistaPage'
 import { TemaPage } from '../pages/bibliotek/TemaPage'
 import { BibliotekSokPage } from '../pages/library/BibliotekSokPage'
@@ -136,6 +137,14 @@ const rumlistaRoute = createRoute({
   component: RumlistaPage,
 })
 
+const kallaPostRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/bibliotek/kalla/$slug',
+  component: function KallaPostRoute() {
+    return <KallaPostPage slug={kallaPostRoute.useParams().slug} />
+  },
+})
+
 // Verkläsaren bor under det statiska segmentet `verk`, så landningens
 // undersidor aldrig kan skuggas av ett verks id.
 const verklistaRoute = createRoute({
@@ -210,6 +219,7 @@ const routeTree = rootRoute.addChildren([
   bibliotekRoute,
   temaRoute,
   rumlistaRoute,
+  kallaPostRoute,
   verklistaRoute,
   verkRoute,
   bokRoute,

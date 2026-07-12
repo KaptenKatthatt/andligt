@@ -188,6 +188,42 @@ describe('valideraInnehall', () => {
     expect(fel.some((f) => f.includes('passage-a') && f.includes('kalla-x'))).toBe(true)
   })
 
+  it('kräver att källors traditioner finns och hindrar publicerad källa från att länka opublicerad tradition', () => {
+    const traditionen = { id: 'tradition-a', slug: 'tradition-a', namn: 'Tradition A' }
+    const okänd = valideraInnehall(
+      grund({ källor: [källa({ traditioner: ['tradition-x'] })] }),
+    )
+    expect(okänd.some((f) => f.includes('kalla-a') && f.includes('tradition-x'))).toBe(true)
+    const opublicerad = valideraInnehall(
+      grund({
+        källor: [källa({ traditioner: ['tradition-a'] })],
+        traditioner: [{ ...traditionen, status: 'utkast' }],
+      }),
+    )
+    expect(
+      opublicerad.some((f) => f.includes('kalla-a') && f.includes('opublicerad tradition')),
+    ).toBe(true)
+    const publicerad = valideraInnehall(
+      grund({
+        källor: [källa({ traditioner: ['tradition-a'] })],
+        traditioner: [{ ...traditionen, status: 'publicerad' }],
+      }),
+    )
+    expect(publicerad).toEqual([])
+    // Utkastkällor är fria — grinden gäller bara publicerat.
+    const utkastkälla = valideraInnehall(
+      grund({
+        rum: [rum({ källor: [{ källa: 'kalla-b', bruk: 'bearbetning', primär: true }] })],
+        källor: [
+          källa({ id: 'kalla-b', slug: 'kalla-b' }),
+          källa({ status: 'utkast', traditioner: ['tradition-a'] }),
+        ],
+        traditioner: [{ ...traditionen, status: 'utkast' }],
+      }),
+    )
+    expect(utkastkälla).toEqual([])
+  })
+
   it('hindrar publicerade vandringar från att innehålla opublicerade rum', () => {
     const fel = valideraInnehall(
       grund({

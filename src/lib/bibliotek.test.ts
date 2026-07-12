@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest'
-import type { Rum, Tema } from '../content/redaktion/schema'
-import { bibliotekRum, bibliotekTeman } from './bibliotek'
+import type { Rum, Tema, Tradition } from '../content/redaktion/schema'
+import { bibliotekRum, bibliotekTeman, bibliotekTraditioner, rumForKalla } from './bibliotek'
 
 // Fabricerade poster: bara fälten biblioteket läser behöver vara meningsfulla.
-const rum = (titel: string, status: Rum['status'] = 'publicerad'): Rum => ({
+const rum = (titel: string, status: Rum['status'] = 'publicerad', över: Partial<Rum> = {}): Rum => ({
   id: `rum-${titel}`,
   slug: titel,
   titel,
@@ -20,6 +20,7 @@ const rum = (titel: string, status: Rum['status'] = 'publicerad'): Rum => ({
   uppdaterad: '2026-07-12',
   öppning: 'x',
   kärna: 'x',
+  ...över,
 })
 
 const tema = (
@@ -71,5 +72,42 @@ describe('bibliotekRum', () => {
       rum('arkivet', 'arkiverad'),
     ]
     expect(bibliotekRum(alla).map((r) => r.titel)).toEqual(['att vänta', 'över tröskeln'])
+  })
+})
+
+describe('rumForKalla', () => {
+  const relation = (källa: string, primär: boolean) => ({
+    källa,
+    bruk: 'bearbetning' as const,
+    primär,
+  })
+
+  it('hittar publicerade rum med källan, primär relation först', () => {
+    const alla = [
+      rum('annan källa', 'publicerad', { källor: [relation('kalla-b', true)] }),
+      rum('bygger på källan', 'publicerad', { källor: [relation('kalla-a', false)] }),
+      rum('utkast med källan', 'utkast', { källor: [relation('kalla-a', true)] }),
+      rum('vilar på källan', 'publicerad', { källor: [relation('kalla-a', true)] }),
+      rum('andrahandsbruk', 'publicerad', { källor: [relation('kalla-a', false)] }),
+    ]
+    expect(rumForKalla('kalla-a', alla).map((r) => r.titel)).toEqual([
+      'vilar på källan',
+      'andrahandsbruk',
+      'bygger på källan',
+    ])
+  })
+})
+
+describe('bibliotekTraditioner', () => {
+  const tradition = (namn: string, status: Tradition['status'] = 'publicerad'): Tradition => ({
+    id: `tradition-${namn}`,
+    slug: namn,
+    namn,
+    status,
+  })
+
+  it('släpper bara igenom publicerade traditioner, i svensk namnordning', () => {
+    const alla = [tradition('stoicism'), tradition('buddhism'), tradition('taoism', 'utkast')]
+    expect(bibliotekTraditioner(alla).map((t) => t.namn)).toEqual(['buddhism', 'stoicism'])
   })
 })

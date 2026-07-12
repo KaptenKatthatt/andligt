@@ -12,6 +12,7 @@ export type To =
   // Omgörningens redaktionella mål (fas 6): läsrummet och bibliotekets sidor.
   | { kind: 'rum'; slug: string }
   | { kind: 'tema'; slug: string }
+  | { kind: 'kallpost'; slug: string }
 
 export type LinkSegment = { t: string; to: To }
 export type Segment = string | LinkSegment

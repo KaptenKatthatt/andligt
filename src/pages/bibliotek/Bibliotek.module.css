@@ -53,6 +53,35 @@
   margin: 6px 0 0;
 }
 
+.originaltitel {
+  font-size: 14px;
+  color: var(--soft);
+  font-style: italic;
+  margin: 6px 0 0;
+}
+
+/* Källpostens sakliga metadata — stillsamma rader, ingen tabellkänsla. */
+.metablock {
+  margin-top: 22px;
+  border-top: 1px solid var(--faint);
+  padding-top: 6px;
+}
+
+.metarad {
+  font-size: 15px;
+  line-height: 1.5;
+  margin: 8px 0 0;
+}
+
+.metaetikett {
+  display: inline-block;
+  min-width: 110px;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--soft);
+}
+
 /* Hårfina rader, samma känsla som RowLink men för statiska biblioteksrutter. */
 .rad {
   display: flex;
@@ -82,4 +111,11 @@
   color: var(--accsoft);
   font-size: 22px;
   flex: none;
+}
+
+/* Traditionsrad utan länk — stödpost, ingen destination (roadmap fas 6). */
+.stillaRad {
+  display: block;
+  padding: 15px 0;
+  border-bottom: 1px solid var(--faint);
 }

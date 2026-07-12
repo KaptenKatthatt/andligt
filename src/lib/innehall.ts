@@ -6,9 +6,11 @@
 import {
   kallaSchema,
   temaSchema,
+  traditionSchema,
   type Kalla,
   type Rum,
   type Tema,
+  type Tradition,
 } from '../content/redaktion/schema'
 import { tolkaPostfil, tolkaRumsfil, type Innehallsfil, type Tolkning } from '../content/redaktion/tolka'
 
@@ -41,9 +43,14 @@ export const troskelTeman: Tema[] = allaTeman
       a.etikett.localeCompare(b.etikett, 'sv'),
   )
 
-const allaKallor: Kalla[] = samla(
+export const allaKallor: Kalla[] = samla(
   tillFiler(import.meta.glob<string>('../content/kallor/*.md', { query: '?raw', import: 'default', eager: true })),
   (fil) => tolkaPostfil(kallaSchema, fil),
+)
+
+export const allaTraditioner: Tradition[] = samla(
+  tillFiler(import.meta.glob<string>('../content/traditioner/*.md', { query: '?raw', import: 'default', eager: true })),
+  (fil) => tolkaPostfil(traditionSchema, fil),
 )
 
 export const hittaRum = (slug: string): Rum | undefined =>
@@ -57,6 +64,12 @@ export const hittaTemaViaSlug = (slug: string): Tema | undefined =>
 
 export const hittaKalla = (id: string): Kalla | undefined =>
   allaKallor.find((källa) => källa.id === id)
+
+export const hittaKallaViaSlug = (slug: string): Kalla | undefined =>
+  allaKallor.find((källa) => källa.slug === slug)
+
+export const hittaTradition = (id: string): Tradition | undefined =>
+  allaTraditioner.find((tradition) => tradition.id === id)
 
 /** Delar prosatext i stycken på tomrad — rummens sektioner är ren prosa. */
 export const stycken = (text: string): string[] =>

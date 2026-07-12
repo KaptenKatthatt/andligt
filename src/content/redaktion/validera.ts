@@ -10,6 +10,7 @@ type Uppslag = {
   frågor: Map<string, Fraga>
   källstatus: Map<string, string>
   passagestatus: Map<string, string>
+  traditionsstatus: Map<string, string>
 }
 
 const perId = <T extends { id: string }>(poster: T[]): Map<string, T> =>
@@ -126,6 +127,17 @@ const vandringsfel = (mängd: Innehallsmangd, uppslag: Uppslag): string[] =>
     return fel
   })
 
+const kallfel = (mängd: Innehallsmangd, uppslag: Uppslag): string[] =>
+  mängd.källor.flatMap((källa) =>
+    (källa.traditioner ?? []).flatMap((traditionId) => {
+      if (!uppslag.traditionsstatus.has(traditionId))
+        return [`källa ${källa.id}: tradition "${traditionId}" finns inte`]
+      if (publicerad(källa.status) && !publicerad(uppslag.traditionsstatus.get(traditionId)))
+        return [`källa ${källa.id}: publicerad källa länkar opublicerad tradition "${traditionId}"`]
+      return []
+    }),
+  )
+
 const passagefel = (mängd: Innehallsmangd, uppslag: Uppslag): string[] =>
   mängd.passager.flatMap((passage) =>
     uppslag.källstatus.has(passage.källa)
@@ -142,6 +154,9 @@ export const valideraInnehall = (mängd: Innehallsmangd): string[] => {
     frågor: perId(mängd.frågor),
     källstatus: new Map(mängd.källor.map((källa) => [källa.id, källa.status])),
     passagestatus: new Map(mängd.passager.map((passage) => [passage.id, passage.status])),
+    traditionsstatus: new Map(
+      mängd.traditioner.map((tradition) => [tradition.id, tradition.status]),
+    ),
   }
   return [
     ...dublettfel('rum', mängd.rum),
@@ -157,6 +172,7 @@ export const valideraInnehall = (mängd: Innehallsmangd): string[] => {
     ...mängd.teman.flatMap((tema) => temafel(tema, uppslag)),
     ...mängd.frågor.flatMap((fråga) => fragefel(fråga, uppslag)),
     ...vandringsfel(mängd, uppslag),
+    ...kallfel(mängd, uppslag),
     ...passagefel(mängd, uppslag),
   ]
 }
