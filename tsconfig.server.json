@@ -18,5 +18,5 @@
     "noUncheckedIndexedAccess": true,
     "types": ["node"]
   },
-  "include": ["server", "scripts", "drizzle.config.ts"]
+  "include": ["server", "scripts", "drizzle.config.ts", "src/content/redaktion"]
 }

@@ -211,41 +211,52 @@ Prefer questions such as:
 
 ### 7. Source
 
-The source is shown at the bottom with low visual emphasis.
+The source is shown below a thin horizontal rule, as the first line of the
+room's quiet colophon: the name of the author — or, when no author fits,
+the work — set in small letter-spaced capitals in the soft meta colour,
+the same typographic voice as the theme label at the top of the room.
 
-Examples:
-
-```text
-Källa: Predikaren 3
-Bearbetad och kondenserad för reflektion.
-```
-
-Or:
+Example:
 
 ```text
-Källa: Enchiridion, avsnitt 1
-Svensk redaktionell återgivning.
+EPIKTETOS ▾
 ```
+
+The downward caret is deliberate. It promises that the content opens in
+place — it does not lead away. Tapping the name reveals the full source
+information (work, passage, editorial treatment, translation status,
+uncertainty) in a quiet sheet or inline expansion that returns the reader
+to the same spot. It must contain no links onward.
 
 The source must always be present.
 
 It must never be hidden.
 
-However, it should not shape the user’s first encounter with the idea.
+However, everything beyond the name is shown only on request.
+
+The rationale: the pull of onward clicking lives in navigation, not in
+links themselves. Doors that open in place and end are self-limiting.
 
 ### 8. Optional Context
 
-Historical context and original source material may be available behind a quiet control.
+Historical context is the second line of the colophon, in the same
+letter-spaced capitals, with the same downward caret:
 
-Examples:
+```text
+HISTORISK BAKGRUND ▾
+```
 
-- Om texten
-- Visa källan
-- Historisk bakgrund
+It has no frame or border. Tapping unfolds the context text in place,
+directly below the line, as one more quiet paragraph. Collapsing it —
+or ignoring it — is equally natural.
 
-Deeper material should remain collapsed by default.
+Deeper material remains collapsed by default.
 
-It must not lead directly to additional rooms.
+It must not lead directly to additional rooms, and the unfolded text
+must contain no links.
+
+The room's final line is always the inward action (Skriv ner en tanke),
+never a door.
 
 ---
 
@@ -355,6 +366,14 @@ It must not be described as:
 - completed content
 
 It is simply a bookmark placed inside a book.
+
+The save action lives at the end of the room, after the source reference.
+The reader should not encounter it until the reading is finished.
+
+The reading top bar contains no bookmark icon. Chapter bookmarks belong to
+the Library texts only, where they mark where the reader stopped — like a
+bookmark in a physical Bible, or on a Kindle. Rooms are read whole and are
+saved whole.
 
 ---
 

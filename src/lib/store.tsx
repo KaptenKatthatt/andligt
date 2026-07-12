@@ -9,6 +9,7 @@ import {
   type SetStateAction,
 } from 'react'
 import type { ReadMode } from '../content/model'
+import { HISTORIKLANGD } from './rumsval'
 import { readJson, writeJson } from './storage'
 import {
   BG_OPTIONS,
@@ -50,6 +51,12 @@ type AtlasState = {
   chapterBookmarks: Record<string, ChapterBookmark>
   notes: Record<string, string>
   lastRead: LastRead | null
+  // Sparade reflektionsrum (rum-id → sparat). Skilt från bookmarks: rum
+  // sparas hela, bokmärken märker kapitelpositioner i biblioteket.
+  sparadeRum: Record<string, boolean>
+  // De senast öppnade rummen (nyast först, max HISTORIKLANGD). Finns bara
+  // för att rumsvalet ska undvika omedelbar upprepning — ingen aktivitetslogg.
+  senastLastaRum: string[]
 }
 
 type AtlasActions = {
@@ -61,6 +68,8 @@ type AtlasActions = {
   toggleChapterBookmark: (bookmark: ChapterBookmark) => void
   setNote: (id: string, text: string) => void
   recordRead: (id: string, mode: ReadMode) => void
+  vaxlaSparatRum: (id: string) => void
+  registreraLastRum: (id: string) => void
 }
 
 // Utåt är dark alltid det effektiva värdet (manuellt val eller systemets).
@@ -76,11 +85,16 @@ const clampStep = (step: number): number =>
 // tillbaka på tomt — ingen värdevalidering, till skillnad från temafälten.
 const restoredCollections = (
   saved: Partial<AtlasState>,
-): Pick<AtlasState, 'bookmarks' | 'chapterBookmarks' | 'notes' | 'lastRead'> => ({
+): Pick<
+  AtlasState,
+  'bookmarks' | 'chapterBookmarks' | 'notes' | 'lastRead' | 'sparadeRum' | 'senastLastaRum'
+> => ({
   bookmarks: saved.bookmarks ?? {},
   chapterBookmarks: saved.chapterBookmarks ?? {},
   notes: saved.notes ?? {},
   lastRead: saved.lastRead ?? null,
+  sparadeRum: saved.sparadeRum ?? {},
+  senastLastaRum: saved.senastLastaRum ?? [],
 })
 
 // Äldre sparad state saknar de nya fälten, och korrupt JSON får inte läcka in
@@ -157,6 +171,27 @@ const useAtlasActions = (setState: SetAtlasState): AtlasActions => {
       setState((s) => ({ ...s, lastRead: { id, mode } })),
     [setState],
   )
+  const vaxlaSparatRum = useCallback(
+    (id: string) =>
+      setState((s) => ({
+        ...s,
+        sparadeRum: { ...s.sparadeRum, [id]: !s.sparadeRum[id] },
+      })),
+    [setState],
+  )
+  const registreraLastRum = useCallback(
+    // Cappen speglar rumsvalets fönster men är bara lagringsstädning —
+    // själva urvalsregeln (vad som räknas som nyligen) bor i rumsval.ts.
+    (id: string) =>
+      setState((s) => ({
+        ...s,
+        senastLastaRum: [id, ...s.senastLastaRum.filter((last) => last !== id)].slice(
+          0,
+          HISTORIKLANGD,
+        ),
+      })),
+    [setState],
+  )
   return {
     toggleDark,
     setFont,
@@ -166,6 +201,8 @@ const useAtlasActions = (setState: SetAtlasState): AtlasActions => {
     toggleChapterBookmark,
     setNote,
     recordRead,
+    vaxlaSparatRum,
+    registreraLastRum,
   }
 }
 

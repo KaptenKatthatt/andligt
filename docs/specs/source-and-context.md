@@ -60,26 +60,22 @@ Detailed context may remain collapsed until the user chooses to open it.
 
 ## Source Visibility
 
-Every published room must show a visible source summary.
+Every published room must show a visible source reference.
 
-Minimum visible information:
-
-- source title
-- author or attributed origin, when known
-- relevant chapter, section, fragment or passage
-- type of editorial treatment
+The visible reference is deliberately minimal: the name of the author or,
+when no author fits, the work. It is set in small letter-spaced capitals
+with a downward caret, below the room's closing rule — a colophon line,
+not a web link. Opening it reveals the details in place; it never
+navigates away.
 
 Example Swedish UI copy:
 
-> Källa: Epiktetos, Enchiridion, avsnitt 1
-> Svensk redaktionell återgivning.
+> EPIKTETOS ▾
 
-Another example:
+Everything else — work, passage, editorial treatment, translation status,
+uncertainty — is revealed when the reference is opened.
 
-> Källa: Predikaren 3:1–8
-> Reflektionen bygger på textens tema och är inte en direkt översättning.
-
-The visible source summary must not require an additional click.
+The name itself must not require an additional click.
 
 ---
 
@@ -306,7 +302,7 @@ Context should remain proportional to the room.
 
 Recommended lengths:
 
-- visible source summary: 1–3 lines
+- visible source reference: one name
 - short expanded context: 100–250 words
 - extended source article: separate Library page
 
