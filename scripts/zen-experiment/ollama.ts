@@ -34,13 +34,16 @@ const chatEnGang = async (modell: string, system: string, prompt: string, maxTok
 
 export type ChatSvar = { text: string; ms: number }
 
-// Ett chatt-anrop med två omförsök (backoff), så enstaka nätfel inte fäller en hel körning.
-export const chat = async (modell: string, system: string, prompt: string, maxTokens = 4096): Promise<ChatSvar> => {
+// Ett chatt-anrop med två omförsök (backoff). Tomt svar räknas som fel: resonerande
+// modeller kan bränna hela tokenbudgeten på ett <think>-block som stripThink tar bort
+// (hände i körning 3 med num_predict 4096 — därav den höga standardbudgeten).
+export const chat = async (modell: string, system: string, prompt: string, maxTokens = 16384): Promise<ChatSvar> => {
   let senasteFel: unknown = null
   for (let forsok = 0; forsok < 3; forsok++) {
     const start = Date.now()
     try {
       const text = await chatEnGang(modell, system, prompt, maxTokens)
+      if (text.length === 0) throw new Error('tomt svar efter think-strippning')
       return { text, ms: Date.now() - start }
     } catch (fel) {
       senasteFel = fel
