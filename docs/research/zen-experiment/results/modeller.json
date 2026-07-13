@@ -1,5 +1,5 @@
 {
-  "datum": "2026-07-13T15:13:30.850Z",
+  "datum": "2026-07-13T17:43:52.648Z",
   "valda": [
     "qwen3.5:cloud",
     "deepseek-v3.2:cloud",
@@ -17,8 +17,11 @@
     "gemma4:31b-cloud": true
   },
   "kanda": [
-    "nomic-embed-text:latest",
     "gemma4:31b-cloud",
+    "glm-5.1:cloud",
+    "deepseek-v3.2:cloud",
+    "qwen3.5:cloud",
+    "nomic-embed-text:latest",
     "kimi-k2.7-code:cloud"
   ],
   "metadata": {
