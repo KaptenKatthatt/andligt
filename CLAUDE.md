@@ -12,8 +12,7 @@ fas för fas enligt `docs/specs/implementation-roadmap.md`; visionen ligger i
   dead-code). CI kör samma. Ska vara grön per commit.
   - Kör inte `npm run check | tail` utan `set -o pipefail` — pipen maskerar felkoden.
 - **Kör appen:** `npm run dev` (Vite 5173, proxar `/api` → 8080) +
-  `npx tsx server/index.ts` (API 8080). API:t är öppet — ingen inloggning
-  (verify-skillens doc nämner `ATLAS_USER`/`ATLAS_PASS`; det är inaktuellt).
+  `npx tsx server/index.ts` (API 8080). API:t är öppet — ingen inloggning.
 - **E2E:** verify-skillen. Playwright med `executablePath: '/opt/pw-browsers/chromium'`,
   viewport 430×900. `npm i playwright-core` i scratchpad.
 
@@ -64,7 +63,7 @@ i produktion via promoveringen till `main` (#24). Fas 6 = Biblioteket (landning 
 Frågor/Teman/Rum/Källor/Traditioner/Sparat, fråge-/tema-/käll-sidor, verkläsaren
 flyttad till `/bibliotek/verk/…`, ny Inställningar-sida).
 
-**Fas 7 — Vandringar (`docs/specs/paths.md`) i PR (mot `main`).** Laddning
+**Fas 7 — Vandringar (`docs/specs/paths.md`) klar, mergad till `main` (#26).** Laddning
 (`allaVandringar`/`hittaVandringViaSlug`), urval (`bibliotek.ts`: `bibliotekVandringar`,
 `rumForVandring` = redaktionell ordning, `vandringLastid`, `traditionerForVandring`),
 översiktssida (`VandringPage`), routen `/bibliotek/vandring/$slug`, To-målet `vandring`,
@@ -83,6 +82,6 @@ dess tre rum publicerade tillsammans.
 - Källpost saknar `edition`/`source location` (fält hör till Fas 8, källpassager).
 - Sparat-ytan görs om i Fas 9 (grupper, export, spec-enliga tomlägen).
 - BottomSheet saknar fokusfälla/Escape (Fas 11); PWA saknar PNG/maskable-ikoner
-  (Fas 13); README beskriver delvis gamla appen; `drizzle.config.ts` vestigial.
+  (Fas 13).
 - Sandlådefällor: `getbible.net` ger 403 vid ingest (ofarligt, bara Bibeln);
   bakgrunds-Vite/API dör mellan skalkommandon — starta om vid ECONNREFUSED.
