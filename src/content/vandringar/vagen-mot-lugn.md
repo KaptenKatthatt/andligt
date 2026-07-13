@@ -19,7 +19,7 @@ avslutandeReflektion: >-
   Kanske är lugnet inte något man når och blir klar med, utan något man
   återvänder till. Distinktionen behöver göras om varje dag. Du kan gå tillbaka
   till vilket rum som helst när du vill.
-status: utkast
+status: publicerad
 skapad: 2026-07-12
 uppdaterad: 2026-07-12
 redaktionellaNoteringar: >-
@@ -29,9 +29,9 @@ redaktionellaNoteringar: >-
   en tanke i nästa snarare än att stegra svårighet. Förgranskad mot alla fyra
   checklistorna: inget kursspråk (ingen kurs/plan/nivå/serie, inga löften om
   förvandling, inga deadlines), introduktionen 50–120 ord, källorna hålls
-  lågmälda. Vandringen ligger som utkast. Publicering kräver att vandringen och
-  dess tre nya rum (rum-inte-tingen-utan-tanken, rum-att-onska-det-som-sker,
-  rum-de-tva-handtagen) publiceras tillsammans — valideringen tillåter inte en
-  publicerad vandring med opublicerade rum. Beslutet är redaktörens och tas i
-  PR-granskningen; AI avgör aldrig ensam vad som publiceras.
+  lågmälda. Vandringen och dess tre nya rum (rum-inte-tingen-utan-tanken,
+  rum-att-onska-det-som-sker, rum-de-tva-handtagen) publiceras tillsammans —
+  valideringen tillåter inte en publicerad vandring med opublicerade rum.
+  Godkänd och publicerad av redaktören Jonas Olson 2026-07-13 efter egen
+  läsning av alla fyra texterna. AI avgör aldrig ensam vad som publiceras.
 ---

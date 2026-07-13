@@ -16,7 +16,7 @@ källor:
     primär: true
     redaktionellNot: Bearbetning av avsnitt 5:s distinktion mellan tinget och omdömet; inga direkta citat.
 lästidMinuter: 3
-status: utkast
+status: publicerad
 skapad: 2026-07-12
 uppdaterad: 2026-07-12
 redaktion:
@@ -36,8 +36,9 @@ redaktion:
     nämns i historisk kontext, inte som citat. Ramen »skyll på dig själv« är
     medvetet mjukad till att lokalisera omdömet, inte till självförebråelse —
     täckt av bruket bearbetning. Ton och rytm: en tanke, två reflektionsfrågor,
-    ca 3 min. Inga direkta citat, inga emojis. Ligger som utkast; publiceras med
-    vandring-vagen-mot-lugn. Publiceringsbeslutet är redaktörens.
+    ca 3 min. Inga direkta citat, inga emojis. Publicerad tillsammans med
+    vandring-vagen-mot-lugn; godkänd av redaktören Jonas Olson 2026-07-13 efter
+    egen läsning. AI avgör aldrig ensam vad som publiceras.
   version: 1
 ---
 

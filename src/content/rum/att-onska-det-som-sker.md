@@ -16,7 +16,7 @@ källor:
     primär: true
     redaktionellNot: Bearbetning av avsnitt 8:s vändning av önskans riktning; inga direkta citat.
 lästidMinuter: 3
-status: utkast
+status: publicerad
 skapad: 2026-07-12
 uppdaterad: 2026-07-12
 redaktion:
@@ -33,9 +33,9 @@ redaktion:
     (euroia, »tranquil flow«) som följer, utan direkt citat. Risken att det läses
     som uppgivenhet är medvetet mött i texten: det gäller att sluta strida mot
     det som redan är, inte att sluta handla. Ton och rytm: en tanke, två
-    reflektionsfrågor, ca 3 min. Inga direkta citat, inga emojis. Ligger som
-    utkast; publiceras med vandring-vagen-mot-lugn. Publiceringsbeslutet är
-    redaktörens.
+    reflektionsfrågor, ca 3 min. Inga direkta citat, inga emojis. Publicerad
+    tillsammans med vandring-vagen-mot-lugn; godkänd av redaktören Jonas Olson
+    2026-07-13 efter egen läsning. AI avgör aldrig ensam vad som publiceras.
   version: 1
 ---
 

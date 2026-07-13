@@ -16,7 +16,7 @@ källor:
     primär: true
     redaktionellNot: Bearbetning av avsnitt 43:s bild av de två handtagen; exemplet generaliserat från »broder« till någon som står en nära.
 lästidMinuter: 3
-status: utkast
+status: publicerad
 skapad: 2026-07-12
 uppdaterad: 2026-07-12
 redaktion:
@@ -36,8 +36,9 @@ redaktion:
     här. Texten markerar tydligt att det inte handlar om att förneka orätten,
     bara om var man tar tag — så bilden inte läses som att man ska blunda för
     det som skett. Ton och rytm: en tanke, två reflektionsfrågor, ca 3 min. Inga
-    direkta citat, inga emojis. Ligger som utkast; publiceras med
-    vandring-vagen-mot-lugn. Publiceringsbeslutet är redaktörens.
+    direkta citat, inga emojis. Publicerad tillsammans med vandring-vagen-mot-lugn;
+    godkänd av redaktören Jonas Olson 2026-07-13 efter egen läsning. AI avgör
+    aldrig ensam vad som publiceras.
   version: 1
 ---
 

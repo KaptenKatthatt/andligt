@@ -49,20 +49,22 @@ publicering = ägarens merge/granskning, dokumenteras i rummets `redaktion.noter
 
 ## Gren- och deployflöde
 
-Utveckla på featuregren → **utkast-PR mot `remake`**. Deploy till Hetzner
-(Tailscale-only) triggas när `remake` promoveras till `main` via en egen PR
-(merge-commit, **inte squash**) — ägarens beslut. Direktpush till `main` nekas.
-Obs: PR till remake kan squash-mergas och grenen raderas; starta då om grenen
-från `origin/remake` för uppföljningsarbete.
+Utveckla på featuregren → **utkast-PR**. Deploy till Hetzner (Tailscale-only)
+triggas när ändringen når `main` (merge-commit, **inte squash**) — ägarens beslut.
+Direktpush till `main` nekas.
+Obs (2026-07-13): den tidigare `remake`-mellangrenen promoverades till `main` (#24)
+och **raderades** — `main` bär nu allt `remake` hade. Feature-PR:er baseras därför
+på `main` tills en ny mellangren ev. återskapas. Starta om grenen från `origin/main`
+för uppföljningsarbete.
 
 ## Status (uppdatera per fas)
 
-Fas 0–6 klara och i produktion (`main`); nav-nedtoningen (#20) mergad till `remake`.
-Fas 6 = Biblioteket (landning med Frågor/Teman/Rum/Källor/Traditioner/Sparat,
-fråge-/tema-/käll-sidor, verkläsaren flyttad till `/bibliotek/verk/…`, ny
-Inställningar-sida).
+Fas 0–6 klara och i produktion (`main`); nav-nedtoningen (#20) och Sparat-fixen (#23)
+i produktion via promoveringen till `main` (#24). Fas 6 = Biblioteket (landning med
+Frågor/Teman/Rum/Källor/Traditioner/Sparat, fråge-/tema-/käll-sidor, verkläsaren
+flyttad till `/bibliotek/verk/…`, ny Inställningar-sida).
 
-**Fas 7 — Vandringar (`docs/specs/paths.md`) i PR (mot `remake`).** Laddning
+**Fas 7 — Vandringar (`docs/specs/paths.md`) i PR (mot `main`).** Laddning
 (`allaVandringar`/`hittaVandringViaSlug`), urval (`bibliotek.ts`: `bibliotekVandringar`,
 `rumForVandring` = redaktionell ordning, `vandringLastid`, `traditionerForVandring`),
 översiktssida (`VandringPage`), routen `/bibliotek/vandring/$slug`, To-målet `vandring`,
@@ -70,8 +72,9 @@ landningssektion (döljs tills publicerat) och läsrummets vandringsfot (»Forts
 vandringen«/»Stanna här«, sökparametern `?vandring`, avslutande reflektion på sista
 rummet) + `vandringsplatser` i store. Valideringen kräver att en publicerad vandring
 bara länkar publicerade rum **och** publicerad central fråga. Innehållet (`Vägen mot
-lugn` + tre nya rum ur Enchiridion, avsnitt 5/8/43) ligger som **utkast** — publicering
-(vandring + dess rum ihop, via statusbyte) är ägarens beslut.
+lugn` + tre nya rum ur Enchiridion, avsnitt 5/8/43) är **publicerat** — godkänt av
+redaktören Jonas Olson 2026-07-13 efter läsning av alla fyra texterna; vandringen och
+dess tre rum publicerade tillsammans.
 
 **Nästa: Fas 8 — Källor och kontext (`docs/specs/source-and-context.md`).**
 
