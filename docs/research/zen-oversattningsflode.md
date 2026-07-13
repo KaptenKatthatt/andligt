@@ -42,8 +42,10 @@ markerat **[kräver specialistgranskning]**.
   körning per cell — små underlag, inga upprepningar; (2) utvärderingen är gjord av
   AI (Claude) mot ordböcker och etablerade översättningar, inte av en specialist på
   klassisk japanska/kinesiska — **[kräver specialistgranskning]**; (3) resonerande
-  modeller kräver stor tokenbudget (≥16k) — med för liten budget levererar de tomma
-  eller trunkerade svar (upptäcktes och åtgärdades under experimentet, se §5);
+  modeller kräver stor tokenbudget (≥16k) och även då kvarstod tomma svar (qwen3.5)
+  och trunkerad apparat (glm-5.1) — leveranskontroll med omförsök är ett
+  obligatoriskt pipelinesteg, och leveranssäkerhet vägde lika tungt som filologi
+  vid modellvalet (se §5);
   (4) kontots Ollama-kvot begränsar hur mycket som kan köras per session;
   (5) modellversioner är färskvara — omtest krävs vid modellbyte.
 
@@ -106,8 +108,32 @@ Hodous, *A Dictionary of Chinese Buddhist Terms* (1937, public domain) samt
 
 ## 3. Modelljämförelse
 
-*(fylls i efter experimentkörningen; exakta modelltaggar, kontextlängder och
-datum dokumenteras maskinellt i `results/modeller.json`)*
+Testade modeller (exakta taggar, kontextlängder och prob-status dokumenteras
+maskinellt i `results/modeller.json`; testdatum 2026-07-13, Ollama-daemon 0.24.0
+via Hermes-gatewayen; temperatur 0,2, tokenbudget 4 096 i körning 3 och 16 384 i
+omkörningen). Kontots utbud saknade körbara icke-coder-varianter av Kimi och
+MiniMax valdes bort när GLM fanns; `kimi-k2.7-code:cloud` uteslöts som
+coder-specialiserad enligt uppdragets instruktion.
+
+| Modell | Kontext | Leverans (kompletta A/B/C-celler av 15) | Snittpoäng (levererade svenska översättningar, 10 kriterier) | Karakteristik |
+|---|---|---|---|---|
+| `deepseek-v3.2:cloud` (671B MoE) | 163 840 | **15/15** | ≈ 3,8 | Mest disciplinerad filologi, ärlig konfidens, bäst kompletta leverans på 4 av 5 passager. Svensk morfologi sviktar under tryck ("återvorde", "avförestapp"); enstaka didaktiska tillägg. |
+| `glm-5.1:cloud` (744B MoE) | 202 752 | 14/15, men apparaten trunkerad i de flesta celler | ≈ 3,9 | Filologiskt vassast per mening: bäst tvetydighetsapparat (者僧, 乾屎橛-debatten, 有時), passagens bästa text på P1/P2. Systemisk trunkering även med 16k-budget; stavfel ("buddhavisen", "abbotrumman"); enstaka lexikalfel ("almskål", "dagg-pelare"). |
+| `gemma4:31b-cloud` (31B tät) | 262 144 | **15/15** (snabbast, 5–95 s/anrop) | ≈ 3,1 | Flytande och alltid komplett — men filologiskt svagast: hallucinationer ("barn" ur 払子, "vissnar" för växer, "Zhōu Zhōu", uppdiktad Dao-läsart) och systematiskt konfidens 5 på svar med påvisbara fel. Flyt utan trohet. |
+| `qwen3.5:cloud` | 262 144 | **8/15** — tomt svar trots 16 384 tokens × 3 försök på flera celler; ytterligare celler trunkerade | ≈ 3,0 (enorm varians: 4,8 på P4 A, oanvändbar på P1/P2) | Stark filologi när den levererar (redovisar ensam hjärt-läsningen av 赤肉團), men opålitlig leverans och ojämn svenska ("monken", "mastern") gör den olämplig för produktion i nuvarande form. |
+
+**Bästa enskilda leverans per passage** (komplett fil med apparat):
+P1 deepseek B · P2 glm B · P3 deepseek A · P4 deepseek C · P5 deepseek A.
+Som *rå översättningstext* utan hänsyn till apparatens kompletthet vann glm på
+P1 och P2 och var tätt efter på P4/P5 — glm är deepseeks naturliga andraläsare.
+
+**Som granskare (flöde D):** gemma4 var förvånande nog en bättre granskare än
+översättare (kompletta, två gånger bäst kalibrerade granskningar — fångade bl.a.
+den dolda 有時-tvetydigheten och 丈六-måttfelet), men med farliga falska positiver
+(dömde korrekta läsningar av 生仏 och 道道 som "allvarliga fel"). glm var skarpast
+när den levererade men trunkerade ofta; deepseek var ibland ärlig, ibland
+konfabulerande som granskare; qwen levererade mest tomt. Ingen modell duger som
+automatisk grind.
 
 ---
 
@@ -144,6 +170,14 @@ modellen tillförde C ibland inget över A (deepseek på P3 blev sämre i C än 
 transparens) väger tyngre än dess risker, som den mänskliga granskningen är bäst
 rustad att fånga just eftersom analysen är synlig.
 
+**Leveransdimensionen (efter omkörningen).** Med höjd tokenbudget blev trunkering
+i flerstegsflödena den dominerande felkällan: enstegsflödet A levererade oftare
+komplett (t.ex. blev qwen A bästa nya fil på P4 medan qwen B/C trunkerades), medan
+B och C dubblar antalet chanser att ett steg havererar. Detta ändrar inte
+rekommendationen av C — deepseek levererade C komplett på samtliga passager — men
+det skärper kravet: **flödesval och modellval hänger ihop**, och varje steg behöver
+leveranskontroll innan nästa steg får köra.
+
 **Flöde D (korsgranskning).** Gav verkligt värde minst en gång per passage — bl.a.
 fångades den inverterade vattenmetaforen (P1), "Gå då och skålen" (P2), den
 monistiska felläsningen av われにあらざる (P3), 丈六-måttfelet och den dolda
@@ -158,8 +192,8 @@ automatisk grind.**
 
 ## 5. Felanalys
 
-Kategoriserade huvudfynd (fler exempel med belägg i agentprotokollen; alla utdata i
-`results/`):
+Kategoriserade huvudfynd (fullständiga per-passage-protokoll med poängtabeller i
+`docs/research/zen-experiment/utvardering/`; alla utdata i `results/`):
 
 **Språkfel.** deepseek under morfologiskt tryck: "återvorde", "avfödslesticka",
 "avförestapp", "skitpinn" (P4); glm: "buddhavisen" för buddhavägen (P3, ×2),
@@ -196,19 +230,23 @@ kalibrerad konfidens (3–4 med konkreta svagheter). **Konfidenssiffror från mo
 utan kalibrering är sämre än inga alls** — i produktionsformatet sparas de som
 modellutsaga, inte som kvalitetsmått.
 
-**Experimentartefakt (viktig metodlärdom).** I körningen med `num_predict 4096`
-levererade de resonerande modellerna (qwen3.5, glm-5.1) tomma eller trunkerade svar
-på flertalet passager — tankeblocken åt upp tokenbudgeten och det synliga svaret
-försvann. Detta är inte modellkvalitet utan konfiguration: budgeten höjdes till
-16 384 och de drabbade cellerna kördes om. Lärdom för pipelinen: sätt hög
-tokenbudget, behandla tomma svar som fel med omförsök, och lita aldrig på en
-körning utan leveranskontroll.
+**Leveranssäkerhet (viktig metodlärdom i två steg).** I körningen med
+`num_predict 4096` levererade de resonerande modellerna (qwen3.5, glm-5.1) tomma
+eller trunkerade svar på flertalet passager — tankeblocken åt upp tokenbudgeten och
+det synliga svaret försvann. Budgeten höjdes till 16 384, tomt svar gjordes till
+fel med omförsök, och de drabbade cellerna kördes om. **Även då** returnerade
+qwen3.5 tomt på 7 av 15 celler (tre försök per cell), och glm-5.1:s apparat
+trunkerades fortfarande i de flesta celler — det som först såg ut som ren
+konfiguration visade sig delvis vara ett äkta tillförlitlighetsfynd hos modellerna.
+Lärdomar för pipelinen: hög tokenbudget, tomt svar = fel med omförsök,
+leveranskontroll av varje svar (finns alla begärda rubriker?), och väg
+leveranssäkerhet lika tungt som filologisk kvalitet vid modellval — det är därför
+deepseek (15/15 kompletta) och inte glm (vassare men trunkerad) rekommenderas som
+primär modell.
 
 ---
 
 ## 6. Rekommenderad produktionspipeline
-
-*(utkast — justeras efter experimentets utfall)*
 
 Repeterbart flöde för en ny textpassage, i linje med
 `docs/specs/source-and-context.md`, `docs/checklists/verify-sources.md` och
@@ -222,12 +260,19 @@ regeln att AI aldrig publicerar ensamt:
 3. **Originaltranskription.** Lägg passagen som teckenexakt fil med
    proveniensmetadata (formatet i `passages/*.json`).
 4. **Modellöversättning.** Kör det rekommenderade flödet (se §1) med den
-   rekommenderade modellen via Hermes. Ordagrann + läsbar version, tvetydighets-
-   och terminologinoter, konfidens.
+   rekommenderade modellen via Hermes: analys först, sedan svensk översättning ur
+   analysen, direkt från originalet. Ordagrann + läsbar version, tvetydighets-
+   och terminologinoter, konfidens. Tokenbudget ≥16k, temperatur låg,
+   **leveranskontroll per steg** (tomt/trunkerat svar = omförsök; kontrollera att
+   alla begärda rubriker finns) innan nästa steg får köra.
 5. **Terminologiordlista.** För in valda termåtergivningar i en gemensam ordlista
    så att samma term återges lika i hela atlasen; avvikelser motiveras.
-6. **Korsmodellsgranskning.** Låt granskningsmodellen (se §1) granska mot
-   originalet med granskningsprotokollet (flöde D-prompten).
+6. **Korsmodellsgranskning.** Låt granskningsmodellen (glm-5.1) granska mot
+   originalet med granskningsprotokollet (flöde D-prompten i
+   `scripts/zen-experiment/prompter.ts`). Granskningens fynd är uppslag för
+   den mänskliga granskningen — varje påstående verifieras, inget åtgärdas
+   automatiskt (experimentet dokumenterade självsäkra falska positiver hos
+   samtliga granskarmodeller).
 7. **Mänsklig granskning.** Redaktören läser original, översättning och noter
    mot `docs/checklists/review-language.md` och `verify-sources.md`; vid behov
    konsulteras specialist på klassisk japanska/kinesiska.
@@ -240,8 +285,6 @@ regeln att AI aldrig publicerar ensamt:
 ---
 
 ## 7. Rekommenderat format för översättningspost
-
-*(utkast — fältet `flode` m.m. låses efter §1)*
 
 JSON (eller frontmatter) per översatt passage, förslagsvis under
 `src/content/kallpassager/` när Fas 8 byggs:
@@ -262,7 +305,7 @@ JSON (eller frontmatter) per översatt passage, förslagsvis under
   "svenskLasbar": "…",
   "terminologinoter": [{ "term": "無位真人", "atergivning": "…", "motivering": "…" }],
   "osakerheter": ["…"],
-  "modell": { "namn": "…", "digest": "…", "flode": "…", "datum": "2026-07-13" },
+  "modell": { "namn": "deepseek-v3.2:cloud", "digest": "…", "flode": "C-analytiskt", "datum": "2026-07-13" },
   "granskning": [
     { "typ": "korsmodell", "modell": "…", "datum": "…", "resultat": "…" },
     { "typ": "mansklig", "granskare": "ägaren", "datum": "…", "beslut": "…" }
@@ -282,6 +325,8 @@ vägen till publicering i stället för att strykas under putsningen.
 
 - Rådata: `docs/research/zen-experiment/results/` (alla prompter och svar,
   latenser, modellmetadata).
+- Utvärderingsprotokoll per passage (två rundor, poängtabeller, felkatalog):
+  `docs/research/zen-experiment/utvardering/`.
 - Harness: `scripts/zen-experiment/run.ts` (återupptagbar; körs via
   `.github/workflows/zen-experiment.yml`).
 - Modellkatalogläget 2026-07: Ollama Cloud omfattar bl.a. deepseek-v3.2 (671B),
