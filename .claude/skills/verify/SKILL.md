@@ -8,15 +8,15 @@ description: Bygg, starta och driv Visdomsatlasen för att verifiera ändringar 
 ## Starta
 
 ```bash
-npm run dev                                   # Vite på :5173, proxar /api → :8080
-ATLAS_USER=test ATLAS_PASS=test npx tsx server/index.ts   # API på :8080 (utan ATLAS_* nekas allt)
+npm run dev                # Vite på :5173, proxar /api → :8080
+npx tsx server/index.ts    # API på :8080 (öppet, ingen inloggning)
 ```
 
-API:t auto-ingestar fixturer/bundlade texter vid start (bibel-ingest mot getbible.net kan ge 403 i sandlåda — ofarligt). Basic auth funkar direkt: `curl -u test:test localhost:8080/api/library/works`.
+API:t auto-ingestar fixturer/bundlade texter vid start (bibel-ingest mot getbible.net kan ge 403 i sandlåda — ofarligt). API:t är öppet: `curl localhost:8080/api/library/works`.
 
 ## Driv med Playwright
 
-`npm i playwright-core` i scratchpad; starta med `executablePath: '/opt/pw-browsers/chromium'`, viewport 430×900 (appens skal är 430px), `httpCredentials: { username: 'test', password: 'test' }` för `/kapitel`-sidor.
+`npm i playwright-core` i scratchpad; starta med `executablePath: '/opt/pw-browsers/chromium'`, viewport 430×900 (appens skal är 430px). API:t är öppet, så ingen `httpCredentials` behövs.
 
 Bra rutter: `/las/stoicism/essa` (essä), `/kalla/markus` (källtext), `/kapitel/dhammapada/dhammapada/1` (bibliotek, kräver API).
 
