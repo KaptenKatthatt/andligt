@@ -12,8 +12,13 @@ EB Garamond rakt igenom, ett centrerat 430 px-skal och mörkt läge.
 
 Appen har två slags innehåll som lever sida vid sida:
 
-- **Atlasen** – kuraterade essäer, personer, tidslinje och citat, skrivna som
-  typade TypeScript-moduler i `src/content/`. Små, handskrivna, sammanlänkade.
+- **Det redaktionella innehållet** – reflektionsrum, frågor, teman, källor och
+  vandringar, skrivna som Markdown med frontmatter under `src/content/<typ>/` och
+  validerade av zod-scheman (`src/content/redaktion/`). Läses i **Läsrummet**
+  (`/rum/$slug`) och utforskas via **Biblioteket** (`/bibliotek`); bara publicerat
+  innehåll visas. (Den äldre atlasen – typade TypeScript-moduler under
+  `src/content/topics/`, `people.ts`, `timeline.ts` – finns kvar bakom sina rutter
+  men fasas ut fas för fas.)
 - **Biblioteket** – *hela* källtexter: **Bibeln 1917**, **Dhammapada**
   (buddhism), **Självbetraktelser** av Marcus Aurelius (stoicism) och **Tao Te
   Ching** (taoism). Alla public domain; de icke-svenska översätts till svenska
@@ -46,7 +51,7 @@ Appen har två slags innehåll som lever sida vid sida:
 ## Kom igång
 
 ```bash
-npm install
+npm ci
 cp .env.example .env        # sätt INGEST_TOKEN m.m.
 
 # Fyll databasen med ett urval av 1917 års bibel (utan nätverk):
@@ -72,8 +77,11 @@ npm run server     # kör Node-servern mot dist/ (samma som i containern)
 ## Kvalitetskontroller
 
 ```bash
-npm run check              # allt nedan i följd
+npm run check              # hela grinden nedan i följd (samma som CI)
 npm run check:types        # tsc -b (app, node och server)
+npm run check:lint         # ESLint
+npm run test               # Vitest
+npm run check:content      # innehållsvalidering (scripts/validera-innehall.ts)
 npm run check:coverage     # type-coverage, kräver 100 % (app + server)
 npm run check:length       # fallow: komplexitets- och längdgränser (max 50 rader/funktion)
 npm run check:dead         # fallow: död kod och oanvända exporter
@@ -187,16 +195,20 @@ Nödvändiga GitHub-secrets (som newsAgg): `TS_OAUTH_CLIENT_ID`, `TS_OAUTH_SECRE
 ## Projektstruktur
 
 ```
-src/                 frontend (atlasen + biblioteksläsaren)
+src/                 frontend (läsrummet, biblioteket, biblioteksläsaren)
   app/               router och rotlayout (skal + bottennavigering)
   components/        små återanvändbara delar
-  content/           atlasens typade innehåll (essäer, personer, tidslinje …)
-  lib/               store, sök, API-klient (api.ts), offline-hämtning
+  content/           innehåll: redaktionell Markdown (rum/fragor/teman/kallor/
+                     vandringar/traditioner) + redaktion/ (zod-scheman, validering);
+                     äldre typade moduler (topics/, people.ts, timeline.ts)
+  lib/               store, sök, API-klient (api.ts), offline; innehall.ts,
+                     bibliotek.ts, rumsval.ts (redaktionellt datalager)
   pages/             en komponent per skärm
-    library/         Bibliotek, Verk, Bok, Kapitel (läsare), sök
+    bibliotek/       landning + fråge-/tema-/rumslist-/käll-/vandringssidor
+    library/         verkläsaren: Verklista, Verk, Bok, Kapitel, sök
   styles/            globala tokens (ljust/mörkt), animationer, bastypografi
 server/              Node-backend (Hono + SQLite)
-  db/                schema, migreringar, databasinit
+  db/                schema (Drizzle ORM), migreringar (handskriven SQL), databasinit
   library/           lagring (store) och läsning (repository, search)
   ingest/            normaliserad modell + källadaptrar (bible/…)
   api/               Hono-rutter (library, ingest)
@@ -204,29 +216,45 @@ scripts/ingest.ts    CLI-ingest (körs av cron på VPS:en)
 data/fixtures/       urval av 1917 för lokal verifiering (DB byggs, ej i git)
 ```
 
-### Lägga till ett atlas-ämne
+### Lägga till innehåll
 
-Skapa `src/content/topics/<namn>.ts` som exporterar en `Topic` och registrera det
-i `topics/index.ts` och en tradition i `traditions.ts`.
+**Redaktionellt innehåll (rum, frågor, teman, källor, vandringar)** skrivs som
+Markdown med frontmatter under `src/content/<typ>/`, mot zod-scheman i
+`src/content/redaktion/schema.ts`. Korsvalideringen (`validera.ts`, körs av
+`npm run check:content`) upprätthåller att **publicerat aldrig länkar
+opublicerat**, att publicerade rum har primär källa och lästid ≤ 10 min, m.m.
+Bara `status: publicerad` visas för läsare; utkast nås via direkt länk.
+Publicering är redaktörens beslut.
+
+**Äldre atlas-ämne (utfasas):** skapa `src/content/topics/<namn>.ts` som
+exporterar en `Topic` och registrera det i `topics/index.ts` och en tradition i
+`traditions.ts`.
 
 ## Skärmar och rutter
 
 | Rutt | Skärm |
 | --- | --- |
-| `/` | Hem: dagens datum, ämnena, »Fortsätt där du var«, dagens citat |
-| `/utforska` | Samlingarna ordnade efter tradition + register |
-| `/bibliotek` | Biblioteket: hela källtexter per tradition + offline-hämtning |
-| `/bibliotek/$workId` | Ett verk och dess böcker |
-| `/bibliotek/$workId/$bookSlug` | En boks kapitel |
+| `/` | Läsrummet: dagens reflektionsrum |
+| `/rum/$slug` | Ett reflektionsrum (valfri vandringskontext via `?vandring=`) |
+| `/bibliotek` | Biblioteket: landning med Frågor, Teman, Rum, Källor, Traditioner, Sparat |
+| `/bibliotek/fraga/$slug` | En fråga och dess rum |
+| `/bibliotek/tema/$slug` | Ett tema och dess rum |
+| `/bibliotek/rum` | Alla rum (ändlig lista) |
+| `/bibliotek/kalla/$slug` | En källpost |
+| `/bibliotek/vandring/$slug` | En vandring (kuraterad rumsföljd) |
+| `/bibliotek/verk` | Verkläsaren: alla hela källtexter |
+| `/bibliotek/verk/$workId` | Ett verk och dess böcker |
+| `/bibliotek/verk/$workId/$bookSlug` | En boks kapitel |
 | `/kapitel/$workId/$bookSlug/$chapter` | Läsläge för ett kapitel |
 | `/bibliotek-sok` | Fritextsök över alla verser |
-| `/amne/$id` | Ämnessida: ingång, vägar in, personer, relaterade idéer |
-| `/las/$id/$mode` | Läsläge för essä/kontext med anteckningsark |
-| `/kalla/$id` | Kuraterad originaltext (atlasen) |
-| `/tidslinje` · `/personer` · `/person/$id` · `/atlas` · `/samling` · `/sok` | Atlasens övriga skärmar |
+| `/installningar` | Inställningar (läsning + utseende) |
+| `/samling` | Sparat |
+| `/amne/$id` · `/las/$id/$mode` · `/kalla/$id` · `/tidslinje` · `/personer` · `/person/$id` · `/atlas` · `/utforska` · `/sok` | Äldre atlas-skärmar (nås via direkt-URL, utan navflik) |
 
-Bottennavigeringen (Hem · Utforska · Texter · Atlas · Samling) döljs i läsläge,
-originaltext och sök.
+De fyra bottenflikarna är **Läsrummet · Biblioteket · Sparat · Inställningar**
+(`src/components/NavTabs.tsx`). Naven döljs på navlösa rutter — `NAVLESS_PREFIXES`
+i `src/app/RootLayout.tsx`: `/las`, `/kalla`, `/sok`, `/kapitel`, `/bibliotek-sok`,
+`/rum`.
 
 ## Kända begränsningar
 
@@ -243,4 +271,3 @@ originaltext och sök.
 - Länka atlasens ämnen direkt in i biblioteksverserna.
 - Export/import av anteckningar (JSON).
 - PNG-ikoner och skärmbilder i manifestet för bättre installationsupplevelse.
-- Enkla tester för sök, ingest-normalisering och localStorage-storen.
