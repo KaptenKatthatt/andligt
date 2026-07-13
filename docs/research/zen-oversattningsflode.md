@@ -14,7 +14,38 @@ markerat **[kräver specialistgranskning]**.
 
 ## 1. Exekutiv rekommendation
 
-*(fylls i efter experimentkörningen)*
+- **Primär översättningsmodell: `deepseek-v3.2:cloud`.** Enda modellen som levererade
+  kompletta svar i alla flöden på alla fem passager, med den mest disciplinerade
+  filologin: redovisade läsningsalternativ, ärligast konfidensangivelser (3–4 med
+  motiverade svagheter, där gemma4 satte 5 på svar med påvisbara fel) och lägst
+  hallucinationsfrekvens. Svagheten är svensk morfologi under tryck ("återvorde",
+  "avförestapp") — den mänskliga språktvätten är obligatorisk, inte valfri.
+- **Granskningsmodell: `glm-5.1:cloud`.** Gav de filologiskt bästa korsgranskningarna
+  när den levererade (fångade bl.a. inverterad kärnmetafor i P1 och didaktisk
+  utslätning i P2). Viktig reservation: *ingen* granskarmodell är pålitlig nog att
+  agera grind ensam — varje granskare producerade minst en självsäker falsk positiv
+  eller en hallucinerad granskning (se §5). Granskningsfynd är uppslag för mänsklig
+  kontroll, aldrig facit.
+- **Rekommenderat flöde: C (analytiskt) — analys först, sedan svensk översättning ur
+  analysen, direkt från originalet.** C höjde golvet mest konsekvent: svagare modeller
+  disciplinerades märkbart av analyssteget (gemma4:s bästa utdata var C på fyra av fem
+  passager) och tvetydighetsapparaten blev bäst. Därtill flöde D (korsgranskning) som
+  obligatoriskt men människoverifierat steg.
+- **Engelska som mellanled: nej som standard.** Flöde B gav enstaka toppresultat
+  (bästa enskilda översättning på tre passager, alltid med deepseek eller glm), men
+  varje fel i det engelska mellansteget propagerade till svenskan trots uttrycklig
+  instruktion att verifiera mot originalet — dokumenterade exempel finns på alla fem
+  passagerna (se §4). Risken är systematisk och svår att upptäcka i efterhand;
+  nyttan är tillfällig. Undantag: en engelsk arbetsöversättning får gärna *sparas som
+  dokumentation* (transparens), men ska inte vara översättarens underlag.
+- **Största begränsningar:** (1) Alla slutsatser bygger på fem korta passager och en
+  körning per cell — små underlag, inga upprepningar; (2) utvärderingen är gjord av
+  AI (Claude) mot ordböcker och etablerade översättningar, inte av en specialist på
+  klassisk japanska/kinesiska — **[kräver specialistgranskning]**; (3) resonerande
+  modeller kräver stor tokenbudget (≥16k) — med för liten budget levererar de tomma
+  eller trunkerade svar (upptäcktes och åtgärdades under experimentet, se §5);
+  (4) kontots Ollama-kvot begränsar hur mycket som kan köras per session;
+  (5) modellversioner är färskvara — omtest krävs vid modellbyte.
 
 ---
 
@@ -82,13 +113,96 @@ datum dokumenteras maskinellt i `results/modeller.json`)*
 
 ## 4. Flödesjämförelse
 
-*(fylls i efter experimentkörningen)*
+**Flöde A (direkt).** Helt beroende av modellens egen disciplin: utmärkt med deepseek
+(bästa enskilda översättning på P5, komplett apparat), sämst med gemma4 (namnfelet
+"Zhōu Zhōu" i P2, "vissnar" för växer i P3, barnhallucinationen i P5 — alla med hög
+konfidens). Direktflödet ger minst transparens: när det går fel finns inget spår av
+varför.
+
+**Flöde B (engelskt mellanled).** Det mest tveeggade resultatet i experimentet. Å ena
+sidan producerade B tre av fem passagers bästa enskilda översättningar (deepseek B på
+P1, glm B på P2 och P3) — en bra engelsk arbetsöversättning fungerade där som
+verklig kvalitetshöjare, och avvikelseavsnittet visade att modellen faktiskt
+kontrollerade mot originalet. Å andra sidan var felpropagering från det engelska
+steget systematisk: gemmas engelska "sentient beings are near" gav inverterat subjekt
+i svenskan (P1), "those who over-explain" förgiftade kommentartolkningen (P2), "grass
+withers" gav "vissnar" (P3), "the head" flyttade den filologiska debatten till fel
+kroppsdel (P4) och "staff-sweeping child" blev "stav-sopande barn" (P5). Instruktionen
+att verifiera mot originalet hjälpte de starka modellerna men inte de svaga — och det
+är just de svaga som behöver den. Slutsats: **engelskt mellanled förbättrar taket men
+sänker golvet; för en produktionspipeline där enskilda fel är dyra är det fel byte.**
+
+**Flöde C (analytiskt).** Höjde golvet mest konsekvent: gemma4:s och qwens bästa
+utdata var C-flödet på nästan alla passager, tvetydighetsredovisningen var
+genomgående bäst (t.ex. redovisade tre av fyra modeller 者僧-frågan i P2 endast i C),
+och analyssteget gav redaktionellt användbart material (segmentering, termdiskussion,
+olösta osäkerheter). Två viktiga förbehåll: analysen kan *inducera* fel som sedan
+propagerar (glossan "lämna vattnet" gav inverterad kärnmetafor i tre C-utdata på P1;
+gemmas analys födde den uppdiktade Dao-läsarten av 道道 i P4), och för den starkaste
+modellen tillförde C ibland inget över A (deepseek på P3 blev sämre i C än i A).
+**C rekommenderas som produktionsflöde** därför att dess vinster (golv, apparat,
+transparens) väger tyngre än dess risker, som den mänskliga granskningen är bäst
+rustad att fånga just eftersom analysen är synlig.
+
+**Flöde D (korsgranskning).** Gav verkligt värde minst en gång per passage — bl.a.
+fångades den inverterade vattenmetaforen (P1), "Gå då och skålen" (P2), den
+monistiska felläsningen av われにあらざる (P3), 丈六-måttfelet och den dolda
+有時-tvetydigheten (P5) — men var också experimentets farligaste komponent när den
+gick fel: granskare recenserade *tomma* översättningar som om de fanns och
+rekommenderade dem som bäst (P2, P4), och underkände korrekta översättningar med
+självsäker felaktig filologi (道道 "allvarligt fel" i P4, 生仏-domen i P3).
+**D behålls i pipelinen som felgenerator för mänsklig kontroll — aldrig som
+automatisk grind.**
 
 ---
 
 ## 5. Felanalys
 
-*(fylls i efter experimentkörningen)*
+Kategoriserade huvudfynd (fler exempel med belägg i agentprotokollen; alla utdata i
+`results/`):
+
+**Språkfel.** deepseek under morfologiskt tryck: "återvorde", "avfödslesticka",
+"avförestapp", "skitpinn" (P4); glm: "buddhavisen" för buddhavägen (P3, ×2),
+"skittpinne", "lanterna"; gemma: "peak" kvar oöversatt i svensk text (P5); qwen:
+"Funkerar", "metaphoriskt" (P1-analysen). Mönster: även de bästa modellerna
+producerar icke-ord i svåra passager — svensk språktvätt är ett obligatoriskt
+pipelinesteg.
+
+**Begreppsfel.** Allvarligast: gemma "gräset *vissnar*" för 草は…おふる = *växer*
+(P3, i alla tre flöden — vänder Dōgens poäng); glm/deepseek/gemma inverterade
+villkorslogiken i 水を離れて氷なく (P1, C-flödet); gemma 道道 som "Säger, säger"
+i stället för imperativt "Tala! Tala!" (P4); glm "en shaku och sex" för 丈六 =
+sexton fot (P5); deepseek "inte skilda från mig själv" för われにあらざる = "inte
+är jag" — negation blev monism (P3).
+
+**Stilproblem.** Mildring av det grova 乾屎橛 till "avföringspinne" med motiveringen
+"klinisk precision" (gemma, P4) — grovheten är textens poäng; kristnande "Paradiset"
+för 蓮華国 (deepseek, P1); didaktiska expansioner av den avsiktligt oexplikerade
+slutbilden i Genjōkōan (deepseek A, P3).
+
+**Hallucinationer.** gemma: "Ibland borstar man bort barn med en stav" ur 杖払子 =
+"staven och flugviskan" (P5, försvarat som "bokstavlig återgivning"); gemma:
+liknelsen attribuerad till "Sutra om det gyllene ljuset" i stället för Lotussutran
+(P1); gemma: uppdiktad Dao-läsart av 道道 presenterad som filologisk tvetydighet
+(P4); deepseek: "klockljudet … dunklet från en lerkruka" — utbroderat utöver 喚鐘作甕
+(P2). Värst av allt: granskarmodeller som recenserade tomma översättningar och
+rekommenderade dem (P2, P4) — konfabulation i själva kvalitetskontrollen.
+
+**Omotiverad säkerhet.** gemma satte konfidens 5 på svar med namnfel, verbfel och
+hallucinationer (P1–P5, systematiskt); granskaren i P4 underkände korrekt 道道-
+översättning som "allvarligt fel" med nybörjarläsningen som facit; gemma B hävdade
+att en felaktig parsning var "bokstavlig" (P1). deepseek var ensam om genomgående
+kalibrerad konfidens (3–4 med konkreta svagheter). **Konfidenssiffror från modeller
+utan kalibrering är sämre än inga alls** — i produktionsformatet sparas de som
+modellutsaga, inte som kvalitetsmått.
+
+**Experimentartefakt (viktig metodlärdom).** I körningen med `num_predict 4096`
+levererade de resonerande modellerna (qwen3.5, glm-5.1) tomma eller trunkerade svar
+på flertalet passager — tankeblocken åt upp tokenbudgeten och det synliga svaret
+försvann. Detta är inte modellkvalitet utan konfiguration: budgeten höjdes till
+16 384 och de drabbade cellerna kördes om. Lärdom för pipelinen: sätt hög
+tokenbudget, behandla tomma svar som fel med omförsök, och lita aldrig på en
+körning utan leveranskontroll.
 
 ---
 
