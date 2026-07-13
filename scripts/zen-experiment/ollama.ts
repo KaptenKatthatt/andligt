@@ -60,9 +60,23 @@ export const listaModeller = async (): Promise<string[]> => {
   return (data.models ?? []).map((modell) => modell.name ?? '').filter((namn) => namn.length > 0)
 }
 
-// Minimalt prob-anrop: kan modellen faktiskt köras på abonnemanget?
+// Cloud-modeller måste pullas (registreras hos daemonen) innan API-anrop fungerar —
+// CLI:t auto-pullar men API:t ger 404 (docs.ollama.com/cloud). Pull av en cloud-modell
+// hämtar bara ett manifest, ingen vikt-nedladdning och ingen GPU-kvot.
+const pullModell = async (modell: string): Promise<void> => {
+  const respons = await fetch(`${bas()}/api/pull`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ model: modell, stream: false }),
+    signal: AbortSignal.timeout(120000),
+  })
+  if (!respons.ok) throw new Error(`Ollama /api/pull ${respons.status}`)
+}
+
+// Minimalt prob-anrop: pulla först, kör sedan ett pyttelitet chatt-anrop.
 export const probaModell = async (modell: string): Promise<boolean> => {
   try {
+    await pullModell(modell)
     await chatEnGang(modell, 'Svara med ett ord.', 'Säg ja.', 8)
     return true
   } catch {
