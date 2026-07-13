@@ -129,12 +129,13 @@ export const traditionerForVandring = (
   return bibliotekTraditioner(traditioner.filter((tradition) => traditionIds.has(tradition.id)))
 }
 
-/** Källans publicerade passager, i referensordning (svensk kollation).
- * Bara publicerade passager når biblioteket; utkast är redaktionens granskningsvy. */
+/** Källans publicerade passager, i naturlig referensordning (»avsnitt 5« före
+ * »avsnitt 43«, inte tvärtom). Bara publicerade passager når biblioteket;
+ * utkast är redaktionens granskningsvy. */
 export const passagerForKalla = (kallaId: string, passager: Kallpassage[]): Kallpassage[] =>
   publicerade(passager)
     .filter((passage) => passage.källa === kallaId)
-    .sort(svOrdning((p) => p.referens))
+    .sort((a, b) => a.referens.localeCompare(b.referens, 'sv', { numeric: true }))
 
 /** Publicerade rum som använder källan — rum med primär relation först. */
 export const rumForKalla = (kallaId: string, rum: Rum[]): Rum[] => {

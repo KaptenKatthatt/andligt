@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import type { Fraga, Kalla, Rum, Tema, Tradition, Vandring } from '../content/redaktion/schema'
+import type { Fraga, Kalla, Kallpassage, Rum, Tema, Tradition, Vandring } from '../content/redaktion/schema'
 import {
   bibliotekRum,
   bibliotekTeman,
@@ -7,6 +7,7 @@ import {
   bibliotekVandringar,
   fragorForTema,
   kallorForFraga,
+  passagerForKalla,
   publiceradeVia,
   rumForFraga,
   rumForKalla,
@@ -320,5 +321,39 @@ describe('traditionerForVandring', () => {
       'buddhism',
       'stoicism',
     ])
+  })
+})
+
+describe('passagerForKalla', () => {
+  const passage = (referens: string, över: Partial<Kallpassage> = {}): Kallpassage => ({
+    id: `passage-${referens}`,
+    källa: 'kalla-a',
+    referens,
+    status: 'publicerad',
+    ...över,
+  })
+
+  it('ger källans publicerade passager i naturlig referensordning', () => {
+    const passager = [
+      passage('avsnitt 43'),
+      passage('avsnitt 5'),
+      passage('avsnitt 1'),
+      passage('avsnitt 8'),
+    ]
+    expect(passagerForKalla('kalla-a', passager).map((p) => p.referens)).toEqual([
+      'avsnitt 1',
+      'avsnitt 5',
+      'avsnitt 8',
+      'avsnitt 43',
+    ])
+  })
+
+  it('utesluter utkastpassager och andra källors passager', () => {
+    const passager = [
+      passage('avsnitt 1'),
+      passage('avsnitt 2', { status: 'granskning' }),
+      passage('avsnitt 3', { källa: 'kalla-b' }),
+    ]
+    expect(passagerForKalla('kalla-a', passager).map((p) => p.referens)).toEqual(['avsnitt 1'])
   })
 })
