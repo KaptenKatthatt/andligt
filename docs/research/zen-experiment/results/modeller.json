@@ -1,0 +1,33 @@
+{
+  "datum": "2026-07-13T14:02:48.786Z",
+  "valda": [],
+  "probstatus": {
+    "qwen3.6:235b-cloud": false,
+    "qwen3.6:cloud": false,
+    "qwen3.6:35b-cloud": false,
+    "qwen3:235b-cloud": false,
+    "qwen3.5:cloud": false,
+    "qwen3:cloud": false,
+    "deepseek-v3.2:cloud": false,
+    "deepseek-v3.2:671b-cloud": false,
+    "deepseek-v3.1:671b-cloud": false,
+    "deepseek-v3:671b-cloud": false,
+    "deepseek-r1:671b-cloud": false,
+    "glm-5.1:cloud": false,
+    "glm-5.2:cloud": false,
+    "glm-4.6:cloud": false,
+    "kimi-k2.6:cloud": false,
+    "kimi-k2.7:cloud": false,
+    "kimi-k2:1t-cloud": false,
+    "minimax-m3:cloud": false,
+    "kimi-k2.7-code:cloud": false,
+    "gemma4:31b-cloud": false,
+    "gpt-oss:120b-cloud": false
+  },
+  "kanda": [
+    "nomic-embed-text:latest",
+    "gemma4:31b-cloud",
+    "kimi-k2.7-code:cloud"
+  ],
+  "metadata": {}
+}
