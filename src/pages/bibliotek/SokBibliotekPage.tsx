@@ -3,14 +3,16 @@
 // i Biblioteket och tar aldrig plats i läsrummet. Ingen popularitetssignal.
 import { useEffect, useState } from 'react'
 import { TopBar } from '../../components/TopBar'
+import { searchLibrary } from '../../lib/api'
+import type { Anteckning } from '../../lib/personligt'
 import { sokAnteckningar } from '../../lib/sokanteckningar'
 import { sokindexet, type Soktyp } from '../../lib/sokindex'
-import { sokIBiblioteket, synligaTraffar, type Sokgrupp } from '../../lib/soklogik'
+import { sokIBiblioteket, synligaTraffar, type Sokgrupp, type SynligGrupp } from '../../lib/soklogik'
 import { normalisera } from '../../lib/soknormalisering'
+import { useAsync } from '../../lib/useAsync'
 import { useAtlas } from '../../lib/store'
 import { useDebounced } from '../../lib/useDebounced'
-import { Filter, Resultatvy, type Sokläge } from './SokDelar'
-import styles from './Sok.module.css'
+import { Filter, KalltextGrupp, Resultatvy, Sokfalt, type Kalltextsvar, type Sokläge } from './SokDelar'
 
 // Vilka grupper som expanderats, ihågkommet per normaliserad fråga över
 // navigation inom sessionen (search.md: sökstate får vara tillfälligt).
@@ -23,16 +25,96 @@ const sökObjekt = (term: string, typ: Soktyp | undefined): { q?: string; typ?: 
   ...(typ ? { typ } : {}),
 })
 
-const sokResultat = (term: string): { grupper: Sokgrupp[]; fel: boolean } => {
+type Härlett = {
+  synliga: SynligGrupp[]
+  noteringar: Anteckning[]
+  redaktionellaOchNoter: number
+  fel: boolean
+}
+
+// Härleder de redaktionella resultaten och den privata anteckningsgruppen ur
+// termen. Ren funktion (utanför komponenten) så sidan hålls liten och läsbar.
+const härledResultat = (
+  term: string,
+  typ: Soktyp | undefined,
+  expanderade: ReadonlySet<Soktyp>,
+  anteckningar: Record<string, Anteckning>,
+): Härlett => {
+  let grupper: Sokgrupp[] = []
+  let fel = false
   try {
-    return { grupper: sokIBiblioteket(term, sokindexet), fel: false }
+    grupper = sokIBiblioteket(term, sokindexet)
   } catch {
-    return { grupper: [], fel: true }
+    fel = true
   }
+  const filtrerade = typ ? grupper.filter((grupp) => grupp.typ === typ) : grupper
+  const synliga = synligaTraffar(filtrerade, expanderade)
+  const noteringar = typ ? [] : sokAnteckningar(term, anteckningar)
+  const redaktionellaOchNoter =
+    filtrerade.reduce((summa, grupp) => summa + grupp.traffar.length, 0) + noteringar.length
+  return { synliga, noteringar, redaktionellaOchNoter, fel }
 }
 
 const beräknaLäge = (nyckel: string, fel: boolean): Sokläge =>
   nyckel.length < 2 ? 'tom' : fel ? 'fel' : 'klar'
+
+const TOMT_KALLTEXTSVAR: Kalltextsvar = { books: [], hits: [] }
+
+const kalltextAntalAv = (svar: Kalltextsvar | null): number =>
+  (svar?.books.length ?? 0) + (svar?.hits.length ?? 0)
+
+// Inga träffar alls (och verssöket är inte längre på väg): först då visas
+// no-results, aldrig medan källtextträffar fortfarande laddas.
+const ärHeltTomt = (redaktionellaOchNoter: number, kalltextAntal: number, laddar: boolean): boolean =>
+  redaktionellaOchNoter === 0 && kalltextAntal === 0 && !laddar
+
+// Lägger till en expanderad grupp och sparar det i sessionsminnet.
+const nyExpansion = (
+  föregående: ReadonlySet<Soktyp>,
+  nyckel: string,
+  grupptyp: Soktyp,
+): Set<Soktyp> => {
+  const nästa = new Set(föregående).add(grupptyp)
+  expansionsminne.set(nyckel, nästa)
+  return nästa
+}
+
+// Sökfältets tillstånd: debouncat värde, Enter söker direkt, termen speglas i
+// URL:en och expanderade grupper minns per fråga. Samlat i en hook så själva
+// sidan blir liten och läsbar.
+const useSoktillstand = (
+  q: string,
+  typ: Soktyp | undefined,
+  onNavigera: (sök: { q?: string; typ?: Soktyp }) => void,
+) => {
+  const [query, setQuery] = useState(q)
+  const [direkt, setDirekt] = useState<string | null>(null)
+  const debounced = useDebounced(query.trim(), 250)
+  const term = direkt ?? debounced
+  const nyckel = normalisera(term)
+  const [expanderade, setExpanderade] = useState<Set<Soktyp>>(() => hämtaExpansion(nyckel))
+
+  useEffect(() => {
+    if (term !== q) onNavigera(sökObjekt(term, typ))
+  }, [term, q, typ, onNavigera])
+
+  useEffect(() => {
+    setExpanderade(hämtaExpansion(normalisera(term)))
+  }, [term])
+
+  return {
+    query,
+    term,
+    nyckel,
+    expanderade,
+    visaFler: (grupptyp: Soktyp) => setExpanderade((prev) => nyExpansion(prev, nyckel, grupptyp)),
+    ändraFråga: (värde: string) => {
+      setQuery(värde)
+      setDirekt(null)
+    },
+    sökDirekt: () => setDirekt(query.trim()),
+  }
+}
 
 type Props = {
   q: string
@@ -41,70 +123,45 @@ type Props = {
 }
 
 export const SokBibliotekPage = ({ q, typ, onNavigera }: Props) => {
-  const [query, setQuery] = useState(q)
-  const [direkt, setDirekt] = useState<string | null>(null)
-  const debounced = useDebounced(query.trim(), 250)
-  const term = direkt ?? debounced
-  const nyckel = normalisera(term)
-  const [expanderade, setExpanderade] = useState<Set<Soktyp>>(() => hämtaExpansion(nyckel))
+  const { query, term, nyckel, expanderade, visaFler, ändraFråga, sökDirekt } = useSoktillstand(
+    q,
+    typ,
+    onNavigera,
+  )
   const anteckningar = useAtlas().anteckningar
 
-  // Skriv termen till URL:en (delbar, överlever refresh) bara när den skiljer
-  // sig — alltid replace, så ingen historik- eller renderingsloop uppstår.
-  useEffect(() => {
-    if (term !== q) onNavigera(sökObjekt(term, typ))
-  }, [term, q, typ, onNavigera])
+  // Verssöket (verkläsarens FTS) körs bara utan typfilter och för fråga ≥ 2
+  // tecken; annars ett tomt svar utan nätanrop. Egen väg, egen laddning.
+  const sökKalltext = nyckel.length >= 2 && typ === undefined
+  const kalltext = useAsync<Kalltextsvar>(
+    () => (sökKalltext ? searchLibrary(term) : Promise.resolve(TOMT_KALLTEXTSVAR)),
+    [term, sökKalltext],
+  )
 
-  // Ny fråga ⇒ läs om vilka grupper som var expanderade för just den frågan.
-  useEffect(() => {
-    setExpanderade(hämtaExpansion(normalisera(term)))
-  }, [term])
-
-  const visaFler = (grupptyp: Soktyp): void => {
-    setExpanderade((prev) => {
-      const nästa = new Set(prev).add(grupptyp)
-      expansionsminne.set(nyckel, nästa)
-      return nästa
-    })
-  }
-
-  const { grupper, fel } = sokResultat(term)
-  const filtrerade = typ ? grupper.filter((grupp) => grupp.typ === typ) : grupper
-  const synliga = synligaTraffar(filtrerade, expanderade)
-  const noteringar = typ ? [] : sokAnteckningar(term, anteckningar)
-  const antal =
-    filtrerade.reduce((summa, grupp) => summa + grupp.traffar.length, 0) + noteringar.length
+  const { synliga, noteringar, redaktionellaOchNoter, fel } = härledResultat(
+    term,
+    typ,
+    expanderade,
+    anteckningar,
+  )
+  const kalltextAntal = kalltextAntalAv(kalltext.data)
+  const antal = redaktionellaOchNoter + kalltextAntal
+  const ingaTraffar = ärHeltTomt(redaktionellaOchNoter, kalltextAntal, kalltext.loading)
 
   return (
     <div className="screenSub">
       <TopBar />
-      <form
-        role="search"
-        onSubmit={(händelse) => {
-          händelse.preventDefault()
-          setDirekt(query.trim())
-        }}
-      >
-        <label htmlFor="bibliotekssok" className={styles.srOnly}>
-          Sök i biblioteket
-        </label>
-        <input
-          id="bibliotekssok"
-          type="search"
-          className={styles.falt}
-          value={query}
-          onChange={(händelse) => {
-            setQuery(händelse.target.value)
-            setDirekt(null)
-          }}
-          placeholder="Sök efter en fråga, tanke eller källa"
-          autoFocus
-        />
-      </form>
+      <Sokfalt query={query} onChange={ändraFråga} onSubmit={sökDirekt} />
       <Filter aktiv={typ} antal={antal} onVal={(nyTyp) => onNavigera(sökObjekt(term, nyTyp))} />
       <Resultatvy
         läge={beräknaLäge(nyckel, fel)}
+        ingaTraffar={ingaTraffar}
         synliga={synliga}
+        kalltext={
+          typ === undefined ? (
+            <KalltextGrupp key={nyckel} svar={kalltext.data} fel={kalltext.error} />
+          ) : null
+        }
         noteringar={noteringar}
         antal={antal}
         onVisaFler={visaFler}
