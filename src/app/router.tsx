@@ -12,7 +12,9 @@ import { KallaPostPage } from '../pages/bibliotek/KallaPostPage'
 import { RumlistaPage } from '../pages/bibliotek/RumlistaPage'
 import { TemaPage } from '../pages/bibliotek/TemaPage'
 import { VandringPage } from '../pages/bibliotek/VandringPage'
+import { SokBibliotekPage } from '../pages/bibliotek/SokBibliotekPage'
 import { BibliotekSokPage } from '../pages/library/BibliotekSokPage'
+import type { Soktyp } from '../lib/sokindex'
 import { BokPage } from '../pages/library/BokPage'
 import { KapitelPage } from '../pages/library/KapitelPage'
 import { VerklistaPage } from '../pages/library/VerklistaPage'
@@ -225,6 +227,33 @@ const bibliotekSokRoute = createRoute({
   component: BibliotekSokPage,
 })
 
+// Bibliotekssöket (fas 10, search.md): frågan och det valfria typfiltret bärs i
+// URL:en (?q=…&typ=…), så sökstate överlever navigation, refresh och delning.
+// Privata anteckningsträffar hamnar aldrig i URL:en.
+const SOKTYPER: readonly Soktyp[] = ['fraga', 'tema', 'rum', 'vandring', 'kalla', 'tradition']
+const ärSoktyp = (värde: unknown): värde is Soktyp =>
+  typeof värde === 'string' && (SOKTYPER as readonly string[]).includes(värde)
+
+const sokBibliotekRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/bibliotek/sok',
+  validateSearch: (search: Record<string, unknown>): { q?: string; typ?: Soktyp } => ({
+    ...(typeof search['q'] === 'string' && search['q'] !== '' ? { q: search['q'] } : {}),
+    ...(ärSoktyp(search['typ']) ? { typ: search['typ'] } : {}),
+  }),
+  component: function SokBibliotekRoute() {
+    const search = sokBibliotekRoute.useSearch()
+    const navigate = sokBibliotekRoute.useNavigate()
+    return (
+      <SokBibliotekPage
+        q={search.q ?? ''}
+        typ={search.typ}
+        onNavigera={(sök) => navigate({ search: sök, replace: true })}
+      />
+    )
+  },
+})
+
 const routeTree = rootRoute.addChildren([
   hemRoute,
   utforskaRoute,
@@ -249,6 +278,7 @@ const routeTree = rootRoute.addChildren([
   bokRoute,
   kapitelRoute,
   bibliotekSokRoute,
+  sokBibliotekRoute,
   rumRoute,
 ])
 
