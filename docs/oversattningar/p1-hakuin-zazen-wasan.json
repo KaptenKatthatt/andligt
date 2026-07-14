@@ -31,7 +31,7 @@
   "granskning": [
     { "typ": "korsmodell", "modell": "deepseek-v4-pro:cloud", "datum": "2026-07-14", "resultat": "Fångade riktigt läsbar rad 3 (vattnet/isen). Samlad dom ('inte duglig, gör om varje rad') bedöms överdriven — en självsäker falsk negativ; översättningen är i huvudsak korrekt. Övriga 'påhitt' (och ändå/eller/men) är läsbarhetsbindning, inte hallucination. Rådata: radata/p1-hakuin-zazen-wasan.json." },
     { "typ": "mansklig", "granskare": "Claude (förgranskning)", "datum": "2026-07-14", "beslut": "Ordagrann träffar alla ankare; en verifierad läsbar-fix (rad 3) applicerad. Duglig som utkast; se granskning.md." },
-    { "typ": "mansklig", "granskare": "ägaren (Jonas Olson)", "datum": null, "beslut": "avvaktar" }
+    { "typ": "mansklig", "granskare": "ägaren (Jonas Olson)", "datum": "2026-07-14", "beslut": "godkänd (chattgranskning); publicering till src/content är ett separat steg" }
   ],
   "status": "utkast"
 }
