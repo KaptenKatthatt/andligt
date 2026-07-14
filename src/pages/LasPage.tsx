@@ -13,7 +13,7 @@ import styles from './LasPage.module.css'
 
 export const LasPage = ({ id, mode }: { id: string; mode: ReadMode }) => {
   const topic = findTopic(id)
-  const { notes, setNote, recordRead } = useAtlas()
+  const { anteckningar, sattAnteckning, recordRead } = useAtlas()
   const [notesOpen, setNotesOpen] = useState(false)
 
   useEffect(() => {
@@ -25,7 +25,7 @@ export const LasPage = ({ id, mode }: { id: string; mode: ReadMode }) => {
   const paragraphs = mode === 'kontext' ? topic.context : topic.essay
   const sources = topic.sources.map(findSource).filter((s) => s !== undefined)
   const related = topic.related.map(findTopic).filter((t) => t !== undefined)
-  const note = notes[topic.id] ?? ''
+  const note = anteckningar[topic.id]?.text ?? ''
   const noteHint = note.trim().length > 0 ? note.trim() : 'Skriv en tanke'
 
   return (
@@ -80,7 +80,7 @@ export const LasPage = ({ id, mode }: { id: string; mode: ReadMode }) => {
         <NotesSheet
           title={topic.title}
           value={note}
-          onChange={(value) => setNote(topic.id, value)}
+          onChange={(value) => sattAnteckning('amne', topic.id, value)}
           onClose={() => setNotesOpen(false)}
         />
       )}

@@ -12,7 +12,7 @@ const excerpt = (note: string): string => {
 }
 
 export const SamlingPage = () => {
-  const { sparadeRum, bookmarks, chapterBookmarks, notes } = useAtlas()
+  const { sparadeRum, bookmarks, chapterBookmarks, anteckningar } = useAtlas()
   const sparade = Object.keys(sparadeRum)
     .filter((id) => sparadeRum[id])
     .map(hittaRumViaId)
@@ -25,14 +25,15 @@ export const SamlingPage = () => {
     (a, b) => b.savedAt - a.savedAt,
   )
   const noBookmarks = bookmarked.length === 0 && chapterBookmarked.length === 0
-  const noted = Object.entries(notes)
-    .filter(([, note]) => note.trim().length > 0)
-    .map(([id, note]) => {
-      const topic = findTopic(id)
+  const noted = Object.values(anteckningar)
+    .filter((a) => a.text.trim().length > 0)
+    .map((a) => {
+      const topic = findTopic(a.ursprungId)
       if (topic)
-        return { key: id, title: topic.title, note, to: { kind: 'las', id: topic.id, mode: 'essa' } as const }
-      const rum = hittaRumViaId(id)
-      if (rum) return { key: id, title: rum.titel, note, to: { kind: 'rum', slug: rum.slug } as const }
+        return { key: a.ursprungId, title: topic.title, note: a.text, to: { kind: 'las', id: topic.id, mode: 'essa' } as const }
+      const rum = hittaRumViaId(a.ursprungId)
+      if (rum)
+        return { key: a.ursprungId, title: rum.titel, note: a.text, to: { kind: 'rum', slug: rum.slug } as const }
       return undefined
     })
     .filter((entry) => entry !== undefined)

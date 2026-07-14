@@ -97,7 +97,7 @@ const Kalldetalj = ({ rum }: { rum: Rum }) => {
 }
 
 const Rumsavslut = ({ rum }: { rum: Rum }) => {
-  const { sparadeRum, vaxlaSparatRum, notes, setNote } = useAtlas()
+  const { sparadeRum, vaxlaSparatRum, anteckningar, sattAnteckning } = useAtlas()
   const [öppenRad, setÖppenRad] = useState<'källa' | 'bakgrund' | null>(null)
   const [anteckningÖppen, setAnteckningÖppen] = useState(false)
   const primärKälla = rum.källor.find((k) => k.primär) ?? rum.källor[0]
@@ -154,8 +154,8 @@ const Rumsavslut = ({ rum }: { rum: Rum }) => {
       {anteckningÖppen && (
         <NotesSheet
           title={rum.titel}
-          value={notes[rum.id] ?? ''}
-          onChange={(text) => setNote(rum.id, text)}
+          value={anteckningar[rum.id]?.text ?? ''}
+          onChange={(text) => sattAnteckning('rum', rum.id, text)}
           onClose={() => setAnteckningÖppen(false)}
         />
       )}
