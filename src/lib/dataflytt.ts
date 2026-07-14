@@ -162,7 +162,13 @@ export const mergaImport = (
 })
 
 const anteckningTillMarkdown = (post: PersonligExport['anteckningar'][number]): string =>
-  [`## ${post.titel ?? 'Anteckning'}`, '', post.text, '', `_Uppdaterad ${post.uppdaterad}_`].join('\n')
+  [
+    `## ${post.titel ?? 'Anteckning'}`,
+    '',
+    post.text,
+    '',
+    `_Skapad ${post.skapad} · uppdaterad ${post.uppdaterad}_`,
+  ].join('\n')
 
 /** Läsbar Markdown-spegel av exporten (spec föredrar öppna format). Inte
  * återimporterbar — JSON är round-trip-formatet. */

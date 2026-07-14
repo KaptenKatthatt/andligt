@@ -98,6 +98,8 @@ describe('tillMarkdown', () => {
     const md = tillMarkdown(tillExport(samlingar(), titelFor, '2026-07-14T10:00:00.000Z'))
     expect(md).toContain('## rum:rum-a')
     expect(md).toContain('en tanke')
+    expect(md).toContain('Skapad 2026-07-01T00:00:00.000Z')
+    expect(md).toContain('uppdaterad 2026-07-05T00:00:00.000Z')
     expect(md).toContain('# Sparat')
     expect(md).toContain('- rum:rum-a')
   })

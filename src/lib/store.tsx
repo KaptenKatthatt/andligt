@@ -311,7 +311,9 @@ const usePersonligtActions = (setState: SetAtlasState): PersonligtActions => {
   return { vaxlaSparatRum, vaxlaSparadVandring, sattAnteckning, taBortAnteckning, rensaSenastBesokt }
 }
 
-const personligaSamlingar = (s: AtlasState): PersonligaSamlingar => ({
+/** Plockar ut den personliga delen av storen — delas av importmerge och av
+ * exporten i Inställningar (Dina data), så samma femfältiga form byggs på ett ställe. */
+export const personligaSamlingar = (s: PersonligaSamlingar): PersonligaSamlingar => ({
   anteckningar: s.anteckningar,
   sparadeRum: s.sparadeRum,
   sparadeVandringar: s.sparadeVandringar,

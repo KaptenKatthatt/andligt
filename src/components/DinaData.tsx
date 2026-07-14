@@ -1,15 +1,9 @@
 import { useState } from 'react'
 import { findTopic } from '../content/topics'
-import {
-  lasImport,
-  tillExport,
-  tillMarkdown,
-  type PersonligaSamlingar,
-  type PersonligExport,
-} from '../lib/dataflytt'
+import { lasImport, tillExport, tillMarkdown, type PersonligExport } from '../lib/dataflytt'
 import { hittaRumViaId, hittaVandringViaId } from '../lib/innehall'
 import type { Ursprung } from '../lib/personligt'
-import { useAtlas } from '../lib/store'
+import { personligaSamlingar, useAtlas } from '../lib/store'
 import styles from './DinaData.module.css'
 
 // Läsbara titlar för exportens anteckningar och sparade poster, per ursprung.
@@ -27,7 +21,9 @@ const laddaNer = (innehåll: string, filnamn: string, mediatyp: string): void =>
   ankare.href = url
   ankare.download = filnamn
   ankare.click()
-  URL.revokeObjectURL(url)
+  // Skjut upp återkallandet: vissa webbläsare (Safari/mobil) avbryter
+  // nedladdningen om objekt-URL:en återkallas synkront innan den lästs.
+  setTimeout(() => URL.revokeObjectURL(url), 0)
 }
 
 const lasImportSäkert = (text: string): PersonligExport | null => {
@@ -81,16 +77,8 @@ export const DinaData = () => {
   const store = useAtlas()
   const [fel, setFel] = useState<string | undefined>(undefined)
 
-  const bygg = (): PersonligExport => {
-    const samlingar: PersonligaSamlingar = {
-      anteckningar: store.anteckningar,
-      sparadeRum: store.sparadeRum,
-      sparadeVandringar: store.sparadeVandringar,
-      bookmarks: store.bookmarks,
-      chapterBookmarks: store.chapterBookmarks,
-    }
-    return tillExport(samlingar, titelFor, new Date().toISOString())
-  }
+  const bygg = (): PersonligExport =>
+    tillExport(personligaSamlingar(store), titelFor, new Date().toISOString())
   const stämpel = new Date().toISOString().slice(0, 10)
 
   const importera = async (fil: File): Promise<void> => {

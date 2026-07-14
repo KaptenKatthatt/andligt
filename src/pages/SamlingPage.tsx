@@ -9,6 +9,8 @@ import {
   sorteradeAnteckningar,
   sparadeIdITidsordning,
   type Anteckning,
+  type ChapterBookmark,
+  type SparadPost,
 } from '../lib/personligt'
 import { useAtlas } from '../lib/store'
 import styles from './SamlingPage.module.css'
@@ -67,7 +69,7 @@ const BokmarkeGrupp = ({ topics }: { topics: { id: string; title: string; tradit
     </Grupp>
   )
 
-const KallorGrupp = ({ kapitel }: { kapitel: { workId: string; bookSlug: string; chapter: number; bookName: string }[] }) =>
+const KallorGrupp = ({ kapitel }: { kapitel: ChapterBookmark[] }) =>
   kapitel.length === 0 ? null : (
     <Grupp rubrik="Källor">
       {kapitel.map((b) => (
@@ -117,7 +119,7 @@ const SenastBesoktGrupp = ({ rum, onRensa }: { rum: Rum[]; onRensa: () => void }
   )
 
 const sparadeVandringarna = (
-  sparadeVandringar: Record<string, { sparadNar: string | null }>,
+  sparadeVandringar: Record<string, SparadPost>,
   vandringsplatser: Record<string, string>,
 ): SparadVandring[] =>
   sparadeIdITidsordning(sparadeVandringar)
