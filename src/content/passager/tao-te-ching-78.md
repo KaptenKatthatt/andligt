@@ -22,7 +22,8 @@ noteringar: >-
   försvenskning av Legges engelska, inte direkt ur kinesiskan; ingen ändring
   av meningen. Kapitlets vers (»Therefore a sage has said …«) är återgiven
   som prosa utan rimimitation. Legges översättning utgavs 1891 i Sacred
-  Books of the East, vol. 39. Publiceringen beslutas av redaktören Jonas
-  Olson genom läsning och merge — AI avgör aldrig ensam vad som publiceras.
+  Books of the East, vol. 39. Publiceringsbeslutet är redaktören Jonas
+  Olsons läsning och merge av PR #31 — AI avgör aldrig ensam vad som
+  publiceras.
 status: publicerad
 ---

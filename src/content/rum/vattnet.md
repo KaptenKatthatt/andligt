@@ -46,9 +46,13 @@ redaktion:
     rytm, en fråga, en tanke, 2 reflektionsfrågor, ca 3 min — inom ramarna.
     Inga direkta citat, inga emojis. Kopplad till källpassagen
     passage-tao-te-ching-78 (egen svensk översättning av hela kapitlet) —
-    källans ord nås på källsidan, åtskilda från rummets bearbetning.
-    Publiceringen beslutas av redaktören Jonas Olson genom läsning och merge
-    av denna ändring — AI avgör aldrig ensam vad som publiceras.
+    källans ord nås på källsidan, åtskilda från rummets bearbetning; kärnans
+    öppningsmening är omformulerad gentemot passagens översättning så att
+    rummets prosa och källans ord inte sammanfaller. Granskningsfix efter
+    tvåaxlig kodgranskning 2026-07-14 (citatavgränsning, historisk kontext
+    omformulerad gentemot källposten, språkputs). Publiceringsbeslutet är
+    redaktören Jonas Olsons läsning och merge av PR #31 — AI avgör aldrig
+    ensam vad som publiceras.
   version: 1
 ---
 
@@ -63,8 +67,8 @@ vatten.
 
 ## Kärna
 
-Ingenting i världen är mjukare och svagare än vattnet, står det i Daodejing.
-Ändå finns inget som bättre rår på det hårda och fasta. Droppen urholkar
+Det mjukaste och svagaste i världen, säger Daodejing, är vattnet — ändå rår
+ingenting bättre på det hårda och fasta. Droppen urholkar
 stenen. Floden slipar klippan rund. Vattnet strider inte med det som står i
 vägen — det ger efter, samlar sig och fortsätter, tills det hårda har gett
 med sig.
@@ -78,18 +82,17 @@ styrka — uthållighet utan strid. Det stela kan bara stå emot tills det
 brister. Det mjuka brister inte; det formar sig efter hindret och är kvar
 när hindret har nötts bort.
 
-Den som prövar tanken i sin egen dag märker var den tar spjärn. Samtalet
+Den som prövar tanken i sin egen dag märker var den skaver. Samtalet
 som låst sig öppnas sällan av ett hårdare argument. Människan som inte
 lyssnar hör inte bättre för att rösten höjs. Ibland är det mjuka svaret,
 väntan, det tålmodiga omtaget den enda kraft som faktiskt tar sig igenom.
 
 ## Historisk kontext
 
-Daodejing — boken om vägen och dess kraft — tillskrivs Laozi, men om honom
-vet forskningen nästan ingenting säkert. Mycket talar för att texten vuxit
-fram under lång tid och genom många händer, någon gång omkring 400–300 f.Kr.
-Vattnet är en av dess mest återkommande bilder: det högsta goda liknas vid
-vatten som gagnar allt utan att tävla, och det mjukaste i världen sägs rå på
-det hårdaste. Tanken i det här rummet står i kapitel 78, ett av de sista.
-Hela texten finns i biblioteket, i James Legges engelska översättning från
-1891.
+Daodejing — boken om vägen och dess kraft — bär Laozis namn, men vem han
+var vet ingen med säkerhet; texten tycks ha samlats under flera århundraden,
+någon gång omkring 400–300 f.Kr. Vattnet är en av dess mest återkommande
+bilder: det högsta goda liknas vid vatten som gagnar allt utan att tävla,
+och det mjukaste i världen sägs rå på det hårdaste. Tanken i det här rummet
+står i kapitel 78, ett av de sista. I biblioteket ligger hela verket att
+läsa, i James Legges engelska översättning från 1891.
