@@ -75,7 +75,7 @@ lugn` + tre nya rum ur Enchiridion, avsnitt 5/8/43) är **publicerat** — godk�
 redaktören Jonas Olson 2026-07-13 efter läsning av alla fyra texterna; vandringen och
 dess tre rum publicerade tillsammans.
 
-**Nästa: Fas 8 — Källor och kontext (`docs/specs/source-and-context.md`).**
+**Pågår: Fas 8 — Källor och kontext (`docs/specs/source-and-context.md`).**
 
 ## Kända skulder
 
