@@ -31,7 +31,7 @@
   "granskning": [
     { "typ": "korsmodell", "modell": "deepseek-v4-pro:cloud", "datum": "2026-07-14", "resultat": "Inga term-/utelämnings-/interferensfel. 'Dolda tvetydigheter' (subjekt, 有時 i citat, 一如なるべし) är alla redovisade i glm:s apparat — öppna redaktionella val, inte fel. Samlad dom 'mycket duglig utgångspunkt'. Rådata: radata/p5-dogen-uji.json." },
     { "typ": "mansklig", "granskare": "Claude (förgranskning)", "datum": "2026-07-14", "beslut": "Fältets starkaste — alla ankare OK (有時 dubbel, 丈六八尺, 払子=viftare, pelare+lykta, 虚空=rymden). Duglig som utkast; SAT-kollation kvarstår. Se granskning.md." },
-    { "typ": "mansklig", "granskare": "ägaren (Jonas Olson)", "datum": null, "beslut": "avvaktar" }
+    { "typ": "mansklig", "granskare": "ägaren (Jonas Olson)", "datum": "2026-07-14", "beslut": "avvisad — för svårtillgänglig; appen ska vara avslappnad och lugn, inte svår. Buddhism ja, men mer lättillgängligt (t.ex. via Alan Watts), inte klassiska primärtexter (redaktionellt val om innehållet, inte om översättningskvaliteten)" }
   ],
-  "status": "utkast"
+  "status": "avvisad"
 }

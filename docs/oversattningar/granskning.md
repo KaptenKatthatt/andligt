@@ -142,3 +142,29 @@ kvar: p3/p5 japanska bör kollationeras mot SAT före publicering; p1 slutlig
 teckenverifiering mot tryckt utgåva; de öppna terminologibesluten i
 `terminologi.md`.
 
+## Ägarens beslut (chattgranskning 2026-07-14)
+
+Ägaren (Jonas Olson) läste alla fyra texterna, en i taget:
+
+| Passage | Beslut | Grund |
+|---|---|---|
+| p1 Hakuin, Zazen wasan | **godkänd** | Enkel, gripbar lekmannavers (vatten/is). |
+| p2 Mumonkan fall 7 | avvisad | Vill inte ha med texten. |
+| p3 Dōgen, Genjōkōan | avvisad | För svårgripbar. |
+| p5 Dōgen, Uji | avvisad | För svårtillgänglig/abstrakt. |
+
+**Redaktionell riktning (ägarens ord):** appen ska vara *avslappnad och lugn, inte
+svår*. Buddhism är välkommet, men **mer lättillgängligt — som genom Alan Watts** —
+inte klassiska filosofiska primärtexter. Det bekräftar den befintliga
+Watts-inriktningen (`docs/research/alan-watts.md`, roadmapens Fas 12 »Modern
+Interpreters: Alan Watts«, de publicerade Watts-rummen).
+
+**Slutsats för valideringen:** pipelinen (glm-5.2 flöde C + deepseek-granskning)
+**fungerar filologiskt** — den producerar trogna, transparenta översättningar som
+klarar de kända fällorna. Den avgörande begränsningen ligger inte i
+översättningskvaliteten utan i **texturvalet**: tunga primärtexter (särskilt Dōgen)
+passar inte appens ton. Framtida översättningsarbete bör därför rikta in sig på
+tillgängligt, lugnt material (uttolkare som Watts; enklare lekmannatexter av
+p1-typ), inte på svår klassisk zenfilosofi. Endast p1 går vidare som kandidat, och
+även den bara som *utkast* tills teckenverifiering mot tryckt utgåva är gjord.
+
