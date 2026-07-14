@@ -32,6 +32,26 @@ const Metarad = ({ rummen }: { rummen: Rum[] }) => {
   return <p className={styles.antal}>{delar.join(' · ')}</p>
 }
 
+/** En stilla spara-kontroll (notes-and-saved.md, Saving): »Spara«/»Sparad«,
+ * ingen firande återkoppling, ingen räknare. En sparad vandring betyder bara
+ * att läsaren vill kunna återvända — aldrig ett åtagande att slutföra. */
+const SparaVandring = ({ vandring }: { vandring: Vandring }) => {
+  const { sparadeVandringar, vaxlaSparadVandring } = useAtlas()
+  const sparad = !!sparadeVandringar[vandring.id]
+  return (
+    <div className={styles.spara}>
+      <button
+        type="button"
+        className={styles.sparaknapp}
+        aria-pressed={sparad}
+        onClick={() => vaxlaSparadVandring(vandring.id)}
+      >
+        {sparad ? 'Sparad' : 'Spara'}
+      </button>
+    </div>
+  )
+}
+
 /** Den centrala frågan — vandringens hjärta. Visas bara när den är publicerad;
  * annars nås utkastfrågan via biblioteket, inte härifrån. */
 const Fragedel = ({ vandring }: { vandring: Vandring }) => {
@@ -102,6 +122,7 @@ export const VandringPage = ({ slug }: { slug: string }) => {
       <TopBar />
       <Sidhuvud kicker="Vandring" titel={vandring.titel} status={vandring.status} />
       <Metarad rummen={rummen} />
+      <SparaVandring vandring={vandring} />
       <Beskrivning text={vandring.introduktion} />
       <Fragedel vandring={vandring} />
       <Rumdel vandring={vandring} rummen={rummen} />

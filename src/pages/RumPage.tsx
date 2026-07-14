@@ -133,7 +133,7 @@ const kolofonetikett = (rum: Rum, källa: Kalla): string =>
   new Set(rum.källor.map((relation) => relation.källa)).size > 1 ? 'Källor' : kallnamn(källa)
 
 const Rumsavslut = ({ rum }: { rum: Rum }) => {
-  const { sparadeRum, vaxlaSparatRum, notes, setNote } = useAtlas()
+  const { sparadeRum, vaxlaSparatRum, anteckningar, sattAnteckning, taBortAnteckning } = useAtlas()
   const [öppenRad, setÖppenRad] = useState<'källa' | 'bakgrund' | null>(null)
   const [anteckningÖppen, setAnteckningÖppen] = useState(false)
   const primärKälla = rum.källor.find((k) => k.primär) ?? rum.källor[0]
@@ -190,8 +190,9 @@ const Rumsavslut = ({ rum }: { rum: Rum }) => {
       {anteckningÖppen && (
         <NotesSheet
           title={rum.titel}
-          value={notes[rum.id] ?? ''}
-          onChange={(text) => setNote(rum.id, text)}
+          value={anteckningar[rum.id]?.text ?? ''}
+          onChange={(text) => sattAnteckning('rum', rum.id, text)}
+          onDelete={() => taBortAnteckning(rum.id)}
           onClose={() => setAnteckningÖppen(false)}
         />
       )}
