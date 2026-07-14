@@ -39,6 +39,29 @@ och när ägaren bedömer att kvaliteten räcker.
 5. **Redaktionell slutbearbetning** — ren svensk version i Visdomsatlasens ton.
 6. **Proveniensmetadata** — översättningsposten i §7-format, `status: "utkast"`.
 
+## Mappning mot appens `kallpassageSchema`
+
+Om en post senare ska bli en skarp källpassage (`src/content/kallpassager/`, Fas 8)
+mappar §7-fälten till `kallpassageSchema`
+(`src/content/redaktion/schema.ts`) som en delmängd — inga skarpa poster skapas i
+detta test:
+
+| §7-post (staging) | `kallpassageSchema` |
+|---|---|
+| `original` | `originaltext` |
+| `svenskLasbar` (redaktionell) | `översättning` |
+| `modell.namn` + `granskning[]` | `översättare` (t.ex. "Visdomsatlasen/glm-5.2, red. ägaren") |
+| `kallreferens.utgava` | `utgåva` |
+| `kallreferens.lank` | `url` |
+| `terminologinoter` + `osakerheter` + `redaktionellaAvsteg` | `noteringar` |
+| `status` | `status` |
+| `kallreferens.verk` | `referens` |
+| (nytt id + koppling till en källa) | `id`, `källa` |
+
+Fält utan motsvarighet (`svenskOrdagrann`, `engelskArbetsoversattning`,
+`modell.*`, `granskning[]`) är proveniens som lever i stagingposten och i
+`radata/`; ett urval sammanfattas i `noteringar` vid en ev. skarp post.
+
 ## Publiceringsregel
 
 **AI publicerar aldrig ensamt.** Ingenting här är publicerat. Statusen är

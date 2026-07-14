@@ -55,19 +55,90 @@ fällorna nedan (från experimentets felanalys). Varje ankare får utfall
 - `杖` = staven; `丈六金身` = den gyllene gestalten (manifestationskroppen), inte
   "förmultnande kropp".
 
-## Per passage (fylls efter råutdata)
+## Leveransutfall
+
+Alla fyra passager levererade **komplett flöde C** (`glm-5.2:cloud`): analys →
+svensk översättning med samtliga fem rubriker, terminalt avslutade. **Ingen
+A-reserv utlöstes.** Det bekräftar rapportens §1: glm-5.2 är leveranssäker för det
+analystunga C-flödet. Korsgranskaren `deepseek-v4-pro:cloud` levererade komplett
+granskning på alla fyra.
+
+## Per passage
 
 ### p1 — Hakuin, Zazen wasan
-_(fylls in)_
+**Ankare: alla OK i den ordagranna versionen.** 水を離れて氷なく korrekt riktning
+("åtskilda från vatten finns ingen is"); 近き-tvetydigheten öppet redovisad;
+Lotussutra-liknelsen korrekt attribuerad (inte "gyllene ljuset"); はかなさ =
+"fåfänglighet" (ingen engelsk kalk).
+
+**Verifierade fynd (kräver redaktionell fix):**
+- **Läsbar rad 3** "Utan att skiljas från vatten finns ingen is" är stapplande och
+  vänder villkoret; *ordagranna* raden är korrekt. Rättas till t.ex. "Skild från
+  vattnet finns ingen is". (Korsgranskningen fångade detta riktigt.)
+- Läsbar mildrar 子となりて ("bli") till "vara barn" — den ordagranna har "bli".
+
+**Falska positiver / överdrifter (avvisas):** deepseeks samlade dom ("inte duglig,
+varje rad måste göras om") är kraftigt överdriven — översättningen är i huvudsak
+korrekt. "Påhittade förklaringar" (och ändå / eller / men) är normala läsbarhets-
+bindningar i en *läsbar* version, inte hallucinationer; den ordagranna saknar dem.
 
 ### p2 — Mumonkan fall 7
-_(fylls in)_
+**Ankare: alla OK.** 洗 ("tvätta skålen") bevarat; 者僧-segmenteringen korrekt
+(både läsningarna redovisade, 者僧="denne munk" vald); 喚鐘作甕 = "kallar klockan
+för en kruka" utan utbroderad scen; 有省 = "fick insikt"; 鉢盂 = "munkskål";
+kontrafaktisk vers bevarad.
+
+**Verifierade fynd (redaktionell not):**
+- **開口見膽 / 露出心肝** — de konkreta organen (膽 galla/mod, 心肝 hjärta/lever) bör
+  bevaras tydligare än glm:s "visar sitt hjärta / blottar sitt innersta". Äkta
+  fynd; en fråga för den redaktionella versionens bildspråk.
+
+**Semi-falska positiver:** deepseek anför 者僧 och 洗鉢盂去 under "falsk säkerhet/dold
+tvetydighet" — men glm *redovisade* båda läsningarna i sin apparat. Läsvärt men
+inte en dold tvetydighet. Samlad dom "duglig utgångspunkt": rimlig.
 
 ### p3 — Dōgen, Genjōkōan
-_(fylls in)_
+**Ankare: alla OK.** 草は…おふる = "gräset **växer**" (inte "vissnar"); われにあらざる
+= "inte är mig" (radikal negation, ej mildrad); 豊倹 = "överflöd och brist"; 生仏 =
+"levande varelser och buddhor" (ej 成仏); のみなり = "det är helt enkelt så" bevarat.
+
+**Verifierade fynd (kräver redaktionell fix):**
+- **滅 översatt "död" i läsbar** (生なく滅なし → "varken födelse eller död"). Äkta
+  fel: 滅 = upphörande/utslocknande, skilt från 死 (död) i första meningen. Den
+  *ordagranna* har korrekt "upphörande". Rättas i läsbar.
+- Läsbar reducerar 愛惜/棄嫌 till en komponent ("fästelse"/"avvisande"); ordagranna
+  har hela paren. Mindre; överväg att återinföra dubbelheten.
+
+**Falska positiver:** deepseeks "dolda tvetydigheter" (すなはち, に, われにあらざる)
+är samtliga *öppet redovisade* i glm:s tvetydighetsapparat. Samlad dom "duglig
+utgångspunkt": rimlig; 滅-fyndet är det värdefulla.
 
 ### p5 — Dōgen, Uji
-_(fylls in)_
+**Ankare: alla OK — fältets starkaste.** 有時 dubbeltydig och synlig ("varande-tid"
++ "ibland" med not); 丈六八尺 = "sexton fot och åtta fot" (två mått, inte "sex fot");
+払子 = "viftare" (inte "barn"); 露柱灯籠 = "bar pelare och lykta" (två ting); 虚空 =
+"tomma rymden" (inte "intet"); 丈六金身 = "gyllene kroppen" (inte "förmultnande").
+
+**Verifierade fynd (öppna redaktionella frågor, ej fel):** deepseek anmärker inget
+term-, utelämnings- eller interferensfel. Dess "dolda tvetydigheter" (subjektet
+[någon] i citatet, 有時 i citatet, 一如なるべし normativt/ontologiskt) är alla
+redovisade i glm:s ordagranna/analys. Öppna val för den redaktionella versionen,
+inte fel. Samlad dom "mycket duglig utgångspunkt": välgrundad.
 
 ## Sammanfattande omdöme
-_(fylls in)_
+
+Pipelinen (glm-5.2 flöde C + deepseek-v4-pro-granskning) **klarade valideringen**:
+alla fyra översättningar träffar samtliga kända filologiska fällor i den ordagranna
+versionen och håller tvetydigheter synliga. Kvarstående brister är få, konkreta och
+ligger i den **läsbara** versionen (p1 rad 3, p3 滅, p2 organbildspråk) — precis den
+typ av redaktionell finputs pipelinen förutsätter. Korsgranskaren gav genuint värde
+(fångade p1-rad-3, p3-滅, p2-organen) men bekräftade också rapportens varning:
+självsäkra falska positiver (p1:s underkännande, upprepade "dolda tvetydigheter" som
+i själva verket var redovisade). **Granskningsfynd är uppslag, inte facit.**
+
+**Beslut:** kvaliteten bedöms räcka som *utkast* för ägarens granskning. Ingenting
+publiceras utan ägarens beslut (AI publicerar aldrig ensamt). Förbehåll som står
+kvar: p3/p5 japanska bör kollationeras mot SAT före publicering; p1 slutlig
+teckenverifiering mot tryckt utgåva; de öppna terminologibesluten i
+`terminologi.md`.
+
