@@ -89,6 +89,12 @@ describe('sokIBiblioteket — språk och tolerans', () => {
     expect(finns(sokIBiblioteket('ångest', index), 'fq-oro')).toBe(true)
     expect(finns(sokIBiblioteket('oro', index), 'r-angslan')).toBe(true)
   })
+
+  it('låter inte en kort synonym prefix-matcha ett orelaterat ord', () => {
+    // »lugn« har synonymen »ro« — den får inte fastna i »romersk«.
+    const medRomersk = [...index, dok('tradition', 't-rom', 'Antik tradition', { text: ['romersk tid'] })]
+    expect(finns(sokIBiblioteket('lugn', medRomersk), 't-rom')).toBe(false)
+  })
 })
 
 describe('sokIBiblioteket — flera ord (AND)', () => {

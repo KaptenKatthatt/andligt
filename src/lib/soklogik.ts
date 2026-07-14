@@ -90,34 +90,36 @@ const byggSynonymkarta = (rå: Record<string, string[]>): Map<string, Set<string
 
 const SYNONYMKARTA = byggSynonymkarta(SYNONYMER)
 
-// Ett tokens sökvarianter: ordet självt (full vikt) plus synonymer (nedvägt).
-const varianter = (token: string): Array<[string, number]> => {
-  const synonymer = [...(SYNONYMKARTA.get(token) ?? [])]
-  return [[token, 1], ...synonymer.map((synonym): [string, number] => [synonym, SYNONYM_FAKTOR])]
-}
+const synonymerFor = (token: string): string[] => [...(SYNONYMKARTA.get(token) ?? [])]
 
 // Matchfaktor mellan två normaliserade ord: 1 för exakt/prefix/stam/delsträng,
-// nedvägt för skrivfel, 0 för ingen träff. Delsträng bara för längre tokens
-// (sammansättningar), skrivfel bara konservativt (se soknormalisering).
+// nedvägt för skrivfel, 0 för ingen träff. Prefix och delsträng bara för längre
+// tokens, skrivfel bara konservativt (se soknormalisering).
 const bastaMotOrd = (token: string, ord: string): number => {
   if (token === ord) return 1
-  if (token.length >= 2 && ord.startsWith(token)) return 1
+  if (token.length >= 3 && ord.startsWith(token)) return 1
   if (stam(token) === stam(ord)) return 1
   if (token.length >= 4 && ord.includes(token)) return 1
   if (inomEttSkrivfel(token, ord)) return SKRIVFEL_FAKTOR
   return 0
 }
 
+// Synonymer matchar konservativt — bara hela ord eller samma stam, aldrig
+// godtyckliga prefix/delsträngar (så »ro« inte fastnar i »romersk«).
+const synonymTraff = (synonym: string, ord: string): boolean =>
+  synonym === ord || stam(synonym) === stam(ord)
+
 // Bästa faktor för ett token mot en fältsamling ord, synonymer inräknade.
 const faktorMotBucket = (token: string, ord: string[]): number => {
   let bäst = 0
-  for (const [variant, variantFaktor] of varianter(token)) {
-    for (const o of ord) {
-      const faktor = bastaMotOrd(variant, o) * variantFaktor
-      if (faktor > bäst) bäst = faktor
-    }
+  for (const o of ord) {
+    const faktor = bastaMotOrd(token, o)
+    if (faktor > bäst) bäst = faktor
   }
-  return bäst
+  if (bäst >= 1) return bäst
+  const synonymer = synonymerFor(token)
+  const träff = synonymer.some((synonym) => ord.some((o) => synonymTraff(synonym, o)))
+  return träff ? Math.max(bäst, SYNONYM_FAKTOR) : bäst
 }
 
 type Bucket = { niva: Traffniva; bas: number; ord: string[] }
