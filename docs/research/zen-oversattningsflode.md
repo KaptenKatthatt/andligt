@@ -14,7 +14,14 @@ markerat **[kräver specialistgranskning]**.
 
 ## 1. Exekutiv rekommendation
 
-- **Primär översättningsmodell: `deepseek-v3.2:cloud`.** Enda modellen som levererade
+> **PRELIMINÄR (2026-07-14) — v4-omkörning pågår.** Den första körningen byggde på en
+> kandidatlista från modell-rankningsbloggar och missade nuvarande flaggskepp:
+> `deepseek-v4-pro:cloud` (1.6T), `qwen3.5:397b-cloud` och `glm-5.2:cloud`.
+> Rekommendationen av `deepseek-v3.2:cloud` nedan var alltså "bäst av det som testades",
+> inte "bäst tillgängligt". En full ren omkörning med de aktuella flaggskeppen pågår;
+> §1, §3, §4 och §5 uppdateras när den är klar. Behåll denna markering tills dess.
+
+- **Primär översättningsmodell (preliminär): `deepseek-v3.2:cloud`.** Enda modellen som levererade
   kompletta svar i alla flöden på alla fem passager, med den mest disciplinerade
   filologin: redovisade läsningsalternativ, ärligast konfidensangivelser (3–4 med
   motiverade svagheter, där gemma4 satte 5 på svar med påvisbara fel) och lägst

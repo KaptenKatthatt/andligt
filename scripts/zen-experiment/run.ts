@@ -13,11 +13,16 @@ const ROT = 'docs/research/zen-experiment'
 
 // Kandidater per familj i prioritetsordning; första körbara tagg per familj väljs.
 // Coder-varianter utesluts medvetet. gemma4 är dagens produktionsbaslinje (ingest).
+// VIKTIGT: verifiera listan mot https://ollama.com/library?c=cloud (INTE mot
+// modell-rankningsbloggar) och datumstämpla — annars missas nya flaggskepp.
+// Senast verifierad mot library-listningen: 2026-07-14 (flaggskepp först per familj:
+// deepseek-v4-pro, qwen3.5:397b, glm-5.2; äldre generationer kvar som fallback).
 const KANDIDATER: Record<string, string[]> = {
-  qwen: ['qwen3.6:235b-cloud', 'qwen3.6:cloud', 'qwen3.6:35b-cloud', 'qwen3:235b-cloud', 'qwen3.5:cloud', 'qwen3:cloud'],
-  deepseek: ['deepseek-v3.2:cloud', 'deepseek-v3.2:671b-cloud', 'deepseek-v3.1:671b-cloud', 'deepseek-v3:671b-cloud', 'deepseek-r1:671b-cloud'],
+  deepseek: ['deepseek-v4-pro:cloud', 'deepseek-v4-flash:cloud', 'deepseek-v3.2:cloud', 'deepseek-v3.2:671b-cloud', 'deepseek-v3.1:671b-cloud'],
+  qwen: ['qwen3.5:397b-cloud', 'qwen3.6:235b-cloud', 'qwen3.6:cloud', 'qwen3.5:cloud', 'qwen3:235b-cloud'],
+  // "Annan trovärdig alternativmodell": GLM-flaggskeppet först; kimi/minimax som fallback.
   // Coder-varianten sist: väljs bara om ingen generalistmodell finns (redovisas i rapporten).
-  alternativ: ['glm-5.1:cloud', 'glm-5.2:cloud', 'glm-4.6:cloud', 'kimi-k2.6:cloud', 'kimi-k2.7:cloud', 'kimi-k2:1t-cloud', 'minimax-m3:cloud', 'kimi-k2.7-code:cloud'],
+  alternativ: ['glm-5.2:cloud', 'glm-5.1:cloud', 'glm-4.6:cloud', 'kimi-k2.6:cloud', 'minimax-m3:cloud', 'kimi-k2.7-code:cloud'],
   baslinje: ['gemma4:31b-cloud', 'gpt-oss:120b-cloud'],
 }
 
