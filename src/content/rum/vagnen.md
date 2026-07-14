@@ -53,8 +53,8 @@ redaktion:
     inga emojis. Publicerad tillsammans med tema-manniskan (första rummet
     under Människan; temat får standardRum rum-vagnen), fraga-ar-jaget-en-
     sak-eller-en-strom, kalla-milindapanha och passagen.
-    Publiceringsbeslutet är redaktören Jonas Olsons läsning och merge — AI
-    avgör aldrig ensam vad som publiceras.
+    Publiceringsbeslutet är redaktören Jonas Olsons läsning och merge av
+    PR #34 — AI avgör aldrig ensam vad som publiceras.
   version: 1
 ---
 

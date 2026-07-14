@@ -37,6 +37,7 @@ noteringar: >-
   »framework« är återgivet som korgen, »ropes« som tömmarna (palins rasmiyo,
   tyglar), »goad« som körstaven. Alltså en försvenskning av Rhys Davids
   engelska, inte direkt ur palin. Publiceringsbeslutet är redaktören Jonas
-  Olsons läsning och merge — AI avgör aldrig ensam vad som publiceras.
+  Olsons läsning och merge av PR #34 — AI avgör aldrig ensam vad som
+  publiceras.
 status: publicerad
 ---
