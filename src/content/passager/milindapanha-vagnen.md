@@ -31,9 +31,13 @@ noteringar: >-
   T.W. Rhys Davids engelska (»Then if you came, Sire, in a carriage, explain
   to me what that is. Is it the pole that is the chariot? …«), public domain,
   hämtad ur SuttaCentrals textarkiv (sc-data) vars kolofon bekräftar »This
-  text is in the public domain«. Utdraget är sammanhängande från vagnsfrågan
-  till Vajirās vers — inga överhopp inuti; dialogens inledning (kungens fråga
-  om namnet och kroppsdelslistan) ligger före utdraget. Rhys Davids
+  text is in the public domain«. Utdraget är förkortat: tankstrecket mellan
+  Nāgasenas fråga »Vad är då vagnen du säger att du kom i?« och Milindas svar
+  markerar var Nāgasenas retoriska anklagelse (»det finns ingen vagn … du är
+  kung över hela Indien«) och åkallandet av de grekiska åhörarna (Yonakas) som
+  vittnen utelämnats — teatern kring argumentet, inte argumentet självt;
+  meningen är oförändrad. Dialogens inledning (kungens fråga om namnet och
+  kroppsdelslistan) ligger före utdraget. Rhys Davids
   »framework« är återgivet som korgen, »ropes« som tömmarna (palins rasmiyo,
   tyglar), »goad« som körstaven. Alltså en försvenskning av Rhys Davids
   engelska, inte direkt ur palin. Publiceringsbeslutet är redaktören Jonas
