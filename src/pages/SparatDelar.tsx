@@ -4,7 +4,9 @@
 import type { ReactNode } from 'react'
 import { ToLink } from '../components/ToLink'
 import type { Vandring } from '../content/redaktion/schema'
-import { utdrag } from '../lib/personligt'
+import { findTopic } from '../content/topics'
+import { hittaRumViaId } from '../lib/innehall'
+import { datumEtikett, utdrag, type Anteckning } from '../lib/personligt'
 import styles from './SparatDelar.module.css'
 
 /** Dit en anteckning länkar tillbaka: läsrummet (rum) eller topic-essän. En
@@ -13,6 +15,31 @@ import styles from './SparatDelar.module.css'
 export type NoteringsMal =
   | { kind: 'rum'; slug: string }
   | { kind: 'las'; id: string; mode: 'essa' }
+
+/** Ett anteckningskorts data: titel, text, datum och ett valfritt ursprungsmål. */
+export type Kort = {
+  key: string
+  titel: string
+  text: string
+  datum: string | undefined
+  to: NoteringsMal | undefined
+}
+
+// Anteckningen kopplad till sitt ursprung (spec Notes and Sources): rum länkas
+// till läsrummet, topic-anteckningar till essän. Hittas inte ursprunget renderas
+// texten ändå — utan länk, men aldrig gömd. Delas av Sparat och söket.
+export const anteckningTillKort = (anteckning: Anteckning): Kort => {
+  const datum = datumEtikett(anteckning.uppdaterad)
+  const bas = { key: anteckning.ursprungId, text: anteckning.text, datum }
+  if (anteckning.ursprungTyp === 'rum') {
+    const rum = hittaRumViaId(anteckning.ursprungId)
+    const to = rum ? ({ kind: 'rum', slug: rum.slug } as const) : undefined
+    return { ...bas, titel: rum?.titel ?? 'Sparad tanke', to }
+  }
+  const topic = findTopic(anteckning.ursprungId)
+  const to = topic ? ({ kind: 'las', id: topic.id, mode: 'essa' } as const) : undefined
+  return { ...bas, titel: topic?.title ?? 'Sparad tanke', to }
+}
 
 /** En grupp visas bara när den har innehåll (spec Saved Section). */
 export const Grupp = ({ rubrik, children }: { rubrik: string; children: ReactNode }) => (

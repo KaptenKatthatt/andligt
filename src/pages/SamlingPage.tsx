@@ -5,35 +5,23 @@ import { findTopic } from '../content/topics'
 import { hittaRumViaId, hittaVandringViaId } from '../lib/innehall'
 import {
   chapterKey,
-  datumEtikett,
   sorteradeAnteckningar,
   sparadeIdITidsordning,
-  type Anteckning,
   type ChapterBookmark,
   type SparadPost,
 } from '../lib/personligt'
 import { useAtlas } from '../lib/store'
 import styles from './SamlingPage.module.css'
-import { AnteckningsKort, Grupp, Tomlage, VandringKort, type NoteringsMal } from './SparatDelar'
+import {
+  AnteckningsKort,
+  anteckningTillKort,
+  Grupp,
+  Tomlage,
+  VandringKort,
+  type Kort,
+} from './SparatDelar'
 
 type SparadVandring = { vandring: Vandring; senastRum: string | undefined }
-type Kort = { key: string; titel: string; text: string; datum: string | undefined; to: NoteringsMal | undefined }
-
-// Anteckningen kopplad till sitt ursprung (spec Notes and Sources): rum länkas
-// till läsrummet, topic-anteckningar till essän. Hittas inte ursprunget renderas
-// texten ändå — utan länk, men aldrig gömd.
-const anteckningTillKort = (anteckning: Anteckning): Kort => {
-  const datum = datumEtikett(anteckning.uppdaterad)
-  const bas = { key: anteckning.ursprungId, text: anteckning.text, datum }
-  if (anteckning.ursprungTyp === 'rum') {
-    const rum = hittaRumViaId(anteckning.ursprungId)
-    const to = rum ? ({ kind: 'rum', slug: rum.slug } as const) : undefined
-    return { ...bas, titel: rum?.titel ?? 'Sparad tanke', to }
-  }
-  const topic = findTopic(anteckning.ursprungId)
-  const to = topic ? ({ kind: 'las', id: topic.id, mode: 'essa' } as const) : undefined
-  return { ...bas, titel: topic?.title ?? 'Sparad tanke', to }
-}
 
 const RumGrupp = ({ rum }: { rum: Rum[] }) =>
   rum.length === 0 ? null : (
