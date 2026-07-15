@@ -59,11 +59,11 @@ Allt sammansatt är förgängligt, står det i Dhammapada. Allt som är satt sam
 av delar och orsaker rör sig, åldras, går över — tankar, känslor, tillstånd,
 ting. Det är ingen dyster nyhet utan en iakttagelse: så ser tillvaron ut.
 
-Det ovanliga är vad versen gör av det. Att se förgängligheten klart, sägs det,
-vänder en bort från lidandet. Inte för att sorgen försvinner, utan för att en
-viss sorts lidande föds ur att kräva att det obeständiga ska bestå. Handen som
-kramar det den är rädd att mista värker. När man verkligen ser att också detta
-går över, lossnar greppet en aning av sig självt.
+Att se förgängligheten klart, vänder en bort från lidandet. Inte för att sorgen
+försvinner, utan för att en viss sorts lidande föds ur att kräva att det
+obeständiga ska bestå. Handen som kramar det den är rädd att mista värker. När
+man verkligen ser att också detta går över, lossnar greppet en aning av sig
+självt.
 
 Det betyder inte att ingenting spelar roll. Det goda ögonblicket är verkligt
 just för att det är flyktigt; det svåra är uthärdligt just för att också det
@@ -74,7 +74,7 @@ föreställningen att vi måste hålla fast vid det.
 
 Dhammapada är en samling av Buddhas ord i versform, buren muntligt i
 århundraden innan den skrevs ned på Sri Lanka omkring år 29 f.Kr. Att allt
-sammansatt är obeständigt — anicca — hör till det som traditionen kallar
-tillvarons tre kännetecken, tillsammans med att inget sammansatt bär ett
+sammansatt är obeständigt hör till det som traditionen kallar tillvarons tre
+kännetecken, tillsammans med att inget sammansatt bär ett
 bestående jag och att fasthållandet föder lidande. Versen i det här rummet är
 en av dem som återkommer oftast. Hela texten finns i biblioteket.
