@@ -3,7 +3,7 @@ id: fraga-vad-blir-lattare-nar-ingenting-bestar
 slug: vad-blir-lattare-nar-ingenting-bestar
 text: Vad blir lättare att bära när ingenting består?
 teman: [tema-lugn]
-status: utkast
+status: publicerad
 ---
 
 Att allt förändras kan låta dystert — som en förlust i förväg. Men flera

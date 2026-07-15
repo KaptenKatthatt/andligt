@@ -17,7 +17,7 @@ källor:
     primär: true
     redaktionellNot: Bearbetning av versens rad om det förgängliga; inga direkta citat.
 lästidMinuter: 3
-status: utkast
+status: publicerad
 skapad: 2026-07-15
 uppdaterad: 2026-07-15
 redaktion:
@@ -39,9 +39,12 @@ redaktion:
     kunde även höra hemma under Lidande. Historisk kontext kontrollerad mot
     källposten (muntlig tradering, nedtecknad ca 29 f.Kr på Sri Lanka; anicca ett
     av tillvarons tre kännetecken). En fråga, en tanke, 2 reflektionsfrågor, ca 3
-    min, inga emojis. Utkast för ägarens granskning — AI avgör aldrig ensam vad
-    som publiceras.
-  version: 1
+    min, inga emojis. Godkänd av redaktören Jonas Olson 2026-07-15 vid
+    chattgranskning av PR #39; redaktören strammade kärnan och tog bort »anicca«
+    ur den läsbara historiska kontexten (paliterm kvar här för källverifiering).
+    Publiceras tillsammans med frågan och passagen (källan kalla-dhammapada är
+    redan publicerad). AI avgör aldrig ensam vad som publiceras.
+  version: 2
 ---
 
 ## Öppning
