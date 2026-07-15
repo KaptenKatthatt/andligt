@@ -25,7 +25,7 @@
 
 .hint {
   font-size: 1.0625rem;
-  color: var(--soft);
+  color: var(--soft-strong);
   font-style: italic;
   line-height: 1.6;
   margin: 40px 0 0;

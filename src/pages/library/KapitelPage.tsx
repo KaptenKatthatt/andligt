@@ -70,7 +70,7 @@ export const KapitelPage = ({ workId, bookSlug, chapter }: Props) => {
   const goUp = () =>
     navigate({ to: '/bibliotek/verk/$workId/$bookSlug', params: { workId, bookSlug } })
   const { data, loading, error } = useAsync(() => fetchChapter(id, n), [id, n])
-  useSidtitel(data ? `${data.book.name} ${data.chapter}` : '')
+  useSidtitel(data ? `${data.book.name} ${data.chapter}` : undefined)
   if (!data) {
     return (
       <div className="screenReader">

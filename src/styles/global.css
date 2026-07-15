@@ -258,7 +258,13 @@ p {
   position: relative;
 }
 
-/* Träffyta minst 44×44 utan att ikonens synliga form växer. */
+/* Träffyta minst 44×44 utan att den synliga formen växer. Moduler ansluter
+   sina små kontroller via `composes: hitArea from global`. */
+.hitArea {
+  position: relative;
+}
+
+.hitArea::after,
 .iconBtn::after {
   content: '';
   position: absolute;

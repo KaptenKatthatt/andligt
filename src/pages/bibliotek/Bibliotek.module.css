@@ -10,7 +10,7 @@
 
 .lede {
   font-size: 1.0625rem;
-  color: var(--soft);
+  color: var(--soft-strong);
   font-style: italic;
   margin: 8px 0 0;
   line-height: 1.5;
@@ -28,7 +28,7 @@
   padding: 13px 16px;
   border: 1px solid var(--faint);
   border-radius: 12px;
-  color: var(--soft);
+  color: var(--soft-strong);
   text-decoration: none;
   font-size: 1rem;
 }
@@ -86,7 +86,7 @@
 
 .tomt {
   font-size: 1.03125rem;
-  color: var(--soft);
+  color: var(--soft-strong);
   font-style: italic;
   line-height: 1.55;
   margin: 6px 0 0;

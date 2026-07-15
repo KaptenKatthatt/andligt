@@ -112,7 +112,9 @@ portal till `.shell`, bakgrunden inertas via `useInertBakgrund` — StrictMode-s
 skip-link (»Hoppa till innehåll«); per-sida-dokumenttitlar (`useSidtitel`, bibliotekets
 undersidor via `Sidhuvud`); sektionsrubriker på aktiva sidor är h2; träffytor ≥44px
 (navflikar bär höjden själva, små kontroller får osynlig utökad träffyta via
-pseudoelement); liten text (<16px) bytte `--soft` → `--soft-strong` (AA i ljust läge);
+pseudoelement, delad global `.hitArea` via composes); all dämpad text bytte `--soft` →
+`--soft-strong` (AA 4.5:1 i ljust läge; `--soft` kvar bara på dekorativa `.dots` och
+ikonknappar som klarar 3:1);
 NotesSheet har kopplad sr-only-etikett och autofokuserar inte längre (globala
 no-autofocus-undantaget borta; sökskärmarna har riktade undantag); aktiv navflik
 markeras även med font-weight 600 (pricken från #20 återinförs inte); all font-size

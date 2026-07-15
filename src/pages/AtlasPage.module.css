@@ -17,7 +17,7 @@
 
 .lede {
   font-size: 1.0625rem;
-  color: var(--soft);
+  color: var(--soft-strong);
   font-style: italic;
   margin: 8px 0 0;
   line-height: 1.5;

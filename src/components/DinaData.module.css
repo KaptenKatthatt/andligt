@@ -6,6 +6,7 @@
 }
 
 .knapp {
+  composes: hitArea from global;
   display: inline-block;
   background: none;
   border: 1px solid var(--faint);
@@ -15,7 +16,6 @@
   font-family: inherit;
   font-size: 0.90625rem;
   color: var(--soft-strong);
-  position: relative;
 }
 
 .dold {
@@ -43,17 +43,4 @@
   color: var(--soft-strong);
   line-height: 1.55;
   margin: 0 0 14px;
-}
-
-/* Träffyta minst 44×44 utan att den synliga formen växer. */
-.knapp::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 100%;
-  height: 100%;
-  min-width: 44px;
-  min-height: 44px;
-  transform: translate(-50%, -50%);
 }

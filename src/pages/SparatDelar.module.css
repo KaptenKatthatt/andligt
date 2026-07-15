@@ -23,7 +23,7 @@
 .kortText {
   display: block;
   font-size: 1rem;
-  color: var(--soft);
+  color: var(--soft-strong);
   margin-top: 4px;
   line-height: 1.5;
 }
@@ -32,7 +32,7 @@
 .noteUtdrag {
   display: block;
   font-size: 1rem;
-  color: var(--soft);
+  color: var(--soft-strong);
   margin-top: 4px;
   font-style: italic;
   line-height: 1.5;
@@ -61,7 +61,7 @@
 
 .tomHint {
   font-size: 1rem;
-  color: var(--soft);
+  color: var(--soft-strong);
   font-style: italic;
   line-height: 1.55;
   margin: 8px 0 0;

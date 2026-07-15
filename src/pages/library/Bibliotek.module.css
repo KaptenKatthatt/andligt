@@ -8,7 +8,7 @@
 .lede {
   font-size: 1.03125rem;
   line-height: 1.6;
-  color: var(--soft);
+  color: var(--soft-strong);
   margin: 10px 0 0;
   text-wrap: pretty;
 }
@@ -157,7 +157,7 @@
 
 .stateNote {
   margin-top: 40px;
-  color: var(--soft);
+  color: var(--soft-strong);
   font-style: italic;
 }
 
@@ -180,7 +180,7 @@
 }
 
 .searchInput::placeholder {
-  color: var(--soft);
+  color: var(--soft-strong);
 }
 
 .hit {

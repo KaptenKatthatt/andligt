@@ -15,7 +15,7 @@
 }
 
 .falt::placeholder {
-  color: var(--soft);
+  color: var(--soft-strong);
 }
 
 /* Programmatiskt kopplad etikett, dold visuellt men läst av skärmläsare. */
@@ -114,7 +114,7 @@
 
 .tomtext {
   font-size: 1.03125rem;
-  color: var(--soft);
+  color: var(--soft-strong);
   font-style: italic;
   line-height: 1.55;
   margin: 40px 0 0;
@@ -133,6 +133,7 @@
 }
 
 .filterknapp {
+  composes: hitArea from global;
   background: none;
   border: 1px solid var(--faint);
   border-radius: 999px;
@@ -141,7 +142,6 @@
   font-family: inherit;
   font-size: 0.875rem;
   color: var(--soft-strong);
-  position: relative;
 }
 
 .filterrad {
@@ -151,9 +151,16 @@
   margin-top: 12px;
 }
 
+.chip {
+  composes: hitArea from global;
+}
+
+.chipVald {
+  composes: hitArea from global;
+}
+
 .chip,
 .chipVald {
-  position: relative;
   background: none;
   border: 1px solid var(--faint);
   border-radius: 999px;
@@ -234,19 +241,4 @@
   text-transform: uppercase;
   color: var(--accent);
   margin-bottom: 4px;
-}
-
-/* Träffyta minst 44×44 utan att den synliga formen växer. */
-.filterknapp::after,
-.chip::after,
-.chipVald::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 100%;
-  height: 100%;
-  min-width: 44px;
-  min-height: 44px;
-  transform: translate(-50%, -50%);
 }
