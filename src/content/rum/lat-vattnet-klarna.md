@@ -66,8 +66,9 @@ fått lägga sig. Ett svar man letat efter dyker upp först när man slutat jaga
 det. En del saker klarnar inte genom att man bearbetar dem, utan genom att man
 för en stund låter dem vara.
 
-Saker stannar inte i stillhet för stillhetens skull. I samma andetag säger den
-att också rörelsen har sin tid: låt vilan råda, så föds rörelsen ur den när det
+Saker stannar inte i stillhet för stillhetens skull. I samma andetag påminner
+texten om att också rörelsen har sin tid: låt vilan råda, så föds rörelsen ur
+den när det
 är dags. Stillheten är ingen liknöjdhet — den är att lita på att somligt reder
 ut sig självt om det får rum att göra det.
 
