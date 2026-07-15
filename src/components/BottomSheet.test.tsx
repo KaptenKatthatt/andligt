@@ -20,6 +20,29 @@ describe('BottomSheet', () => {
     expect(screen.getByText('Innehållet i arket')).toBeInTheDocument()
   })
 
+  it('är modal och tar emot initialfokus', () => {
+    render(
+      <BottomSheet label="Anteckning" onClose={() => {}}>
+        <p>Innehåll</p>
+      </BottomSheet>,
+    )
+    const dialog = screen.getByRole('dialog', { name: 'Anteckning' })
+    expect(dialog).toHaveAttribute('aria-modal', 'true')
+    expect(document.activeElement).toBe(dialog)
+  })
+
+  it('stänger på Escape', async () => {
+    const användare = userEvent.setup()
+    const onClose = vi.fn()
+    render(
+      <BottomSheet label="Anteckning" onClose={onClose}>
+        <p>Innehåll</p>
+      </BottomSheet>,
+    )
+    await användare.keyboard('{Escape}')
+    expect(onClose).toHaveBeenCalledTimes(1)
+  })
+
   it('anropar onClose via Klar-knappen och scrimmen', async () => {
     const användare = userEvent.setup()
     const onClose = vi.fn()
