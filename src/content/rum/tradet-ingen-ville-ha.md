@@ -17,7 +17,7 @@ källor:
     primär: true
     redaktionellNot: Bearbetning av trädliknelsen i återberättad form; inga direkta citat.
 lästidMinuter: 3
-status: utkast
+status: publicerad
 skapad: 2026-07-15
 uppdaterad: 2026-07-15
 redaktion:
@@ -40,9 +40,12 @@ redaktion:
     för att fånga möss. Kärnan återberättar dialogen indirekt och delar inga
     meningar med passagens översättning. Historisk kontext kontrollerad mot
     källposten (Zhuang Zhou, 300-talet f.Kr; de inre kapitlen tillskrivs honom).
-    En fråga, en tanke, 2 reflektionsfrågor, ca 3 min, inga emojis. Utkast för
-    ägarens granskning — AI avgör aldrig ensam vad som publiceras.
-  version: 1
+    En fråga, en tanke, 2 reflektionsfrågor, ca 3 min, inga emojis. Godkänd av
+    redaktören Jonas Olson 2026-07-15 vid chattgranskning av PR #39. Publiceras
+    tillsammans med temat Mening (första rummet under Mening; temat får
+    standardRum rum-tradet-ingen-ville-ha), frågan och passagen (källan
+    kalla-zhuangzi är redan publicerad). AI avgör aldrig ensam vad som publiceras.
+  version: 2
 ---
 
 ## Öppning

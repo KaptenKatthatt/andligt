@@ -24,5 +24,5 @@ noteringar: >-
   »det icke-varandes rike«; rummets prosa bearbetar bilden friare. Alltså en
   försvenskning av Gilesʼ engelska. Publiceringsbeslutet är redaktörens — AI
   avgör aldrig ensam vad som publiceras.
-status: utkast
+status: publicerad
 ---
