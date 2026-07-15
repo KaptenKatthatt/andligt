@@ -1,11 +1,17 @@
 /* Visdomsatlasen — riktning "Folianten" (design handoff) */
 
 :root {
-  --rs: 19px;
+  --rs: 1.1875rem;
 }
 
 * {
   box-sizing: border-box;
+}
+
+/* 100 % av läsarens grundstorlek — rem-skalan följer webbläsarens
+   teckenstorleksinställning (text-only-zoom), inte bara sidzoom. */
+html {
+  font-size: 100%;
 }
 
 html,
@@ -89,7 +95,7 @@ p {
   border-radius: 999px;
   box-shadow: 0 2px 12px rgba(30, 22, 10, 0.18);
   text-decoration: none;
-  font-size: 14px;
+  font-size: 0.875rem;
 }
 
 @keyframes vaFade {
@@ -128,7 +134,7 @@ p {
 
 .desk {
   --font: 'EB Garamond', Georgia, serif;
-  --rs-verse: calc(var(--rs) + 2px);
+  --rs-verse: calc(var(--rs) + 0.125rem);
   --paper: #faf6ed;
   --desk: #ece4d2;
   --ink: #2b251b;
@@ -158,19 +164,19 @@ p {
 }
 
 .desk[data-size='1'] {
-  --rs: 16px;
+  --rs: 1rem;
 }
 
 .desk[data-size='2'] {
-  --rs: 17.5px;
+  --rs: 1.09375rem;
 }
 
 .desk[data-size='4'] {
-  --rs: 21px;
+  --rs: 1.3125rem;
 }
 
 .desk[data-size='5'] {
-  --rs: 23px;
+  --rs: 1.4375rem;
 }
 
 .desk:where([data-bg='sepia']) {
@@ -227,7 +233,7 @@ p {
 /* Shared primitives */
 
 .kicker {
-  font-size: 11.5px;
+  font-size: 0.71875rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--soft-strong);
@@ -237,7 +243,7 @@ p {
 .dots {
   color: var(--soft);
   letter-spacing: 0.6em;
-  font-size: 13px;
+  font-size: 0.8125rem;
   text-align: center;
   padding-left: 0.6em;
 }

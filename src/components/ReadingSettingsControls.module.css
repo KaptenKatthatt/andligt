@@ -9,7 +9,7 @@
   border: 1px solid var(--faint);
   border-radius: 10px;
   color: var(--ink);
-  font-size: 15.5px;
+  font-size: 0.96875rem;
   padding: 8px 14px;
   cursor: pointer;
   position: relative;
@@ -34,14 +34,14 @@
   background: none;
   border: none;
   color: var(--ink);
-  font-size: 15px;
+  font-size: 0.9375rem;
   cursor: pointer;
   padding: 6px 14px;
   position: relative;
 }
 
 .stepBtnLarge {
-  font-size: 23px;
+  font-size: 1.4375rem;
 }
 
 .stepBtn:disabled {
@@ -70,7 +70,7 @@
   border: 1px solid var(--faint);
   border-radius: 10px;
   color: var(--ink);
-  font-size: 15.5px;
+  font-size: 0.96875rem;
   padding: 8px 14px;
   cursor: pointer;
   display: flex;
@@ -103,7 +103,7 @@
   border: 1px solid var(--faint);
   border-radius: 10px;
   color: var(--ink);
-  font-size: 15.5px;
+  font-size: 0.96875rem;
   padding: 10px 14px;
   cursor: pointer;
   display: flex;
