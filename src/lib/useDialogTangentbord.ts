@@ -63,7 +63,11 @@ export const useDialogTangentbord = (
     document.addEventListener('keydown', vidTangent)
     return () => {
       document.removeEventListener('keydown', vidTangent)
-      if (tidigare instanceof HTMLElement) tidigare.focus()
+      // Mikrotask: låter en samtidig inert-städning hinna före, annars kan
+      // utlösaren fortfarande vara oåtkomlig när fokus ska tillbaka.
+      queueMicrotask(() => {
+        if (tidigare instanceof HTMLElement) tidigare.focus()
+      })
     }
   }, [arkRef])
 }
