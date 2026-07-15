@@ -137,6 +137,9 @@ export const BibliotekHemPage = () => (
     <p className={styles.lede}>
       För den som vill leta vidare på egen hand — bland frågor, teman, rum och källor.
     </p>
+    <Link to="/bibliotek/sok" className={styles.sokingang}>
+      Sök efter en fråga, tanke eller källa
+    </Link>
     <Fragesektion />
     <Temasektion />
     <Vandringssektion />

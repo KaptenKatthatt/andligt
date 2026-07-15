@@ -20,6 +20,24 @@
   margin-top: 42px;
 }
 
+/* Sökingången: en stilla ruta som liknar ett fält, aldrig framhävd. Söket bor
+   i Biblioteket och är lätt att hitta (search.md, Search Entry). */
+.sokingang {
+  display: block;
+  margin-top: 26px;
+  padding: 13px 16px;
+  border: 1px solid var(--faint);
+  border-radius: 12px;
+  color: var(--soft);
+  text-decoration: none;
+  font-size: 16px;
+}
+
+.sokingang:hover {
+  border-color: var(--accsoft);
+  color: var(--accent);
+}
+
 /* Undersidornas huvud (under TopBar), samma mått som verkläsarens. */
 .huvud {
   margin-top: 34px;
