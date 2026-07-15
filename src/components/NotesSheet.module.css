@@ -34,6 +34,7 @@
   font-family: inherit;
   font-size: 13.5px;
   color: var(--soft);
+  position: relative;
 }
 
 .bekrafta {
@@ -56,4 +57,19 @@
   font-size: 13.5px;
   color: var(--ink);
   font-weight: 500;
+  position: relative;
+}
+
+/* Träffyta minst 44×44 utan att den synliga formen växer. */
+.taBort::after,
+.bekraftaJa::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  min-width: 44px;
+  min-height: 44px;
+  transform: translate(-50%, -50%);
 }
