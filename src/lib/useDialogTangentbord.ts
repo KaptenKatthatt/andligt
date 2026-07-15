@@ -47,11 +47,15 @@ export const useDialogTangentbord = (
   useEffect(() => {
     stängRef.current = onStäng
   })
+  // Utlösaren sparas i en ref som överlever StrictMode-remontering; vid
+  // remonteringen är fokus redan i arket och får inte skriva över minnet.
+  const tidigareRef = useRef<Element | null>(null)
 
   useEffect(() => {
     const ark = arkRef.current
     if (!ark) return
-    const tidigare = document.activeElement
+    const aktivt = document.activeElement
+    if (!ark.contains(aktivt)) tidigareRef.current = aktivt
     ark.focus()
     const vidTangent = (händelse: KeyboardEvent) => {
       if (händelse.key === 'Escape') {
@@ -63,10 +67,12 @@ export const useDialogTangentbord = (
     document.addEventListener('keydown', vidTangent)
     return () => {
       document.removeEventListener('keydown', vidTangent)
+      const tidigare = tidigareRef.current
       // Mikrotask: låter en samtidig inert-städning hinna före, annars kan
-      // utlösaren fortfarande vara oåtkomlig när fokus ska tillbaka.
+      // utlösaren fortfarande vara oåtkomlig när fokus ska tillbaka. Arket
+      // finns kvar i DOM vid StrictMode-remontering — då ska inget hända.
       queueMicrotask(() => {
-        if (tidigare instanceof HTMLElement) tidigare.focus()
+        if (!document.contains(ark) && tidigare instanceof HTMLElement) tidigare.focus()
       })
     }
   }, [arkRef])

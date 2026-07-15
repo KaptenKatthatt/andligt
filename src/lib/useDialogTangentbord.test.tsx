@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { useRef, useState } from 'react'
+import { StrictMode, useRef, useState } from 'react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { cleanup, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -63,6 +63,23 @@ describe('useDialogTangentbord', () => {
   it('återlämnar fokus till utlösaren när arket stängs', async () => {
     const användare = userEvent.setup()
     render(<MedUtlösare />)
+    const utlösare = screen.getByRole('button', { name: 'Öppna' })
+
+    await användare.click(utlösare)
+    expect(document.activeElement).toBe(screen.getByRole('dialog', { name: 'Testark' }))
+
+    await användare.keyboard('{Escape}')
+    expect(screen.queryByRole('dialog')).toBeNull()
+    expect(document.activeElement).toBe(utlösare)
+  })
+
+  it('återlämnar fokus även under StrictMode-remontering', async () => {
+    const användare = userEvent.setup()
+    render(
+      <StrictMode>
+        <MedUtlösare />
+      </StrictMode>,
+    )
     const utlösare = screen.getByRole('button', { name: 'Öppna' })
 
     await användare.click(utlösare)
