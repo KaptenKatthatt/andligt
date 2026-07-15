@@ -12,7 +12,7 @@ plats: Japan
 upphov: känt
 datering: ungefärlig
 rättigheter: public-domain
-status: utkast
+status: publicerad
 ---
 
 Hakuins hymn till zazen, sittandet i stillhet — en kort sång på japanska,

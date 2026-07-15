@@ -17,11 +17,11 @@ källor:
     primär: true
     redaktionellNot: Bearbetning av vattnet-och-isen-bilden och liknelserna; inga direkta citat.
 lästidMinuter: 3
-status: utkast
+status: publicerad
 skapad: 2026-07-15
 uppdaterad: 2026-07-15
 redaktion:
-  skribent: Claude (utkast)
+  skribent: Claude (utkast); kärnan omarbetad av redaktören
   källgranskare: Claude (förgranskning)
   språkgranskare: Claude (förgranskning)
   granskad: 2026-07-15
@@ -38,9 +38,12 @@ redaktion:
     1686–1769, japansk rinzai-förnyare; hymnen skriven för lekfolk). Förbehåll:
     källhostarna är blockerade i byggmiljön, slutlig teckenverifiering mot tryckt
     utgåva återstår (noterat i passagen). En fråga, en tanke, 2 reflektionsfrågor,
-    ca 3 min, inga emojis. Utkast för ägarens granskning — AI avgör aldrig ensam
-    vad som publiceras.
-  version: 1
+    ca 3 min, inga emojis. Godkänd av redaktören Jonas Olson 2026-07-15 vid
+    chattgranskning av PR #39; redaktören omarbetade kärnan (stramare inledning
+    med tankstreck) och justerade törst-liknelsen (»omgiven av vatten, ropar efter
+    något att dricka«). Publiceras tillsammans med frågan, källan (kalla-zazen-wasan)
+    och passagen. AI avgör aldrig ensam vad som publiceras.
+  version: 2
 ---
 
 ## Öppning

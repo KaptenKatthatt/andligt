@@ -20,5 +20,5 @@ noteringar: >-
   tempelsidor) är blockerade i byggmiljön; slutlig teckenverifiering mot tryckt
   utgåva återstår som redaktionellt steg. Publiceringsbeslutet är redaktörens —
   AI avgör aldrig ensam vad som publiceras.
-status: utkast
+status: publicerad
 ---
