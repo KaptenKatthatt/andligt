@@ -36,7 +36,9 @@
   justify-content: center;
 }
 
-/* Aktiv flik markeras med mörkare text — ingen prick. */
+/* Aktiv flik markeras med mörkare text och tyngre vikt — form-cue utöver
+   färg (WCAG 1.4.1). Pricken togs medvetet bort (#20) och återinförs inte. */
 .active {
   color: var(--ink);
+  font-weight: 600;
 }
