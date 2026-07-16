@@ -17,9 +17,9 @@ källor:
     primär: true
     redaktionellNot: Bearbetning av kockens svar i återberättad form; inga direkta citat.
 lästidMinuter: 3
-status: utkast
+status: publicerad
 skapad: 2026-07-15
-uppdaterad: 2026-07-15
+uppdaterad: 2026-07-16
 redaktion:
   skribent: Claude (utkast, Watts-planen)
   källgranskare: Claude (förgranskning)
@@ -38,10 +38,12 @@ redaktion:
     Kärnan återberättar dialogen indirekt och delar inga meningar med passagens
     översättning. Historisk kontext kontrollerad mot källposten (Zhuang Zhou,
     300-talet f.Kr; de inre kapitlen tillskrivs honom) och begreppet wu wei.
-    En fråga, en tanke, 2 reflektionsfrågor, ca 3 min, inga emojis. Väntar på
-    redaktörens läsning; inget publiceras utan ägarens beslut. AI avgör aldrig
+    En fråga, en tanke, 2 reflektionsfrågor, ca 3 min, inga emojis. Godkänd av
+    redaktören Jonas Olson 2026-07-16 vid chattgranskning av PR #42; redaktören
+    justerade öppningen (»Ibland är det vad som krävs«). Publiceras tillsammans
+    med frågan och passagen (temat Lugn är redan publicerat). AI avgör aldrig
     ensam vad som publiceras.
-  version: 1
+  version: 2
 ---
 
 ## Öppning

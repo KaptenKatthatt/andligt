@@ -3,7 +3,7 @@ id: fraga-var-kan-du-sluta-hugga
 slug: var-kan-du-sluta-hugga
 text: Var i ditt liv skulle det gå lättare om du slutade hugga och följde fogarna?
 teman: [tema-lugn]
-status: utkast
+status: publicerad
 ---
 
 Somligt gör vi med kraft: vi biter ihop, tar i, forcerar det som står emot. En
