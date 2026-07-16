@@ -47,7 +47,7 @@ redaktion:
 ## Öppning
 
 En del av det vi gör känns som att skära genom motstånd. Vi tar i, biter ihop,
-tvingar igenom det som inte vill. Ibland är det som krävs. Men ibland tar kraften
+tvingar igenom det som inte vill. Ibland är det vad som krävs. Men ibland tar kraften
 slut fortare än uppgiften, och vi undrar varför något som borde gå ändå kostar så
 mycket.
 
