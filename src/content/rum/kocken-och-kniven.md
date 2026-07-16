@@ -42,8 +42,10 @@ redaktion:
     redaktören Jonas Olson 2026-07-16 vid chattgranskning av PR #42; redaktören
     justerade öppningen (»Ibland är det vad som krävs«). Publiceras tillsammans
     med frågan och passagen (temat Lugn är redan publicerat). AI avgör aldrig
-    ensam vad som publiceras.
-  version: 2
+    ensam vad som publiceras. 2026-07-16: redaktören lät ta bort den avslutande
+    teaser-raden i öppningen (»…berättar om en kock«) som lockade vidare utan att
+    berätta vad, i linje med review-language.md; Kärnan tar nu vid direkt.
+  version: 3
 ---
 
 ## Öppning
@@ -52,8 +54,6 @@ En del av det vi gör känns som att skära genom motstånd. Vi tar i, biter iho
 tvingar igenom det som inte vill. Ibland är det vad som krävs. Men ibland tar kraften
 slut fortare än uppgiften, och vi undrar varför något som borde gå ändå kostar så
 mycket.
-
-Zhuangzi, den lekfullaste av de gamla kinesiska böckerna, berättar om en kock.
 
 ## Kärna
 
