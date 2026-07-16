@@ -48,9 +48,9 @@ redaktion:
 
 ## Öppning
 
-Ibland vaknar man ur en dröm som kändes alldeles verklig. Ett kort ögonblick vet
-man inte riktigt var man är, innan rummet och morgonen faller på plats. Sedan
-börjar dagen, och drömmen glider undan.
+Vi tvivlar sällan på att vi är vakna. Golvet bär, kaffet är varmt, dagen är på
+riktigt. Det mesta vi lever efter tar vi för givet och vänder aldrig på, och för
+det mesta är det bra så.
 
 ## Kärna
 
