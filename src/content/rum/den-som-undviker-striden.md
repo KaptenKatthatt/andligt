@@ -50,11 +50,11 @@ Det säkra valet ser gratis ut. Du skjuter upp det svåra samtalet, låter
 ansökan ligga, säger inget på mötet. Ingenting går sönder. Ingenting händer
 alls.
 
-I en gammal nordisk diktsamling finns en strof som synar den kalkylen.
-
 ## Kärna
 
-Den tröge, säger Hávamál, tror att han ska leva för evigt om han bara
+I en gammal nordisk diktsamling finns en strof som synar denna kalkylen.
+
+Den rådvillige, säger Hávamál, tror att han ska leva för evigt om han bara
 undviker striden. Men åldern ger honom ingen fred, fast spjuten skonar
 honom.
 
