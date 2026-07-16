@@ -52,8 +52,6 @@ Ibland vaknar man ur en dröm som kändes alldeles verklig. Ett kort ögonblick 
 man inte riktigt var man är, innan rummet och morgonen faller på plats. Sedan
 börjar dagen, och drömmen glider undan.
 
-Zhuangzi, en av de gamla kinesiska böckerna, berättar om en dröm.
-
 ## Kärna
 
 En gång, säger Zhuangzi, drömde han att han var en fjäril. Han fladdrade hit och
