@@ -3,7 +3,7 @@ id: fraga-vad-kostar-det-sakra
 slug: vad-kostar-det-sakra
 text: Vad kostar det att alltid välja det säkra?
 teman: [tema-mod]
-status: utkast
+status: publicerad
 ---
 
 Det säkra valet ser gratis ut: ingen risk, ingen förlust. Men undvikandet

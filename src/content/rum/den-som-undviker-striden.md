@@ -17,7 +17,7 @@ källor:
     primär: true
     redaktionellNot: Bearbetning av strofens tankegång; strofen citeras inte i rummet.
 lästidMinuter: 3
-status: utkast
+status: publicerad
 skapad: 2026-07-15
 uppdaterad: 2026-07-15
 redaktion:
@@ -39,9 +39,11 @@ redaktion:
     i historisk kontext mot källposten (muntlig tradition, nedtecknad på
     Island på 1200-talet, tillskriven Oden). Ton, rytm, en fråga, en tanke,
     2 reflektionsfrågor, ca 3 min. Förgranskad mot alla fyra checklistorna.
-    Publiceringsbeslutet är redaktörens läsning och merge — AI avgör aldrig
-    ensam vad som publiceras.
-  version: 1
+    Godkänt av redaktören Jonas Olson 2026-07-15 vid chattgranskning av batch
+    Mod (PR #43), efter att övergångsmeningen flyttats till Kärnans inledning
+    och »Den tröge« ändrats till »Den rådvillige«. Publicerat tillsammans med
+    temat Mod. AI avgör aldrig ensam vad som publiceras.
+  version: 2
 ---
 
 ## Öppning

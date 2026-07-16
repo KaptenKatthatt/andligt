@@ -17,7 +17,7 @@ källor:
     primär: true
     redaktionellNot: Bearbetning av avsnittets morgonsamtal; inga direkta citat i rummet.
 lästidMinuter: 3
-status: utkast
+status: publicerad
 skapad: 2026-07-15
 uppdaterad: 2026-07-15
 redaktion:
@@ -43,9 +43,12 @@ redaktion:
     Bearbetningen håller sig till avsnittets bild och gör kejsarens »en
     människas arbete« vardagligt utan att lägga ord i hans mun. Ton, rytm,
     en fråga, en tanke, 2 reflektionsfrågor, ca 3 min. Förgranskad mot alla
-    fyra checklistorna. Publiceringsbeslutet är redaktörens läsning och
-    merge — AI avgör aldrig ensam vad som publiceras.
-  version: 1
+    fyra checklistorna. Godkänt av redaktören Jonas Olson 2026-07-15 vid
+    chattgranskning av batch Mod (PR #43), efter att öppningens teaser-mening
+    skrivits om (click bait i strid med review-language). Översättarfrågan för
+    Självbetraktelser avgjord av redaktören: George Long. Publicerat
+    tillsammans med temat Mod. AI avgör aldrig ensam vad som publiceras.
+  version: 2
 ---
 
 ## Öppning

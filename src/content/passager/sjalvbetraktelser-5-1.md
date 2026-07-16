@@ -13,23 +13,18 @@ referens: bok 5, avsnitt 1
   del av världens ordning? Och du vill inte göra en människas arbete — inte
   skynda till det som din natur kräver?
 översättare: Visdomsatlasens redaktion
-utgåva: Project Gutenberg 2680 (bibliotekets grundtext)
+utgåva: George Long, via Project Gutenberg 2680
 url: https://www.gutenberg.org/ebooks/2680
 noteringar: >-
   Egen svensk översättning av avsnittets inledning; texten kortas något mot
   slutet (uppräkningen sammanfattas), ingen ändring av meningen. Grundtext:
   bibliotekets ingest av Självbetraktelser, bok 5 avsnitt 1: »In the morning
   when thou findest thyself unwilling to rise, consider with thyself
-  presently, it is to go about a man's work that I am stirred up …«.
-  FÖRBEHÅLL för redaktören: källposten och bibliotekets metadata anger
-  George Long som översättare, men Project Gutenberg 2680 är i stil och
-  ordalag Meric Casaubons klassiska översättning (»to lay me down, and make
-  much of myself in a warm bed«) — Longs version av samma ställe lyder
-  annorlunda (»I am rising to the work of a human being«). Gutenberg.org är
-  blockerad i byggmiljön, så titelbladet kunde inte kontrolleras härifrån;
-  översättarangivelsen behöver avgöras av redaktören före publicering, och
-  källpostens prosa rättas i så fall i samma veva. Utgåvefältet pekar därför
-  på Gutenberg-numret, inte på ett översättarnamn. AI avgör aldrig ensam vad
-  som publiceras.
-status: utkast
+  presently, it is to go about a man's work that I am stirred up …«. Notering:
+  Project Gutenberg 2680 anges av redaktören som George Longs översättning, i
+  linje med källposten och bibliotekets metadata; Gutenberg.org är blockerad i
+  byggmiljön så titelbladet kunde inte kontrolleras härifrån, men
+  översättarangivelsen är redaktörens beslut. AI avgör aldrig ensam vad som
+  publiceras.
+status: publicerad
 ---

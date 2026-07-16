@@ -17,7 +17,7 @@ källor:
     primär: true
     redaktionellNot: Bearbetning av ställets tankegång; inga direkta citat i rummet.
 lästidMinuter: 4
-status: utkast
+status: publicerad
 skapad: 2026-07-15
 uppdaterad: 2026-07-15
 redaktion:
@@ -41,9 +41,11 @@ redaktion:
     källan. Historisk kontext kontrollerad mot källposten (rättegången 399
     f.Kr, Platons återgivning, Jowett i biblioteket). Ton, rytm, en fråga,
     en tanke, 2 reflektionsfrågor, ca 4 min — inom ramarna. Förgranskad mot
-    alla fyra checklistorna. Publiceringsbeslutet är redaktörens läsning och
-    merge — AI avgör aldrig ensam vad som publiceras.
-  version: 1
+    alla fyra checklistorna. Godkänt av redaktören Jonas Olson 2026-07-15 vid
+    chattgranskning av batch Mod (PR #43), efter att öppningens avslutande
+    övergångsmening tagits bort. Publicerat tillsammans med temat Mod och de
+    två övriga Mod-rummen. AI avgör aldrig ensam vad som publiceras.
+  version: 2
 ---
 
 ## Öppning
