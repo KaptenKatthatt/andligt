@@ -17,9 +17,9 @@ källor:
     primär: true
     redaktionellNot: Bearbetning av talets resonemang om döden i återberättad form; inga direkta citat.
 lästidMinuter: 4
-status: utkast
+status: publicerad
 skapad: 2026-07-15
-uppdaterad: 2026-07-15
+uppdaterad: 2026-07-16
 redaktion:
   skribent: Claude (utkast)
   källgranskare: Claude (förgranskning)
@@ -40,9 +40,12 @@ redaktion:
     399 f.Kr; Platons återgivning). En fråga, en tanke, 2 reflektionsfrågor, ca 4
     min, inga emojis. Rummet är första rummet under temat Mod; vid publicering
     aktiveras temat (standardRum rum-sokrates-infor-doden) tillsammans med frågan
-    och passagen. Väntar på redaktörens läsning; inget publiceras utan ägarens
-    beslut. AI avgör aldrig ensam vad som publiceras.
-  version: 1
+    och passagen. Godkänd av redaktören Jonas Olson 2026-07-16 vid chattgranskning
+    av PR #42; redaktören lät ta bort ett avslutande teaser-stycke ur öppningen, i
+    linje med review-language.md §4b. Publiceras tillsammans med frågan, passagen
+    och temat Mod (rummet blir dess standardRum). AI avgör aldrig ensam vad som
+    publiceras.
+  version: 2
 ---
 
 ## Öppning
