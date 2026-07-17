@@ -19,7 +19,7 @@ källor:
 lästidMinuter: 4
 status: utkast
 skapad: 2026-07-15
-uppdaterad: 2026-07-15
+uppdaterad: 2026-07-17
 redaktion:
   skribent: Claude (utkast, Fas 12 batch Människan/Mening)
   källgranskare: Claude (förgranskning)
@@ -49,9 +49,18 @@ redaktion:
 
 ## Öppning
 
-Vi frågar tidigt vad saker är bra för. Ett föremål, en syssla, en dag —
-allt vägs efter vad det leder till. Det som inte tjänar något syfte känns
-som slöseri, nästan som något att göra sig av med.
+Vi frågar tidigt vad saker är bra för. Promenaden får ett stegmål,
+läsningen ska göra oss klokare, och till och med semestern ska ladda
+batterierna — inför jobbet. Ett föremål, en syssla, en dag: allt vägs efter
+vad det leder till. Det som inte tjänar något syfte känns som slöseri,
+nästan som något att göra sig av med.
+
+Men de stunder vi minns bäst klarar sällan den granskningen. Ett långt
+samtal som inte ledde någonstans, en eftermiddag vid vattnet, en lek som
+bara pågick tills det blev mörkt — inget av det var till någon nytta, och
+inget av det var bortkastat. Kanske är det inte stunderna det är fel på.
+Kanske är det måttet: allt behöver inte vara bra för något för att vara
+värt att finnas.
 
 ## Kärna
 
