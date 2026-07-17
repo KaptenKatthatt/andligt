@@ -42,8 +42,11 @@ redaktion:
     chattgranskning av PR #39; redaktören omarbetade kärnan (stramare inledning
     med tankstreck) och justerade törst-liknelsen (»omgiven av vatten, ropar efter
     något att dricka«). Publiceras tillsammans med frågan, källan (kalla-zazen-wasan)
-    och passagen. AI avgör aldrig ensam vad som publiceras.
-  version: 2
+    och passagen. AI avgör aldrig ensam vad som publiceras. 2026-07-16: redaktören
+    lät ta bort den avslutande bryggraden i öppningen (»En gammal japansk sång
+    vänder på den förutsättningen«) i linje med review-language.md; Kärnan tar nu
+    vid direkt.
+  version: 3
 ---
 
 ## Öppning
@@ -51,8 +54,6 @@ redaktion:
 Det mesta drar åt samma håll: bli lite bättre, lite lugnare, lite mer färdig.
 En dag ska allt vara på plats. Under strävan ligger en tyst förutsättning —
 att det du behöver ännu inte finns, att det väntar någonstans framför dig.
-
-En gammal japansk sång vänder på den förutsättningen.
 
 ## Kärna
 
