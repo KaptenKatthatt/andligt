@@ -17,14 +17,14 @@ källor:
     primär: true
     redaktionellNot: Bearbetning av kalebassliknelsen; inga direkta citat i rummet.
 lästidMinuter: 4
-status: utkast
+status: publicerad
 skapad: 2026-07-15
 uppdaterad: 2026-07-17
 redaktion:
   skribent: Claude (utkast, Fas 12 batch Människan/Mening)
   källgranskare: Claude (förgranskning)
   språkgranskare: Claude (förgranskning)
-  granskad: 2026-07-15
+  granskad: 2026-07-17
   noteringar: >-
     Rum under temat Mening (Fas 12, PR-batch 4); roadmapens Watts-insteg
     (»Leken«, Zhuangzi 1). Byggt helt på den fria källan enligt strategi D;
@@ -46,8 +46,15 @@ redaktion:
     redaktörens läsning och merge — AI avgör aldrig ensam vad som publiceras.
     2026-07-17: redaktören lät ersätta »gurda« med det svenska ordet kalebass
     (Giles »gourd«) i rum och passage; passagens id och fil bytte namn till
-    zhuangzi-1-kalebassen.
-  version: 1
+    zhuangzi-1-kalebassen. Godkänt av redaktören Jonas Olson 2026-07-17 vid
+    chattgranskning av batch Människan/Mening (PR #47): öppningen
+    utbroderades enligt checklistans nya öppningsregel (review-language.md
+    4c) och landar i slutklämmen om att allt inte behöver vara bra för något;
+    ordbytet till kalebass prövades mot bibliotekets Giles-text (»a
+    large-sized kind of gourd«, kap 1 vers 35). Publicerat tillsammans med
+    batchens övriga rum, frågor och passager. AI avgör aldrig ensam vad som
+    publiceras.
+  version: 2
 ---
 
 ## Öppning

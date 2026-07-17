@@ -17,14 +17,14 @@ källor:
     primär: true
     redaktionellNot: Bearbetning av avsnittets bild; inga direkta citat i rummet.
 lästidMinuter: 3
-status: utkast
+status: publicerad
 skapad: 2026-07-15
 uppdaterad: 2026-07-17
 redaktion:
   skribent: Claude (utkast, Fas 12 batch Människan/Mening)
   källgranskare: Claude (förgranskning)
   språkgranskare: Claude (förgranskning)
-  granskad: 2026-07-15
+  granskad: 2026-07-17
   noteringar: >-
     Rum under temat Människan (Fas 12, PR-batch 4); delar central fråga med
     rum-manniska-ar-manniskas-gladje — samma fråga från fornnordisk
@@ -44,7 +44,14 @@ redaktion:
     biblioteket). Ton, rytm, en fråga, en tanke, 2 reflektionsfrågor, ca 3
     min. Förgranskad mot alla fyra checklistorna. Publiceringsbeslutet är
     redaktörens läsning och merge — AI avgör aldrig ensam vad som publiceras.
-  version: 1
+    Godkänt av redaktören Jonas Olson 2026-07-17 vid chattgranskning av
+    batch Människan/Mening (PR #47): öppningen utbroderades i två steg på
+    redaktörens begäran och landar nu i slutklämmen »vi är gjorda för att
+    verka tillsammans«; Kärnans första rad jämkades (»påminde sig om
+    detsamma«) så källan bekräftar i stället för att introducera. Publicerat
+    tillsammans med batchens övriga rum, frågor och passager. AI avgör
+    aldrig ensam vad som publiceras.
+  version: 2
 ---
 
 ## Öppning

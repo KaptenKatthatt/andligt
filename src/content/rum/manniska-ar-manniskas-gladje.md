@@ -17,14 +17,14 @@ källor:
     primär: true
     redaktionellNot: Bearbetning av strofens bild; kärnan speglar sista raden men utan citatmarkering.
 lästidMinuter: 3
-status: utkast
+status: publicerad
 skapad: 2026-07-15
-uppdaterad: 2026-07-15
+uppdaterad: 2026-07-17
 redaktion:
   skribent: Claude (utkast, Fas 12 batch Människan/Mening)
   källgranskare: Claude (förgranskning)
   språkgranskare: Claude (förgranskning)
-  granskad: 2026-07-15
+  granskad: 2026-07-17
   noteringar: >-
     Rum under temat Människan (Fas 12, PR-batch 4); temat var redan
     publicerat (standardrum rum-vagnen), så ingen temaflipp. Andra rummet ur
@@ -38,8 +38,12 @@ redaktion:
     blir naivt sällskaplig. Historisk kontext mot källposten. Ton, rytm, en
     fråga, en tanke, 2 reflektionsfrågor, ca 3 min. Förgranskad mot alla
     fyra checklistorna. Publiceringsbeslutet är redaktörens läsning och
-    merge — AI avgör aldrig ensam vad som publiceras.
-  version: 1
+    merge — AI avgör aldrig ensam vad som publiceras. Godkänt av redaktören
+    Jonas Olson 2026-07-17 vid chattgranskning av batch Människan/Mening
+    (PR #47), utan ändringar. Publicerat tillsammans med batchens övriga
+    rum, frågor och passager (temana Människan och Mening var redan
+    publicerade). AI avgör aldrig ensam vad som publiceras.
+  version: 2
 ---
 
 ## Öppning
