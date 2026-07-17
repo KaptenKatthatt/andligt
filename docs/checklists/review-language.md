@@ -64,6 +64,40 @@ If a sentence sounds like it could appear in any AI-generated article, rewrite i
 
 ---
 
+# 4c. The Opening Builds to a Landing
+
+Decided by the editor 2026-07-17, after reviewing the batch-4 rooms: an opening
+must not be a thin paragraph of throat-clearing. It carries its own arc — it
+tells a whole story before the source ever appears.
+
+The shape, in two paragraphs:
+
+1. **Build the everyday concretely.** Small, specific scenes the reader
+   recognizes — not abstractions. Not "vardagen rymmer friktion" but "någon
+   tränger sig före i kön, någon svarar snävt på ett vänligt menat meddelande".
+   Let the small things accumulate into the feeling the room is about.
+2. **Turn, and land.** Examine the feeling the first paragraph built — does it
+   hold? — and end on a *slutkläm*: often the room's own conclusion, stated
+   plainly in the reader's language, with no source in sight.
+
+Examples of landings (from approved rooms):
+
+- "… Kanske är krockarna undantagen, inte regeln, och sanningen om oss den
+  motsatta: vi är gjorda för att verka tillsammans." (Gjorda för varandra)
+- "… Kanske är det inte livet som är för kort. Kanske är det vi som gör det
+  kort." (Livets korthet)
+
+When the opening lands the conclusion itself, the Kärna must not re-introduce
+it as news. Let the source *confirm* what the reader just arrived at: "Marcus
+Aurelius … påminde sig om detsamma", "En romersk filosof kom fram till just
+det". The insight belongs to the reader first; the source joins them.
+
+This does not loosen the teaser rule: the opening still never names or hints
+at the source. A slutkläm states the thought outright — the opposite of a
+curiosity gap that dangles it.
+
+---
+
 # 5. Remove Unnecessary Words
 
 Read every paragraph.
