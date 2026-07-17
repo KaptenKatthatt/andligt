@@ -17,7 +17,7 @@ källor:
     primär: true
     redaktionellNot: Bearbetning av liknelsen om de två pilarna i återberättad form; inga direkta citat.
 lästidMinuter: 3
-status: utkast
+status: publicerad
 skapad: 2026-07-16
 uppdaterad: 2026-07-16
 redaktion:
@@ -40,10 +40,12 @@ redaktion:
     pali, muntlig tradering, nedtecknad ca 29 f.Kr på Sri Lanka). En fråga, en
     tanke, 2 reflektionsfrågor, ca 3 min, inga emojis. Rummet är första rummet
     under temat Lidande; vid publicering aktiveras temat (standardRum
-    rum-de-tva-pilarna) tillsammans med källan, frågan och passagen. Väntar på
-    redaktörens läsning; inget publiceras utan ägarens beslut. AI avgör aldrig
-    ensam vad som publiceras.
-  version: 1
+    rum-de-tva-pilarna) tillsammans med källan, frågan och passagen. Godkänd av
+    redaktören Jonas Olson 2026-07-16 vid chattgranskning av PR #42. Publiceras
+    tillsammans med källan (kalla-samyutta-nikaya), frågan, passagen och temat
+    Lidande (rummet blir dess standardRum). AI avgör aldrig ensam vad som
+    publiceras.
+  version: 2
 ---
 
 ## Öppning

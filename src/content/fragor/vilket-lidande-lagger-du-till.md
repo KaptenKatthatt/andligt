@@ -3,7 +3,7 @@ id: fraga-vilket-lidande-lagger-du-till
 slug: vilket-lidande-lagger-du-till
 text: Vilket lidande lägger du själv till det som redan gör ont?
 teman: [tema-lidande]
-status: utkast
+status: publicerad
 ---
 
 När något gör ont finns det ofta en smärta vi inte valde, och en annan som växer
