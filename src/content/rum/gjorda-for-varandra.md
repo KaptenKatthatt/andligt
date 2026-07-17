@@ -52,18 +52,20 @@ redaktion:
 En vanlig dag rymmer en rad små sammanstötningar. Någon tränger sig före i
 kön, någon svarar snävt på ett vänligt menat meddelande, någon tar åt sig
 äran för det du gjorde. Var för sig är de småsaker, knappt värda att nämna.
-Men de samlas. Vid dagens slut kan de ha lagt sig som en tunn hinna över
-allting — en känsla av att människor mest är i vägen.
+Men de samlas, och vid dagens slut kan de ha lagt sig som en tunn hinna
+över allting — en känsla av att människor mest är i vägen.
 
-Det är lätt att börja se dem så: som hinder mellan dig och det du försöker
-göra, var och en med sina egna mål som krockar med dina. Och ur den blicken
-växer ett tyst antagande — att andra i grunden är konkurrenter, och att
-gemenskap är något man kostar på sig när kampen tillåter.
+Ändå stämmer den känslan illa med det mesta vi faktiskt gör. Dagen som
+skaver är byggd av samarbete från början till slut: någon körde bussen,
+någon bakade brödet, någon lärde dig en gång orden du tänker med. Också den
+som tränger sig i kön står i en kö — en ordning vi håller åt varandra.
+Kanske är krockarna undantagen, inte regeln, och sanningen om oss den
+motsatta: vi är gjorda för att verka tillsammans.
 
 ## Kärna
 
 Marcus Aurelius, som hade mer skäl än de flesta att tröttna på människor,
-påminde sig om en annan bild. Vi är gjorda för att verka tillsammans,
+påminde sig om detsamma. Vi är gjorda för att verka tillsammans,
 skrev han, som fötterna och händerna, som ögonlocken, som de övre och undre
 tandraderna. Att stå emot varandra är att gå emot naturen.
 
