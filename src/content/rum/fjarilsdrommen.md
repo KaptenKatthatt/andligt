@@ -38,14 +38,14 @@ redaktion:
     undviker den mer svårtillgängliga metafysiken, i linje med appens lugna ton.
     Kärnan delar inga meningar med passagens översättning. Historisk kontext
     kontrollerad mot källposten (Zhuang Zhou, 300-talet f.Kr). En fråga, en tanke,
-    2 reflektionsfrågor, ca 3 min, inga emojis. Rummet är första rummet under
-    temat Sanning; vid publicering aktiveras temat (standardRum
-    rum-fjarilsdrommen) tillsammans med frågan och passagen. Godkänd av redaktören
-    Jonas Olson 2026-07-16 vid chattgranskning av PR #42; redaktören skrev om
-    öppningen till sin egen lydelse och lät ta bort en avslutande teaser-rad, i
-    linje med review-language.md. Publiceras tillsammans med frågan, passagen och
-    temat Sanning (rummet blir dess standardRum). AI avgör aldrig ensam vad som
-    publiceras.
+    2 reflektionsfrågor, ca 3 min, inga emojis. Rummet hör hemma under temat
+    Sanning, som redan publicerats via Fas 12 batch 2 (#45, standardRum
+    rum-oraklet-och-den-som-inte-vet) — ingen temaflipp här; rummet läggs till
+    temats rumslista. Godkänd av redaktören Jonas Olson 2026-07-16 vid
+    chattgranskning av PR #42; redaktören skrev om öppningen till sin egen
+    lydelse och lät ta bort en avslutande teaser-rad, i linje med
+    review-language.md. Publiceras tillsammans med frågan och passagen. AI
+    avgör aldrig ensam vad som publiceras.
   version: 2
 ---
 

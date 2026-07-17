@@ -26,7 +26,7 @@ redaktion:
   språkgranskare: Claude (förgranskning)
   granskad: 2026-07-16
   noteringar: >-
-    Rum som aktiverar temat Lidande med en ny källpost (kalla-samyutta-nikaya).
+    Rum under temat Lidande med en ny källpost (kalla-samyutta-nikaya).
     Byggt helt på den fria källan. Förgranskad mot alla fyra checklistorna, med
     särskild vikt vid review-language.md §4b: öppningen landar i det vardagliga och
     introducerar inte källan (Kärnan gör det), och passerar den maskinella
@@ -38,12 +38,12 @@ redaktion:
     betydelse (den andra pilen = lidandet vi lägger till) och undviker de tyngre
     lärotermerna. Historisk kontext kontrollerad mot källposten (Samyutta Nikaya,
     pali, muntlig tradering, nedtecknad ca 29 f.Kr på Sri Lanka). En fråga, en
-    tanke, 2 reflektionsfrågor, ca 3 min, inga emojis. Rummet är första rummet
-    under temat Lidande; vid publicering aktiveras temat (standardRum
-    rum-de-tva-pilarna) tillsammans med källan, frågan och passagen. Godkänd av
-    redaktören Jonas Olson 2026-07-16 vid chattgranskning av PR #42. Publiceras
-    tillsammans med källan (kalla-samyutta-nikaya), frågan, passagen och temat
-    Lidande (rummet blir dess standardRum). AI avgör aldrig ensam vad som
+    tanke, 2 reflektionsfrågor, ca 3 min, inga emojis. Rummet hör hemma under
+    temat Lidande, som redan publicerats via Fas 12 batch 3 (#46, standardRum
+    rum-sorgens-rot) — ingen temaflipp här; rummet läggs till temats rumslista
+    och bär med sig den nya källan. Godkänd av redaktören Jonas Olson
+    2026-07-16 vid chattgranskning av PR #42. Publiceras tillsammans med källan
+    (kalla-samyutta-nikaya), frågan och passagen. AI avgör aldrig ensam vad som
     publiceras.
   version: 2
 ---

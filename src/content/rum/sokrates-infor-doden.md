@@ -26,7 +26,7 @@ redaktion:
   språkgranskare: Claude (förgranskning)
   granskad: 2026-07-15
   noteringar: >-
-    Rum som aktiverar temat Mod med en redan publicerad källa (kalla-forsvarstalet,
+    Rum under temat Mod med en redan publicerad källa (kalla-forsvarstalet,
     Platons Försvarstal). Byggt helt på den fria källan. Förgranskad mot alla fyra
     checklistorna. Källverifiering: bearbetningen följer Benjamin Jowetts engelska
     av talets slutdel (Standard Ebooks, samma utgåva som bibliotekets ingest) via
@@ -38,13 +38,13 @@ redaktion:
     egen formulering, inte som appens ståndpunkt. Kärnan delar inga meningar med
     passagens översättning. Historisk kontext kontrollerad mot källposten (Aten
     399 f.Kr; Platons återgivning). En fråga, en tanke, 2 reflektionsfrågor, ca 4
-    min, inga emojis. Rummet är första rummet under temat Mod; vid publicering
-    aktiveras temat (standardRum rum-sokrates-infor-doden) tillsammans med frågan
-    och passagen. Godkänd av redaktören Jonas Olson 2026-07-16 vid chattgranskning
-    av PR #42; redaktören lät ta bort ett avslutande teaser-stycke ur öppningen, i
-    linje med review-language.md §4b. Publiceras tillsammans med frågan, passagen
-    och temat Mod (rummet blir dess standardRum). AI avgör aldrig ensam vad som
-    publiceras.
+    min, inga emojis. Rummet hör hemma under temat Mod, som redan publicerats
+    via Fas 12 batch 1 (#43, standardRum rum-att-inte-veta-hur-det-slutar) —
+    ingen temaflipp här; rummet läggs till temats rumslista. Godkänd av
+    redaktören Jonas Olson 2026-07-16 vid chattgranskning av PR #42; redaktören
+    lät ta bort ett avslutande teaser-stycke ur öppningen, i linje med
+    review-language.md §4b. Publiceras tillsammans med frågan och passagen. AI
+    avgör aldrig ensam vad som publiceras.
   version: 2
 ---
 
