@@ -20,7 +20,7 @@ avslutandeReflektion: >-
   Kanske hör sorgen ihop med att ha hållit något kärt, mer än med att ha gjort
   något fel. Den går inte att resonera bort, och behöver kanske inte det. Du kan
   gå tillbaka till vilket rum som helst när du vill.
-status: utkast
+status: publicerad
 skapad: 2026-07-17
 uppdaterad: 2026-07-17
 redaktionellaNoteringar: >-
@@ -36,7 +36,8 @@ redaktionellaNoteringar: >-
   alla fyra checklistorna: inget kursspråk (ingen kurs/plan/nivå/serie, inga
   löften om förvandling, inga deadlines), introduktionen inom 50–120 ord,
   källorna hålls lågmälda. Alla fyra rummen och den centrala frågan är redan
-  publicerade; vandringen kan därför publiceras ensam vid godkännande. Väntar på
-  redaktörens läsning; inget publiceras utan ägarens beslut. AI avgör aldrig
-  ensam vad som publiceras.
+  publicerade; vandringen kan därför publiceras ensam vid godkännande. Godkänd
+  av redaktören Jonas Olson 2026-07-17 vid chattgranskning av PR #49, utan
+  ändringar (ordningen och den centrala frågan »Varifrån kommer sorgen?«
+  prövades och godkändes). AI avgör aldrig ensam vad som publiceras.
 ---
