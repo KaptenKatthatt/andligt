@@ -25,5 +25,5 @@ noteringar: >-
   »Chuang Tzŭ« återges med namnformen »Zhuang Zhou«. Rummets prosa bearbetar
   bilden friare. Publiceringsbeslutet är redaktörens — AI avgör aldrig ensam vad
   som publiceras.
-status: utkast
+status: publicerad
 ---
