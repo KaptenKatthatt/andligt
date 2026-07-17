@@ -19,7 +19,7 @@ källor:
 lästidMinuter: 4
 status: utkast
 skapad: 2026-07-15
-uppdaterad: 2026-07-15
+uppdaterad: 2026-07-17
 redaktion:
   skribent: Claude (utkast, Fas 12 batch Människan/Mening)
   källgranskare: Claude (förgranskning)
@@ -47,13 +47,21 @@ redaktion:
 
 ## Öppning
 
-Livet är kort, säger vi, ofta med en suck. Det gick så fort. Man hann inte.
-Bakom orden ligger en känsla av att tiden är för knapp, att den rinner ur
-händerna hur vi än gör.
+Livet är kort, säger vi, ofta med en suck. Somrarna blir färre än man trott,
+barnen växer ur skorna innan man vant sig vid storleken, och ett helt
+decennium låter sig numera sammanfattas i en mening. Det gick så fort. Man
+hann inte. Bakom orden ligger en känsla av att tiden är för knapp — att den
+rinner ur händerna hur vi än gör.
+
+Men den som ser efter var dagarna faktiskt tar vägen upptäcker något
+obekvämt. De försvinner inte av sig själva. De går åt: till möten som inte
+angår en, till gräl ingen minns om en vecka, till att skjuta upp det man
+längtar efter tills vidare, som om tiden vore ett lån utan förfallodag.
+Kanske är det inte livet som är för kort. Kanske är det vi som gör det kort.
 
 ## Kärna
 
-En romersk filosof höll inte med. Vi får inte ett kort liv, skrev Seneca,
+En romersk filosof kom fram till just det. Vi får inte ett kort liv, skrev Seneca,
 vi gör det kort. Vi är inte fattiga på dagar — vi är slösaktiga med dem.
 Livet är långt nog, om man vet hur man ska bruka det.
 
