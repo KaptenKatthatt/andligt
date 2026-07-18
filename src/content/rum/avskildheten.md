@@ -18,10 +18,10 @@ källor:
       Bearbetning av avskildhetspredikans huvudtanke (avskildheten som den
       högsta av dygder, tomheten som Gud med nödvändighet fyller) samt
       predikan IV:s tanke om att för Guds skull ge upp Gud. Inga direkta
-      citat i rummet. Källpassage med egen översättning återstår — se
-      redaktionens noteringar.
+      citat i rummet. Källpassage med egen översättning läggs till i
+      efterhand — se redaktionens noteringar.
 lästidMinuter: 4
-status: utkast
+status: publicerad
 skapad: 2026-07-18
 uppdaterad: 2026-07-18
 redaktion:
@@ -43,18 +43,22 @@ redaktion:
     skrivtavlan som måste vara tom — samt predikan IV »True Hearing« — »the
     highest act of renunciation for man is for God's sake to give up God«
     med Paulus-exemplet, »When for God's sake he gave up God, God still
-    remained with him«. ÅTERSTÅR före publicering: källpassage med egen
-    svensk översättning ur predikan VI kan inte byggas förrän Fields
-    fulltext kan läsas — ägaren behöver hämta/verifiera texten (t.ex.
-    ccel.org/ccel/eckhart/sermons.txt eller Wikisource) eller godkänna att
-    rummet publiceras med enbart fritextreferens (bruket bearbetning kräver
-    ingen passage enligt grinden). Frågan är
+    remained with him«. Källpassage med egen svensk översättning ur predikan
+    VI kunde inte byggas eftersom Fields fulltext inte var nåbar i
+    byggmiljön; redaktören beslutade 2026-07-18 att rummet publiceras med
+    enbart fritextreferens (bruket bearbetning kräver ingen passage enligt
+    grinden). Passagen kan läggas till i efterhand när Fields text kan läsas
+    (t.ex. ccel.org/ccel/eckhart/sermons.txt eller Wikisource). Frågan är
     avpersonifierad gentemot rapportens arbetsformulering (»Vad menade
     Eckhart …«) för att följa frågetaxonomins stil; rapportens innebörd är
-    oförändrad. Källposten och traditionen kristen mystik är nya utkast som
-    publiceras tillsammans med rummet om ägaren godkänner. Förgranskad mot
+    oförändrad. Källposten publicerades i samma flipp; traditionen kristen
+    mystik och temat Jesus var redan publicerade med rum 1. Förgranskad mot
     alla fyra checklistorna; öppningen bygger egen båge och landar i slutkläm
-    utan källa (§4b/§4c). AI avgör aldrig ensam vad som publiceras.
+    utan källa (§4b/§4c). Godkänd av redaktören Jonas Olson 2026-07-18 efter
+    läsning av hela rumstexten vid chattgranskning av PR #52, med beslutet
+    att publicera utan källpassage; publiceringen är redaktörens beslut och
+    verkställs i PR:en som redaktören mergar. AI avgör aldrig ensam vad som
+    publiceras.
   version: 1
 ---
 

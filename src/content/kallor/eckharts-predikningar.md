@@ -12,7 +12,7 @@ plats: Tyskland
 upphov: känt
 datering: ungefärlig
 rättigheter: public-domain
-status: utkast
+status: publicerad
 alias: [Meister Eckhart, Eckhart]
 nyckelord: [mystik, predikan, avskildhet, gud, dominikan]
 ---
