@@ -39,7 +39,7 @@ const Temasektion = () => {
   return (
     <Sektion rubrik="Teman">
       {themes.length === 0 ? (
-        <p className={styles.tomt}>Inga themes ännu.</p>
+        <p className={styles.tomt}>Inga teman ännu.</p>
       ) : (
         themes.map((tema) => (
           <ToLink key={tema.id} to={{ kind: 'tema', slug: tema.slug }} className={styles.rad}>

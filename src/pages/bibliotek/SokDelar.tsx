@@ -199,7 +199,7 @@ export const Sokfalt = ({
 )
 
 const SokTomlage = () => (
-  <p className={styles.tomtext}>Sök bland frågor, rum, sources och traditions.</p>
+  <p className={styles.tomtext}>Sök bland frågor, rum, källor och traditioner.</p>
 )
 
 const IngaTraffar = () => (
