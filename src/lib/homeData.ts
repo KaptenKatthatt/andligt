@@ -12,9 +12,10 @@ export const allThemes: Theme[] = collect(
   (fil) => parsePostFile(themeSchema, fil),
 )
 
-/** Tröskelns themes (home-and-entry.md): redaktionell order, aldrig arkiverade. */
+/** Tröskelns themes (home-and-entry.md): redaktionell order, bara publicerade —
+ * utkast får aldrig synas för läsare. */
 export const thresholdThemes: Theme[] = allThemes
-  .filter((tema) => tema.status !== 'archived')
+  .filter((tema) => tema.status === 'published')
   .sort(
     (a, b) =>
       (a.order ?? Number.MAX_SAFE_INTEGER) - (b.order ?? Number.MAX_SAFE_INTEGER) ||

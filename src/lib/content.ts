@@ -7,11 +7,13 @@ import {
   questionSchema,
   sourceSchema,
   kallpassageSchema,
+  personSchema,
   traditionSchema,
   pathSchema,
   type Question,
   type Source,
   type SourcePassage,
+  type Person,
   type Room,
   type Theme,
   type Tradition,
@@ -59,6 +61,13 @@ export const allTraditions: Tradition[] = collect(
   (fil) => parsePostFile(traditionSchema, fil),
 )
 
+/** Personer — referenspunkter i biblioteket, inte ingångar (library.md,
+ * People and Authors). Porträtt av gestalterna bakom eller kring källorna. */
+export const allPeople: Person[] = collect(
+  toFiles(import.meta.glob<string>('../content/people/*.md', { query: '?raw', import: 'default', eager: true })),
+  (fil) => parsePostFile(personSchema, fil),
+)
+
 export const findRoom = (slug: string): Room | undefined =>
   allRooms.find((rum) => rum.slug === slug)
 
@@ -85,6 +94,9 @@ export const findSourceBySlug = (slug: string): Source | undefined =>
 
 export const findTradition = (id: string): Tradition | undefined =>
   allTraditions.find((tradition) => tradition.id === id)
+
+export const findPersonBySlug = (slug: string): Person | undefined =>
+  allPeople.find((person) => person.slug === slug)
 
 export const findPathBySlug = (slug: string): Path | undefined =>
   allPaths.find((vandring) => vandring.slug === slug)

@@ -7,6 +7,7 @@ import type {
   Question,
   Source,
   SourcePassage,
+  Person,
   Room,
   Theme,
   Tradition,
@@ -51,6 +52,11 @@ export const librarySources = (sources: Source[]): Source[] =>
  * de hjälper till med sammanhang men äger inte frågorna (library.md). */
 export const libraryTraditions = (traditions: Tradition[]): Tradition[] =>
   onlyPublished(traditions).sort(svOrdning((t) => t.name))
+
+/** Bibliotekets personer: publicerade, i svensk namnordning. Referenspunkter,
+ * aldrig primary navigation (library.md, People and Authors). */
+export const libraryPeople = (people: Person[]): Person[] =>
+  onlyPublished(people).sort(svOrdning((p) => p.name))
 
 /** Bibliotekets frågor: publicerade, i svensk textordning. */
 export const libraryQuestions = (frågor: Question[]): Question[] =>

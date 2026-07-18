@@ -191,7 +191,11 @@ export const personSchema = z.object({
   id: idSchema,
   slug: slugSchema,
   name: z.string().min(1),
-  årtal: z.string().optional(),
+  years: z.string().optional(),
+  // Kort igenkännande rad för sökresultat och listor (search.md, Person
+  // Result: »short identifying description«) — porträttets brödtext är för
+  // lång och börjar ofta med födelsedata.
+  shortDescription: z.string().optional(),
   traditions: z.array(idSchema).optional(),
   status: statusSchema,
   description: z.string().optional(),

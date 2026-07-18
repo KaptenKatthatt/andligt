@@ -2,6 +2,7 @@ import { Link } from '@tanstack/react-router'
 import { ToLink } from '../../components/ToLink'
 import {
   libraryQuestions,
+  libraryPeople,
   librarySources,
   libraryRooms,
   libraryThemes,
@@ -14,6 +15,7 @@ import { useSidtitel } from '../../lib/useSidtitel'
 import {
   allQuestions,
   allSources,
+  allPeople,
   allRooms,
   allThemes,
   allTraditions,
@@ -117,6 +119,27 @@ const Traditionssektion = () => {
   )
 }
 
+// Personer är referenspunkter, inte ingångar (library.md, People and Authors).
+// Sektionen står sist tills vidare (redaktörens beslut 2026-07-18) och döljs
+// tills publicerade personer finns — samma disciplin som vandringarna.
+const Personsektion = () => {
+  const people = libraryPeople(allPeople)
+  if (people.length === 0) return null
+  return (
+    <Section rubrik="Personer">
+      {people.map((person) => (
+        <ToLink
+          key={person.id}
+          to={{ kind: 'personpost', slug: person.slug }}
+          className={styles.rad}
+        >
+          <Row title={person.name} sub={person.years} />
+        </ToLink>
+      ))}
+    </Section>
+  )
+}
+
 /**
  * Bibliotekets landningssida (library.md) — den medvetna ingången till
  * utforskning. Sekundär till läsrummet; lugn, ändlig, utan engagemangsmått.
@@ -131,16 +154,17 @@ export const BibliotekHemPage = () => {
       <h1 className={styles.title}>Biblioteket</h1>
       <p className={styles.lede}>
         För den som vill leta vidare på egen hand — bland traditioner, källor, teman och frågor.
-      </p>
+                    </p>
       <Link to="/bibliotek/sok" className={styles.sokingang}>
         Sök efter en fråga, tanke eller källa
-      </Link>
+                    </Link>
       <Traditionssektion />
       <Kallsektion />
       <Temasektion />
       <Vandringssektion />
       <Rumsektion />
       <Fragesektion />
+      <Personsektion />
     </div>
   )
 }

@@ -14,7 +14,7 @@ reflectionQuestions:
   - Vad händer när du försöker styra det som ligger utanför din makt?
 sources:
   - source: kalla-enchiridion
-    reference: avsnitt 1
+    referens: avsnitt 1
     use: adaptation
     primary: true
 readingTimeMinutes: 4

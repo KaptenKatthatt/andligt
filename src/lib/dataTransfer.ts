@@ -24,14 +24,26 @@ export type PersonalCollections = {
   chapterBookmarks: Record<string, ChapterBookmark>
 }
 
-const noteSchema = z.object({
-  ursprungTyp: z.enum(['rum', 'vandring', 'amne']),
-  ursprungId: z.string(),
-  text: z.string(),
-  created: z.string(),
-  updated: z.string(),
-  title: z.string().optional(),
-})
+// Äldre v1-exporter (samma format/version) bär de svenska tidsstämpelnycklarna
+// `skapad`/`uppdaterad`; mappa dem till `created`/`updated` före validering så
+// en tidigare backup fortfarande går att importera utan att tappa anteckningar.
+const withLegacyDates = (v: unknown): unknown => {
+  if (typeof v !== 'object' || v === null || Array.isArray(v)) return v
+  const r = v as Record<string, unknown>
+  return { ...r, created: r.created ?? r.skapad, updated: r.updated ?? r.uppdaterad }
+}
+
+const noteSchema = z.preprocess(
+  withLegacyDates,
+  z.object({
+    ursprungTyp: z.enum(['rum', 'vandring', 'amne']),
+    ursprungId: z.string(),
+    text: z.string(),
+    created: z.string(),
+    updated: z.string(),
+    title: z.string().optional(),
+  }),
+)
 
 const savedSchema = z.object({
   id: z.string(),

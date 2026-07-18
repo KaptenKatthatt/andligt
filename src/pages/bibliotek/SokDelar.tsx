@@ -207,7 +207,7 @@ const NoHits = () => (
     <p className={styles.tomtext}>Vi hittade inget som stämde med din sökning.</p>
     <p className={styles.tomhint}>
       Prova ett bredare ord eller sök efter en fråga, ett tema eller en källa.
-                </p>
+                            </p>
   </div>
 )
 

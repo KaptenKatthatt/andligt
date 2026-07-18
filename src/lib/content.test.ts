@@ -38,7 +38,7 @@ describe('innehållsladdaren', () => {
 })
 
 describe('tröskeln', () => {
-  it('ordnar temana redaktionellt och utan arkiverade', () => {
+  it('ordnar temana redaktionellt och visar bara publicerade', () => {
     expect(thresholdThemes.map((tema) => tema.label)).toEqual([
       'Lugn',
       'Mening',
@@ -46,8 +46,9 @@ describe('tröskeln', () => {
       'Sanning',
       'Lidande',
       'Människan',
+      'Jesus',
     ])
-    expect(thresholdThemes.every((tema) => tema.status !== 'archived')).toBe(true)
+    expect(thresholdThemes.every((tema) => tema.status === 'published')).toBe(true)
   })
 })
 

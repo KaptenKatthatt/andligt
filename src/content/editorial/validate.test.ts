@@ -336,7 +336,7 @@ describe('valideraInnehall', () => {
       }),
     )
     expect(
-      withoutTranslator.some((f) => f.includes('translation') && f.includes('översättare')),
+      withoutTranslator.some((f) => f.includes('translation') && f.includes('translator')),
     ).toBe(true)
     const withTranslator = validateContent(
       grund({

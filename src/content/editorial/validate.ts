@@ -87,13 +87,13 @@ const bruksgrind = (rum: Room, relation: Kallrelation, uppslag: Lookup): string[
   if (!REQUIRES_PASSAGE.has(relation.use)) return []
   const mark = `rum ${rum.id}: ${relation.use}`
   if (relation.passage === undefined)
-    return [`${mark} kräver en källpassage med exakt referens och utgåva`]
+    return [`${mark} kräver en källpassage med exakt reference och edition`]
   const passage = uppslag.passager.get(relation.passage)
   if (!passage) return [] // saknad passage rapporteras redan som bruten relation
   return [
-    ...(passage.edition ? [] : [`${mark} kräver utgåva (edition) på passagen "${passage.id}"`]),
+    ...(passage.edition ? [] : [`${mark} kräver edition (edition) på passagen "${passage.id}"`]),
     ...(relation.use === 'translation' && !passage.translator
-      ? [`${mark} kräver angiven översättare på passagen "${passage.id}"`]
+      ? [`${mark} kräver angiven translator på passagen "${passage.id}"`]
       : []),
   ]
 }
@@ -198,9 +198,9 @@ const sourceUncertainty = (source: Source): string[] =>
 const sourceTraditionError = (source: Source, uppslag: Lookup): string[] =>
   (source.traditions ?? []).flatMap((traditionId) => {
     if (!uppslag.traditionsstatus.has(traditionId))
-      return [`källa ${source.id}: tradition "${traditionId}" finns inte`]
+      return [`source ${source.id}: tradition "${traditionId}" finns inte`]
     if (publicerad(source.status) && !publicerad(uppslag.traditionsstatus.get(traditionId)))
-      return [`källa ${source.id}: publicerad källa länkar opublicerad tradition "${traditionId}"`]
+      return [`source ${source.id}: publicerad source länkar opublicerad tradition "${traditionId}"`]
     return []
   })
 
@@ -214,7 +214,7 @@ const passagefel = (mängd: ContentSet, uppslag: Lookup): string[] =>
   mängd.passager.flatMap((passage) =>
     uppslag.källstatus.has(passage.source)
       ? []
-      : [`passage ${passage.id}: källa "${passage.source}" finns inte`],
+      : [`passage ${passage.id}: source "${passage.source}" finns inte`],
   )
 
 /** Validerar relationer och publiceringskrav över hela innehållsmängden.

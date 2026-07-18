@@ -69,14 +69,19 @@ export const migrateSaved = (rått: unknown): Record<string, SavedItem> => {
 // saknas eller är korrupta får trygga fallbacks — texten bevaras alltid.
 const migrateNoteItem = (id: string, värde: unknown, nu: string): Note | null => {
   if (!isRecord(värde)) return null
-  const { ursprungTyp, ursprungId, text, created, updated } = värde
+  // Äldre lagrade anteckningar bär de svenska tidsstämpelnycklarna `skapad`/
+  // `uppdaterad`; läs dem som fallback så en uppgradering aldrig nollställer
+  // kronologin (anteckningsvyn sorterar på `updated`, importkonflikter avgörs på det).
+  const { ursprungTyp, ursprungId, text, created, updated, skapad, uppdaterad } = värde
   if (typeof text !== 'string' || text.trim().length === 0) return null
+  const förstSträng = (a: unknown, b: unknown): string =>
+    typeof a === 'string' ? a : typeof b === 'string' ? b : nu
   return {
     ursprungTyp: isOrigin(ursprungTyp) ? ursprungTyp : 'amne',
     ursprungId: typeof ursprungId === 'string' ? ursprungId : id,
     text,
-    created: typeof created === 'string' ? created : nu,
-    updated: typeof updated === 'string' ? updated : nu,
+    created: förstSträng(created, skapad),
+    updated: förstSträng(updated, uppdaterad),
   }
 }
 

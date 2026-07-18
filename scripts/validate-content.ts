@@ -51,7 +51,7 @@ const mängd: ContentSet = {
   sources: poster('sources', sourceSchema),
   passager: poster('passages', kallpassageSchema),
   traditions: poster('traditions', traditionSchema),
-  personer: poster('personer', personSchema),
+  personer: poster('people', personSchema),
 }
 
 allErrors.push(...validateContent(mängd))

@@ -34,6 +34,9 @@ const FragelistaPage = lazyPage(() =>
 const KallaPostPage = lazyPage(() =>
   import('../pages/bibliotek/KallaPostPage').then((m) => m.KallaPostPage),
 )
+const PersonPostPage = lazyPage(() =>
+  import('../pages/bibliotek/PersonPostPage').then((m) => m.PersonPostPage),
+)
 const RumlistaPage = lazyPage(() => import('../pages/bibliotek/RumlistaPage').then((m) => m.RumlistaPage))
 const TemaPage = lazyPage(() => import('../pages/bibliotek/TemaPage').then((m) => m.TemaPage))
 const VandringPage = lazyPage(() => import('../pages/bibliotek/VandringPage').then((m) => m.VandringPage))
@@ -190,6 +193,15 @@ const sourceItemRoute = createRoute({
   },
 })
 
+// Bibliotekets personsidor (nya modellen) — skilda från legacy /person/$id.
+const personPostRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/bibliotek/person/$slug',
+  component: function PersonPostRoute() {
+    return <PersonPostPage slug={personPostRoute.useParams().slug} />
+  },
+})
+
 const pathRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/bibliotek/vandring/$slug',
@@ -305,6 +317,7 @@ const routeTree = rootRoute.addChildren([
   rumlistaRoute,
   fragelistaRoute,
   sourceItemRoute,
+  personPostRoute,
   pathRoute,
   verklistaRoute,
   workRoute,

@@ -5,7 +5,7 @@ import { z } from 'zod'
 
 const passageSchema = z.object({
   id: z.string(),
-  title: z.string(),
+  titel: z.string(),
   forfattare: z.string(),
   verk: z.string(),
   datum: z.string(),

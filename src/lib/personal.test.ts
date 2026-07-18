@@ -68,6 +68,23 @@ describe('migreraAnteckningar', () => {
     expect(migrateNotes(undefined, redan, klassificera, NU)).toEqual(redan)
   })
 
+  it('bevarar tidsstämplar ur äldre poster med svenska nycklar (skapad/uppdaterad)', () => {
+    // Deployad app före engelsk-migreringen lagrade skapad/uppdaterad — de får
+    // aldrig nollställas vid uppgradering.
+    const gammal = {
+      x: {
+        ursprungTyp: 'rum',
+        ursprungId: 'rum-a',
+        text: 'en tanke',
+        skapad: '2026-05-01T00:00:00.000Z',
+        uppdaterad: '2026-05-09T00:00:00.000Z',
+      },
+    }
+    const ut = migrateNotes(undefined, gammal, klassificera, NU)
+    expect(ut['x']?.created).toBe('2026-05-01T00:00:00.000Z')
+    expect(ut['x']?.updated).toBe('2026-05-09T00:00:00.000Z')
+  })
+
   it('räddar en korrupt migrerad post med trygga fallbacks men bevarar texten', () => {
     const ut = migrateNotes(undefined, { x: { text: 'kvar' } }, klassificera, NU)
     expect(ut.x).toEqual({ ursprungTyp: 'amne', ursprungId: 'x', text: 'kvar', created: NU, updated: NU })

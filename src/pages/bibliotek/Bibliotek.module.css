@@ -99,6 +99,11 @@
   margin: 6px 0 0;
 }
 
+/* Personens levnadsår under namnet — samma stilla stil som originaltiteln. */
+.artal {
+  composes: originalTitle;
+}
+
 /* Källpostens sakliga metadata — stillsamma rader, ingen tabellkänsla. */
 .metablock {
   margin-top: 22px;

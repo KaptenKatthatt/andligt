@@ -4,11 +4,11 @@
 // innehåll vid moduladdning; skulle routern importera därifrån skulle varje
 // sidladdning bygga indexet i onödan. Denna modul har inga innehållsberoenden.
 
-export type SearchType = 'fraga' | 'tema' | 'rum' | 'vandring' | 'kalla' | 'tradition'
+export type SearchType = 'fraga' | 'tema' | 'rum' | 'vandring' | 'kalla' | 'tradition' | 'person'
 
 /** Söktyperna i redaktionell prioritetsordning — en enda source som router,
  * rankning och filter delar (så en ny type läggs till på ett ställe). */
-export const SEARCH_TYPES: readonly SearchType[] = ['fraga', 'tema', 'rum', 'vandring', 'kalla', 'tradition']
+export const SEARCH_TYPES: readonly SearchType[] = ['fraga', 'tema', 'rum', 'vandring', 'kalla', 'tradition', 'person']
 
 /** Den delbara sökparametern: fråga och valfritt typfilter. Aldrig privata värden. */
 export type SearchParams = { q?: string; type?: SearchType }

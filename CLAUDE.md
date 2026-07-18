@@ -186,6 +186,18 @@ loggar bara meddelande + kodplats. Rumsvalet förblir deterministiskt och läser
 någon telemetri — ingen engagemang-dashboard styr rumsval. Ingen instrumentering finns för
 de förbjudna storheterna (session, återkomst, streaks, sparande, notiser, vandringsavslut).
 
+**Watts-rummen (issue #44, PR #52):** Molnet av icke-vetande och Avskildheten
+publicerade (godkända av redaktören 2026-07-18); tema Jesus (tröskelordning 7)
+och traditionen kristen mystik nya. Tolken i väst blev **inte** ett rum
+(redaktörens beslut) utan bibliotekets första **personsida**:
+`src/content/personer/`, route `/bibliotek/person/$slug`, sektionen Personer
+sist på landningen (dold tills publicerat). Personsidorna är ett provisorium —
+kandidater och uppstyrning i roadmapens »Person Pages (to do)«. Eckhart-rummets
+källpassage återstår (Fields fulltext onåbar i byggmiljön). Tröskelns
+temafilter skärpt till bara publicerade (i `troskeldata.ts` efter Fas 13).
+Personer är sökbara (granskningsfynd i PR #52): `Soktyp` »person« rankas
+sist, målet `personpost` i To/ToLink, `kortbeskrivning` bär sökunderraden.
+
 ## Kända skulder
 
 - Sandlådefällor: `getbible.net` ger 403 vid ingest (ofarligt, bara Bibeln);

@@ -8,6 +8,7 @@ import type {
   ContentSet,
   Source,
   SourcePassage,
+  Person,
   Room,
   Theme,
   Tradition,
@@ -19,6 +20,7 @@ import {
   libraryRooms,
   libraryThemes,
   libraryTraditions,
+  libraryPeople,
   libraryPaths,
   passagesForSource,
   roomsForPath,
@@ -31,6 +33,7 @@ import {
   allRooms,
   allThemes,
   allTraditions,
+  allPeople,
   allPaths,
   sourceName,
 } from './content'
@@ -50,6 +53,7 @@ export type SearchTarget =
   | { kind: 'tema'; slug: string }
   | { kind: 'rum'; slug: string }
   | { kind: 'kallpost'; slug: string }
+  | { kind: 'personpost'; slug: string }
   | { kind: 'vandring'; slug: string }
 
 /** Ett sökdokument. `title`/`underrad`/`meta` visas oviket (korrekt stavning);
@@ -209,9 +213,28 @@ const docFromTradition = (tradition: Tradition): SearchDoc => ({
   text: tradition.description ? [tradition.description] : [],
 })
 
+// Personresultatet visar name, period och kort igenkännande description
+// (search.md, Person Result); personer rankas alltid sist (Result Priority).
+// Underraden tar den redaktionella kortbeskrivningen — porträttkroppens
+// första mening är födelsedata och dubblerar årtalet i meta.
+const docFromPerson = (person: Person): SearchDoc => ({
+  type: 'person',
+  id: person.id,
+  title: person.name,
+  underrad: person.shortDescription ?? (person.description ? utdrag(person.description, 110) : undefined),
+  meta: person.years,
+  mal: { kind: 'personpost', slug: person.slug },
+  alias: [],
+  keywords: [],
+  text: [
+    ...(person.shortDescription ? [person.shortDescription] : []),
+    ...(person.description ? [person.description] : []),
+  ],
+})
+
 type Innehall = Pick<
   ContentSet,
-  'rum' | 'themes' | 'frågor' | 'vandringar' | 'sources' | 'passager' | 'traditions'
+  'rum' | 'themes' | 'frågor' | 'vandringar' | 'sources' | 'passager' | 'traditions' | 'personer'
 >
 
 /** Bygger det publika indexet. Uppslagskartorna byggs ur de PUBLICERADE
@@ -233,6 +256,7 @@ export const byggSokindex = (innehall: Innehall): SearchDoc[] => {
       docFromSource(source, traditions, passagesForSource(source.id, innehall.passager)),
     ),
     ...libraryTraditions(innehall.traditions).map(docFromTradition),
+    ...libraryPeople(innehall.personer).map(docFromPerson),
   ]
 }
 
@@ -245,4 +269,5 @@ export const searchIndexData: SearchDoc[] = byggSokindex({
   sources: allSources,
   passager: allPassages,
   traditions: allTraditions,
+  personer: allPeople,
 })

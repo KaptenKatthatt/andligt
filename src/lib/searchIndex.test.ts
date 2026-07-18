@@ -109,6 +109,7 @@ const tomtIndex = {
   sources: [],
   passager: [],
   traditions: [],
+  personer: [],
 }
 
 const hitta = (index: SearchDoc[], id: string): SearchDoc | undefined =>
@@ -189,7 +190,7 @@ describe('sokindexet (det verkliga indexet)', () => {
   it('rymmer bara giltiga söktyper — inga läckta råposter', () => {
     const typer = new Set(searchIndexData.map((dok) => dok.type))
     for (const type of typer) {
-      expect(['fraga', 'tema', 'rum', 'vandring', 'kalla', 'tradition']).toContain(type)
+      expect(['fraga', 'tema', 'rum', 'vandring', 'kalla', 'tradition', 'person']).toContain(type)
     }
   })
 })
