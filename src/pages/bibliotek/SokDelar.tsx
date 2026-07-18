@@ -7,7 +7,7 @@ import { ToLink } from '../../components/ToLink'
 import { slugOfBook, type BookHit, type SearchHit } from '../../lib/api'
 import type { Note } from '../../lib/personal'
 import { SEARCH_TYPES, type SearchType } from '../../lib/searchIndex'
-import { MAX_SYNLIGA_PER_GRUPP, RUBRIK, type SearchResult, type VisibleGroup } from '../../lib/searchLogic'
+import { MAX_VISIBLE_PER_GROUP, HEADINGS, type SearchResult, type VisibleGroup } from '../../lib/searchLogic'
 import { NoteCard, noteToCard } from '../SparatDelar'
 import styles from './Sok.module.css'
 
@@ -63,7 +63,7 @@ const SearchGroupSection = ({
 const NoteGroupSearch = ({ anteckningar }: { anteckningar: Note[] }) => {
   const [visaAlla, setVisaAlla] = useState(false)
   if (anteckningar.length === 0) return null
-  const synliga = visaAlla ? anteckningar : anteckningar.slice(0, MAX_SYNLIGA_PER_GRUPP)
+  const synliga = visaAlla ? anteckningar : anteckningar.slice(0, MAX_VISIBLE_PER_GROUP)
   return (
     <section className={styles.grupp}>
       <h2 className="kicker sectionKicker">Anteckningar</h2>
@@ -147,7 +147,7 @@ export const SourceTextGroup = ({
       </section>
     )
   if (svar === null || (svar.books.length === 0 && svar.hits.length === 0)) return null
-  const verses = visaAlla ? svar.hits : svar.hits.slice(0, MAX_SYNLIGA_PER_GRUPP)
+  const verses = visaAlla ? svar.hits : svar.hits.slice(0, MAX_VISIBLE_PER_GROUP)
   const dolda = svar.hits.length - verses.length
   return (
     <section className={styles.grupp}>
@@ -272,7 +272,7 @@ export const Resultatvy = ({
 // type inte behöver läggas till på fler ställen än sokindex/soklogik.
 const TYPVAL: Array<{ värde: SearchType | 'alla'; label: string }> = [
   { värde: 'alla', label: 'Alla' },
-  ...SEARCH_TYPES.map((type) => ({ värde: type, label: RUBRIK[type] })),
+  ...SEARCH_TYPES.map((type) => ({ värde: type, label: HEADINGS[type] })),
 ]
 
 /** Valfria, hopfällda typfilter (search.md, Filters): aldrig krav före sökning,

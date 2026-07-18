@@ -89,15 +89,15 @@ const migrateNoteItem = (id: string, värde: unknown, nu: string): Note | null =
   const { originType, originId, ursprungTyp, ursprungId, text, created, updated, skapad, uppdaterad } =
     värde
   if (typeof text !== 'string' || text.trim().length === 0) return null
-  const förstSträng = (a: unknown, b: unknown): string =>
+  const firstString = (a: unknown, b: unknown): string =>
     typeof a === 'string' ? a : typeof b === 'string' ? b : nu
   return {
     originType: toOrigin(originType) ?? toOrigin(ursprungTyp) ?? 'topic',
     originId:
       typeof originId === 'string' ? originId : typeof ursprungId === 'string' ? ursprungId : id,
     text,
-    created: förstSträng(created, skapad),
-    updated: förstSträng(updated, uppdaterad),
+    created: firstString(created, skapad),
+    updated: firstString(updated, uppdaterad),
   }
 }
 

@@ -5,7 +5,7 @@
 import { isTeaserOpening } from './openingGuard'
 import type { Question, ContentSet, Source, SourcePassage, Room, Theme } from './schema'
 
-type Kallrelation = Room['sources'][number]
+type SourceRelation = Room['sources'][number]
 
 type Lookup = {
   rooms: Map<string, Room>
@@ -19,7 +19,7 @@ type Lookup = {
 const perId = <T extends { id: string }>(poster: T[]): Map<string, T> =>
   new Map(poster.map((post) => [post.id, post]))
 
-const dublettfel = (type: string, poster: { id: string; slug?: string }[]): string[] => {
+const duplicateError = (type: string, poster: { id: string; slug?: string }[]): string[] => {
   const fel: string[] = []
   const seddaId = new Set<string>()
   const seddaSluggar = new Set<string>()
@@ -72,7 +72,7 @@ const roomReferences = (rum: Room, uppslag: Lookup): Reference[] => {
   ]
 }
 
-const relationsfel = (rum: Room, uppslag: Lookup): string[] =>
+const relationError = (rum: Room, uppslag: Lookup): string[] =>
   roomReferences(rum, uppslag)
     .filter((reference) => !reference.finns)
     .map((reference) => `rum ${rum.id}: ${reference.type} "${reference.id}" finns inte`)
@@ -81,9 +81,9 @@ const relationsfel = (rum: Room, uppslag: Lookup): string[] =>
 // edition (source-and-context.md, Types of Source Use): så hålls källans ord
 // belagda och åtskilda från redaktionell prosa. Bearbetning/parafras/inspiration
 // får nöja sig med fritextreferens och passerar orörda.
-const REQUIRES_PASSAGE: ReadonlySet<Kallrelation['use']> = new Set(['quote', 'translation'])
+const REQUIRES_PASSAGE: ReadonlySet<SourceRelation['use']> = new Set(['quote', 'translation'])
 
-const bruksgrind = (rum: Room, relation: Kallrelation, uppslag: Lookup): string[] => {
+const sourceUseError = (rum: Room, relation: SourceRelation, uppslag: Lookup): string[] => {
   if (!REQUIRES_PASSAGE.has(relation.use)) return []
   const mark = `rum ${rum.id}: ${relation.use}`
   if (relation.passage === undefined)
@@ -108,7 +108,7 @@ const publishError = (rum: Room, uppslag: Lookup): string[] => {
     ...(rum.readingTimeMinutes <= 10
       ? []
       : [`rum ${rum.id}: lästid ${rum.readingTimeMinutes} min utanför 1–10 för publicerat rum`]),
-    ...rum.sources.flatMap((relation) => bruksgrind(rum, relation, uppslag)),
+    ...rum.sources.flatMap((relation) => sourceUseError(rum, relation, uppslag)),
   ]
   const opublicerade = roomReferences(rum, uppslag)
     .filter((reference) => reference.finns && !reference.publicerad)
@@ -210,7 +210,7 @@ const sourceError = (mängd: ContentSet, uppslag: Lookup): string[] =>
     ...sourceUncertainty(source),
   ])
 
-const passagefel = (mängd: ContentSet, uppslag: Lookup): string[] =>
+const passageError = (mängd: ContentSet, uppslag: Lookup): string[] =>
   mängd.passages.flatMap((passage) =>
     uppslag.sourceStatus.has(passage.source)
       ? []
@@ -231,21 +231,21 @@ export const validateContent = (mängd: ContentSet): string[] => {
     ),
   }
   return [
-    ...dublettfel('rum', mängd.rooms),
-    ...dublettfel('tema', mängd.themes),
-    ...dublettfel('fråga', mängd.questions),
-    ...dublettfel('vandring', mängd.paths),
-    ...dublettfel('source', mängd.sources),
-    ...dublettfel('passage', mängd.passages),
-    ...dublettfel('tradition', mängd.traditions),
-    ...dublettfel('person', mängd.people),
-    ...mängd.rooms.flatMap((rum) => relationsfel(rum, uppslag)),
+    ...duplicateError('rum', mängd.rooms),
+    ...duplicateError('tema', mängd.themes),
+    ...duplicateError('fråga', mängd.questions),
+    ...duplicateError('vandring', mängd.paths),
+    ...duplicateError('source', mängd.sources),
+    ...duplicateError('passage', mängd.passages),
+    ...duplicateError('tradition', mängd.traditions),
+    ...duplicateError('person', mängd.people),
+    ...mängd.rooms.flatMap((rum) => relationError(rum, uppslag)),
     ...mängd.rooms.flatMap((rum) => openingError(rum)),
     ...mängd.rooms.flatMap((rum) => publishError(rum, uppslag)),
     ...mängd.themes.flatMap((tema) => themeError(tema, uppslag)),
     ...mängd.questions.flatMap((fråga) => questionError(fråga, uppslag)),
     ...pathError(mängd, uppslag),
     ...sourceError(mängd, uppslag),
-    ...passagefel(mängd, uppslag),
+    ...passageError(mängd, uppslag),
   ]
 }

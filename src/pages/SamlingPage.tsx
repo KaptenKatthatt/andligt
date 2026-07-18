@@ -163,7 +163,7 @@ export const SamlingPage = () => {
           <NoteGroup kort={kort} />
         </>
       )}
-      <RecentlyVisitedGroup rum={recent} onRensa={store.rensaSenastBesokt} />
+      <RecentlyVisitedGroup rum={recent} onRensa={store.clearRecentlyVisited} />
     </div>
   )
 }

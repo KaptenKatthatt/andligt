@@ -8,7 +8,7 @@ import type {
   Tradition,
   Path,
 } from '../content/editorial/schema'
-import { byggSokindex, searchIndexData, type SearchDoc } from './searchIndex'
+import { buildSearchIndex, searchIndexData, type SearchDoc } from './searchIndex'
 
 type Status = Room['status']
 
@@ -117,7 +117,7 @@ const hitta = (index: SearchDoc[], id: string): SearchDoc | undefined =>
 
 describe('byggSokindex — publiceringsgrind', () => {
   it('släpper aldrig in utkast, granskning eller arkiverat av någon typ', () => {
-    const index = byggSokindex({
+    const index = buildSearchIndex({
       ...tomtIndex,
       questions: [fraga('fraga-pub'), fraga('fraga-utkast', 'draft')],
       themes: [tema('tema-pub'), tema('tema-granskning', 'review')],
@@ -131,7 +131,7 @@ describe('byggSokindex — publiceringsgrind', () => {
   })
 
   it('utesluter en opublicerad passage även när dess källa är publicerad', () => {
-    const index = byggSokindex({
+    const index = buildSearchIndex({
       ...tomtIndex,
       sources: [kalla('kalla-1')],
       passages: [
@@ -147,7 +147,7 @@ describe('byggSokindex — publiceringsgrind', () => {
 
 describe('byggSokindex — fält per typ', () => {
   it('lägger källans originalTitle, alias och författare i alias-fältet', () => {
-    const index = byggSokindex({
+    const index = buildSearchIndex({
       ...tomtIndex,
       sources: [
         kalla('kalla-1', 'published', {
@@ -161,7 +161,7 @@ describe('byggSokindex — fält per typ', () => {
   })
 
   it('ger rummet en meta med primärfrågans text och lästid', () => {
-    const index = byggSokindex({
+    const index = buildSearchIndex({
       ...tomtIndex,
       questions: [fraga('fraga-1', 'published', { text: 'Vad kan du styra?' })],
       rooms: [rum('rum-1', 'published', { primaryQuestion: 'fraga-1', readingTimeMinutes: 8 })],
@@ -170,14 +170,14 @@ describe('byggSokindex — fält per typ', () => {
   })
 
   it('sätter frågans titel till frågetexten och pekar mot frågesidan', () => {
-    const index = byggSokindex({ ...tomtIndex, questions: [fraga('fraga-1', 'published', { text: 'Hur lever man?' })] })
+    const index = buildSearchIndex({ ...tomtIndex, questions: [fraga('fraga-1', 'published', { text: 'Hur lever man?' })] })
     const dok = hitta(index, 'fraga-1')
     expect(dok?.title).toBe('Hur lever man?')
     expect(dok?.target).toEqual({ kind: 'fraga', slug: 'fraga-1' })
   })
 
   it('lämnar traditioner utan sökmål (de har inga egna sidor)', () => {
-    const index = byggSokindex({ ...tomtIndex, traditions: [tradition('trad-1')] })
+    const index = buildSearchIndex({ ...tomtIndex, traditions: [tradition('trad-1')] })
     expect(hitta(index, 'trad-1')?.target).toBeUndefined()
   })
 })

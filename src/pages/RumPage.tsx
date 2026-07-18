@@ -135,7 +135,7 @@ const kolofonetikett = (rum: Room, source: Source): string =>
   new Set(rum.sources.map((relation) => relation.source)).size > 1 ? 'Källor' : sourceName(source)
 
 const Rumsavslut = ({ rum }: { rum: Room }) => {
-  const { savedRooms, vaxlaSparatRum, notes, sattAnteckning, taBortAnteckning } = useAtlas()
+  const { savedRooms, toggleSavedRoom, notes, setNote, removeNote } = useAtlas()
   const [öppenRad, setÖppenRad] = useState<'source' | 'bakgrund' | null>(null)
   const [anteckningÖppen, setAnteckningÖppen] = useState(false)
   const primarySource = rum.sources.find((k) => k.primary) ?? rum.sources[0]
@@ -177,7 +177,7 @@ const Rumsavslut = ({ rum }: { rum: Room }) => {
           type="button"
           className={styles.avslutshandling}
           aria-pressed={sparat}
-          onClick={() => vaxlaSparatRum(rum.id)}
+          onClick={() => toggleSavedRoom(rum.id)}
         >
           {sparat ? 'Sparad' : 'Spara'}
         </button>
@@ -193,8 +193,8 @@ const Rumsavslut = ({ rum }: { rum: Room }) => {
         <NotesSheet
           title={rum.title}
           value={notes[rum.id]?.text ?? ''}
-          onChange={(text) => sattAnteckning('room', rum.id, text)}
-          onDelete={() => taBortAnteckning(rum.id)}
+          onChange={(text) => setNote('room', rum.id, text)}
+          onDelete={() => removeNote(rum.id)}
           onClose={() => setAnteckningÖppen(false)}
         />
       )}
@@ -251,7 +251,7 @@ const Vandringsfot = ({ vandring, rum }: { vandring: Path; rum: Room }) => {
  * direkt länk ska varken tränga ut publicerade rum ur det lilla fönstret eller
  * skriva vandringsminne (paths.md: minnet är orientering, aldrig förlopp). */
 const useRumsminne = (rum: Room | undefined, vandring: Path | undefined): void => {
-  const { registreraLastRum, registreraVandringsplats } = useAtlas()
+  const { registerLastRoom, registerPathPosition } = useAtlas()
   const publishedRoomId = rum?.status === 'published' ? rum.id : undefined
   const pathPositionId =
     vandring?.status === 'published' &&
@@ -260,12 +260,12 @@ const useRumsminne = (rum: Room | undefined, vandring: Path | undefined): void =
       ? vandring.id
       : undefined
   useEffect(() => {
-    if (publishedRoomId !== undefined) registreraLastRum(publishedRoomId)
-  }, [publishedRoomId, registreraLastRum])
+    if (publishedRoomId !== undefined) registerLastRoom(publishedRoomId)
+  }, [publishedRoomId, registerLastRoom])
   useEffect(() => {
     if (pathPositionId !== undefined && publishedRoomId !== undefined)
-      registreraVandringsplats(pathPositionId, publishedRoomId)
-  }, [pathPositionId, publishedRoomId, registreraVandringsplats])
+      registerPathPosition(pathPositionId, publishedRoomId)
+  }, [pathPositionId, publishedRoomId, registerPathPosition])
 }
 
 /** Fas 14: fångar brutna källrelationer — ett rum som pekar på en source eller

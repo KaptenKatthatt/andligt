@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import type { SearchDoc, SearchType } from './searchIndex'
 import {
-  MAX_SYNLIGA_PER_GRUPP,
-  MAX_SYNLIGA_TOTALT,
+  MAX_VISIBLE_PER_GROUP,
+  MAX_VISIBLE_TOTAL,
   searchInLibrary,
   visibleHits,
   type SearchGroup,
@@ -117,7 +117,7 @@ describe('synligaTraffar — ändliga resultat', () => {
 
   it('visar som mest fem per grupp och röjer resten bakom Visa fler', () => {
     const [synlig] = visibleHits([grupp('rum', 7)], new Set())
-    expect(synlig?.visible.length).toBe(MAX_SYNLIGA_PER_GRUPP)
+    expect(synlig?.visible.length).toBe(MAX_VISIBLE_PER_GROUP)
     expect(synlig?.hidden).toBe(2)
   })
 
@@ -136,6 +136,6 @@ describe('synligaTraffar — ändliga resultat', () => {
       grupp('kalla', 5),
     ]
     const totalt = visibleHits(grupper, new Set()).reduce((s, g) => s + g.visible.length, 0)
-    expect(totalt).toBeLessThanOrEqual(MAX_SYNLIGA_TOTALT)
+    expect(totalt).toBeLessThanOrEqual(MAX_VISIBLE_TOTAL)
   })
 })

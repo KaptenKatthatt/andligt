@@ -62,20 +62,20 @@ export const libraryPeople = (people: Person[]): Person[] =>
 export const libraryQuestions = (frågor: Question[]): Question[] =>
   onlyPublished(frågor).sort(svOrdning((f) => f.text))
 
-const svTitel = svOrdning<Room>((r) => r.title)
+const compareTitleSv = svOrdning<Room>((r) => r.title)
 
 /** Frågesidans rum: rum som bär frågan som sitt eget anspråk (primaryQuestion)
  * står först; rum som bara pekar på den bland relatedQuestions breddar
  * efteråt. En ändlig lista — aldrig en sekvens. */
 export const roomsForQuestion = (fragaId: string, rum: Room[]): Room[] => {
   const published = onlyPublished(rum)
-  const primary = published.filter((ettRum) => ettRum.primaryQuestion === fragaId).sort(svTitel)
+  const primary = published.filter((ettRum) => ettRum.primaryQuestion === fragaId).sort(compareTitleSv)
   const relaterade = published
     .filter(
       (ettRum) =>
         ettRum.primaryQuestion !== fragaId && (ettRum.relatedQuestions ?? []).includes(fragaId),
     )
-    .sort(svTitel)
+    .sort(compareTitleSv)
   return [...primary, ...relaterade]
 }
 
@@ -149,5 +149,5 @@ export const roomsForSource = (kallaId: string, rum: Room[]): Room[] => {
     ettRum.sources.some((relation) => relation.source === kallaId && relation.primary) ? 0 : 1
   return onlyPublished(rum)
     .filter((ettRum) => ettRum.sources.some((relation) => relation.source === kallaId))
-    .sort((a, b) => primaryWeight(a) - primaryWeight(b) || svTitel(a, b))
+    .sort((a, b) => primaryWeight(a) - primaryWeight(b) || compareTitleSv(a, b))
 }

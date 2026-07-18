@@ -27,7 +27,7 @@ const searchObject = (term: string, type: SearchType | undefined): SearchParams 
   ...(type ? { type } : {}),
 })
 
-type Härlett = {
+type Derived = {
   synliga: VisibleGroup[]
   notes: Note[]
   redaktionellaOchNoter: number
@@ -41,7 +41,7 @@ const deriveResult = (
   type: SearchType | undefined,
   expanderade: ReadonlySet<SearchType>,
   anteckningar: Record<string, Note>,
-): Härlett => {
+): Derived => {
   let grupper: SearchGroup[] = []
   let fel = false
   try {

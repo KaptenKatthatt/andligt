@@ -11,7 +11,7 @@ export type Parsed<T> = { value: T | null; errors: string[] }
 
 // Sektionsrubrik i markdown → fält på rummet. Okända rubriker är fel, så
 // stavfel inte tyst sväljer text.
-const SEKTIONER: Record<string, 'opening' | 'core' | 'historicalContext'> = {
+const SECTIONS: Record<string, 'opening' | 'core' | 'historicalContext'> = {
   'Opening': 'opening',
   'Core': 'core',
   'Historical context': 'historicalContext',
@@ -70,16 +70,16 @@ const splitSections = (kropp: string): Map<string, string> => {
 
 type RoomFields = Partial<Record<'opening' | 'core' | 'historicalContext', string>>
 
-const rumssektioner = (sökväg: string, kropp: string): Parsed<RoomFields> => {
+const roomSections = (sökväg: string, kropp: string): Parsed<RoomFields> => {
   const fel: string[] = []
   const field: RoomFields = {}
   for (const [rubrik, text] of splitSections(kropp)) {
-    const name = SEKTIONER[rubrik]
+    const name = SECTIONS[rubrik]
     if (!name) fel.push(`${sökväg}: okänd sektion "## ${rubrik}"`)
     else if (text.length > 0) field[name] = text
   }
   for (const required of ['Opening', 'Core'] as const) {
-    const name = SEKTIONER[required]
+    const name = SECTIONS[required]
     if (name && field[name] === undefined) fel.push(`${sökväg}: saknar sektionen "## ${required}"`)
   }
   return fel.length > 0 ? { value: null, errors: fel } : { value: field, errors: [] }
@@ -89,7 +89,7 @@ const rumssektioner = (sökväg: string, kropp: string): Parsed<RoomFields> => {
 export const parseRoomFile = (fil: ContentFile): Parsed<Room> => {
   const split = splitFrontmatter(fil)
   if (!split.value) return { value: null, errors: split.errors }
-  const sektioner = rumssektioner(fil.filePath, split.value.kropp)
+  const sektioner = roomSections(fil.filePath, split.value.kropp)
   if (!sektioner.value) return { value: null, errors: sektioner.errors }
   const parsed = roomSchema.safeParse({ ...split.value.frontmatter, ...sektioner.value })
   if (!parsed.success) return { value: null, errors: formateraError(fil.filePath, parsed.error.issues) }

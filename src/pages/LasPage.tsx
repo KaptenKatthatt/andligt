@@ -14,7 +14,7 @@ import styles from './LasPage.module.css'
 
 export const LasPage = ({ id, mode }: { id: string; mode: ReadMode }) => {
   const topic = findTopic(id)
-  const { notes, sattAnteckning, taBortAnteckning, recordRead } = useAtlas()
+  const { notes, setNote, removeNote, recordRead } = useAtlas()
   const [notesOpen, setNotesOpen] = useState(false)
   useSidtitel(topic?.title)
 
@@ -82,8 +82,8 @@ export const LasPage = ({ id, mode }: { id: string; mode: ReadMode }) => {
         <NotesSheet
           title={topic.title}
           value={note}
-          onChange={(value) => sattAnteckning('topic', topic.id, value)}
-          onDelete={() => taBortAnteckning(topic.id)}
+          onChange={(value) => setNote('topic', topic.id, value)}
+          onDelete={() => removeNote(topic.id)}
           onClose={() => setNotesOpen(false)}
         />
       )}

@@ -44,7 +44,7 @@ const nu = (): string => new Date().toISOString()
 // alla rum bär) blir `rum`, allt annat (topic-id ur gamla appen, oidentifierbart)
 // hamnar i `amne` — texten bevaras alltid, oavsett ursprung. Prefixkollen håller
 // storen fri från innehållssamlingen så startbunten slipper hela biblioteket (fas 13).
-const klassificeraUrsprung = (id: string): Origin => (id.startsWith('rum-') ? 'room' : 'topic')
+const classifyOrigin = (id: string): Origin => (id.startsWith('rum-') ? 'room' : 'topic')
 
 type AtlasState = {
   // null = inget manuellt val: temat följer systemets färgschema, även när
@@ -83,15 +83,15 @@ type AtlasActions = {
   toggleBookmark: (id: string) => void
   toggleChapterBookmark: (bookmark: ChapterBookmark) => void
   recordRead: (id: string, mode: ReadMode) => void
-  registreraLastRum: (id: string) => void
-  registreraVandringsplats: (vandringId: string, rumId: string) => void
-  vaxlaSparatRum: (id: string) => void
-  vaxlaSparadVandring: (id: string) => void
-  sattAnteckning: (type: Origin, ursprungId: string, text: string) => void
-  taBortAnteckning: (ursprungId: string) => void
-  rensaSenastBesokt: () => void
-  importeraPersonligt: (importen: PersonalExport) => void
-  rensaPersonligt: () => void
+  registerLastRoom: (id: string) => void
+  registerPathPosition: (vandringId: string, rumId: string) => void
+  toggleSavedRoom: (id: string) => void
+  toggleSavedPath: (id: string) => void
+  setNote: (type: Origin, ursprungId: string, text: string) => void
+  removeNote: (ursprungId: string) => void
+  clearRecentlyVisited: () => void
+  importPersonal: (importen: PersonalExport) => void
+  clearPersonal: () => void
 }
 
 // Utåt är dark alltid det effektiva värdet (manuellt val eller systemets).
@@ -123,7 +123,7 @@ export type SavedRaw = Partial<Omit<AtlasState, 'notes' | 'savedRooms' | 'savedP
 // former — både gammal datastruktur och de svenska nycklarna (anteckningar/
 // sparadeRum/sparadeVandringar) före engelsk-migreringen.
 const restoredPersonal = (saved: SavedRaw): Pick<AtlasState, 'notes' | 'savedRooms' | 'savedPaths'> => ({
-  notes: migrateNotes(saved.notes, saved.anteckningar ?? saved.notes, klassificeraUrsprung, nu()),
+  notes: migrateNotes(saved.notes, saved.anteckningar ?? saved.notes, classifyOrigin, nu()),
   savedRooms: migrateSaved(saved.savedRooms ?? saved.sparadeRum),
   savedPaths: migrateSaved(saved.savedPaths ?? saved.sparadeVandringar),
 })
@@ -193,14 +193,14 @@ type CollectionActions = Pick<
   | 'toggleBookmark'
   | 'toggleChapterBookmark'
   | 'recordRead'
-  | 'registreraLastRum'
-  | 'registreraVandringsplats'
+  | 'registerLastRoom'
+  | 'registerPathPosition'
 >
 type PersonligtActions = Pick<
   AtlasActions,
-  'vaxlaSparatRum' | 'vaxlaSparadVandring' | 'sattAnteckning' | 'taBortAnteckning' | 'rensaSenastBesokt'
+  'toggleSavedRoom' | 'toggleSavedPath' | 'setNote' | 'removeNote' | 'clearRecentlyVisited'
 >
-type DataActions = Pick<AtlasActions, 'importeraPersonligt' | 'rensaPersonligt'>
+type DataActions = Pick<AtlasActions, 'importPersonal' | 'clearPersonal'>
 
 const useThemeActions = (setState: SetAtlasState): ThemeActions => {
   const toggleDark = useCallback(
@@ -248,7 +248,7 @@ const useCollectionActions = (setState: SetAtlasState): CollectionActions => {
       setState((s) => ({ ...s, lastRead: { id, mode } })),
     [setState],
   )
-  const registreraLastRum = useCallback(
+  const registerLastRoom = useCallback(
     // Cappen speglar rumsvalets fönster men är bara lagringsstädning —
     // själva urvalsregeln (vad som räknas som nyligen) bor i rumsval.ts.
     (id: string) =>
@@ -261,7 +261,7 @@ const useCollectionActions = (setState: SetAtlasState): CollectionActions => {
       })),
     [setState],
   )
-  const registreraVandringsplats = useCallback(
+  const registerPathPosition = useCallback(
     // Sista rummet vinner — ren orientering, ingen historik och inget förlopp.
     (vandringId: string, rumId: string) =>
       setState((s) => ({
@@ -274,8 +274,8 @@ const useCollectionActions = (setState: SetAtlasState): CollectionActions => {
     toggleBookmark,
     toggleChapterBookmark,
     recordRead,
-    registreraLastRum,
-    registreraVandringsplats,
+    registerLastRoom,
+    registerPathPosition,
   }
 }
 
@@ -291,17 +291,17 @@ const toggleSaved = (
 }
 
 const usePersonligtActions = (setState: SetAtlasState): PersonligtActions => {
-  const vaxlaSparatRum = useCallback(
+  const toggleSavedRoom = useCallback(
     // Anteckningen är en egen post och överlever av-sparning, så ingen varning
     // behövs (notes-and-saved.md: varning bara när borttag även raderar anteckning).
     (id: string) => setState((s) => ({ ...s, savedRooms: toggleSaved(s.savedRooms, id) })),
     [setState],
   )
-  const vaxlaSparadVandring = useCallback(
+  const toggleSavedPath = useCallback(
     (id: string) => setState((s) => ({ ...s, savedPaths: toggleSaved(s.savedPaths, id) })),
     [setState],
   )
-  const sattAnteckning = useCallback(
+  const setNote = useCallback(
     (type: Origin, ursprungId: string, text: string) =>
       setState((s) => ({
         ...s,
@@ -312,7 +312,7 @@ const usePersonligtActions = (setState: SetAtlasState): PersonligtActions => {
       })),
     [setState],
   )
-  const taBortAnteckning = useCallback(
+  const removeNote = useCallback(
     (ursprungId: string) =>
       setState((s) => {
         const next = { ...s.notes }
@@ -321,13 +321,13 @@ const usePersonligtActions = (setState: SetAtlasState): PersonligtActions => {
       }),
     [setState],
   )
-  const rensaSenastBesokt = useCallback(
+  const clearRecentlyVisited = useCallback(
     // Tömmer bara orienteringshistoriken. Ofarligt för rumsvalet: utan historik
     // undviks ingen upprepning tillfälligt, aldrig ett fel val.
     () => setState((s) => ({ ...s, recentRooms: [] })),
     [setState],
   )
-  return { vaxlaSparatRum, vaxlaSparadVandring, sattAnteckning, taBortAnteckning, rensaSenastBesokt }
+  return { toggleSavedRoom, toggleSavedPath, setNote, removeNote, clearRecentlyVisited }
 }
 
 /** Plockar ut den personliga delen av storen — delas av importmerge och av
@@ -354,16 +354,16 @@ const tomtPersonligt = {
 } satisfies Partial<AtlasState>
 
 const useDataActions = (setState: SetAtlasState): DataActions => {
-  const importeraPersonligt = useCallback(
+  const importPersonal = useCallback(
     (importen: PersonalExport) =>
       setState((s) => ({ ...s, ...mergeImport(personalCollections(s), importen) })),
     [setState],
   )
-  const rensaPersonligt = useCallback(
+  const clearPersonal = useCallback(
     () => setState((s) => ({ ...s, ...tomtPersonligt })),
     [setState],
   )
-  return { importeraPersonligt, rensaPersonligt }
+  return { importPersonal, clearPersonal }
 }
 
 const useAtlasActions = (setState: SetAtlasState): AtlasActions => ({

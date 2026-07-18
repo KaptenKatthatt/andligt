@@ -71,7 +71,7 @@ export type SearchDoc = {
   text: string[]
 }
 
-const kartaById = <T extends { id: string }>(poster: T[]): Map<string, T> =>
+const mapById = <T extends { id: string }>(poster: T[]): Map<string, T> =>
   new Map(poster.map((post) => [post.id, post]))
 
 const docFromQuestion = (fraga: Question): SearchDoc => ({
@@ -232,7 +232,7 @@ const docFromPerson = (person: Person): SearchDoc => ({
   ],
 })
 
-type Innehall = Pick<
+type IndexContent = Pick<
   ContentSet,
   'rooms' | 'themes' | 'questions' | 'paths' | 'sources' | 'passages' | 'traditions' | 'people'
 >
@@ -240,11 +240,11 @@ type Innehall = Pick<
 /** Bygger det publika indexet. Uppslagskartorna byggs ur de PUBLICERADE
  * urvalen, så ingen utkasttext kan följa med in i ett sökbart fält ens via en
  * reference. */
-export const byggSokindex = (innehall: Innehall): SearchDoc[] => {
-  const frågor = kartaById(libraryQuestions(innehall.questions))
-  const themes = kartaById(libraryThemes(innehall.themes))
-  const sources = kartaById(librarySources(innehall.sources))
-  const traditions = kartaById(libraryTraditions(innehall.traditions))
+export const buildSearchIndex = (innehall: IndexContent): SearchDoc[] => {
+  const frågor = mapById(libraryQuestions(innehall.questions))
+  const themes = mapById(libraryThemes(innehall.themes))
+  const sources = mapById(librarySources(innehall.sources))
+  const traditions = mapById(libraryTraditions(innehall.traditions))
   return [
     ...libraryQuestions(innehall.questions).map(docFromQuestion),
     ...libraryThemes(innehall.themes).map(docFromTheme),
@@ -261,7 +261,7 @@ export const byggSokindex = (innehall: Innehall): SearchDoc[] => {
 }
 
 /** Appens index, byggt en gång vid moduladdning ur allt laddat innehåll. */
-export const searchIndexData: SearchDoc[] = byggSokindex({
+export const searchIndexData: SearchDoc[] = buildSearchIndex({
   rooms: allRooms,
   themes: allThemes,
   questions: allQuestions,

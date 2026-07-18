@@ -87,7 +87,7 @@ export const DinaData = () => {
       setFel('Filen kunde inte läsas.')
       return
     }
-    store.importeraPersonligt(data)
+    store.importPersonal(data)
     setFel(undefined)
   }
 
@@ -123,7 +123,7 @@ export const DinaData = () => {
         </label>
       </div>
       {fel !== undefined && <p className={styles.fel}>{fel}</p>}
-      <Rensning onRensa={store.rensaPersonligt} />
+      <Rensning onRensa={store.clearPersonal} />
     </div>
   )
 }

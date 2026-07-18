@@ -36,7 +36,7 @@ const Metarad = ({ rummen }: { rummen: Room[] }) => {
  * ingen firande återkoppling, ingen räknare. En sparad vandring betyder bara
  * att läsaren vill kunna återvända — aldrig ett åtagande att slutföra. */
 const SavePath = ({ vandring }: { vandring: Path }) => {
-  const { savedPaths, vaxlaSparadVandring } = useAtlas()
+  const { savedPaths, toggleSavedPath } = useAtlas()
   const saved = !!savedPaths[vandring.id]
   return (
     <div className={styles.spara}>
@@ -44,7 +44,7 @@ const SavePath = ({ vandring }: { vandring: Path }) => {
         type="button"
         className={styles.sparaknapp}
         aria-pressed={saved}
-        onClick={() => vaxlaSparadVandring(vandring.id)}
+        onClick={() => toggleSavedPath(vandring.id)}
       >
         {saved ? 'Sparad' : 'Spara'}
       </button>
