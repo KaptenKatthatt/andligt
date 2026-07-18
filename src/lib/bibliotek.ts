@@ -7,6 +7,7 @@ import type {
   Fraga,
   Kalla,
   Kallpassage,
+  Person,
   Rum,
   Tema,
   Tradition,
@@ -128,6 +129,11 @@ export const traditionerForVandring = (
   )
   return bibliotekTraditioner(traditioner.filter((tradition) => traditionIds.has(tradition.id)))
 }
+
+/** Bibliotekets personer: publicerade, i svensk namnordning. Referenspunkter,
+ * aldrig primär navigation (library.md, People and Authors). */
+export const bibliotekPersoner = (personer: Person[]): Person[] =>
+  publicerade(personer).sort(svOrdning((p) => p.namn))
 
 /** Källans publicerade passager, i naturlig referensordning (»avsnitt 5« före
  * »avsnitt 43«, inte tvärtom). Bara publicerade passager når biblioteket;

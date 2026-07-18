@@ -3,12 +3,13 @@ import type {
   Fraga,
   Kalla,
   Kallpassage,
+  Person,
   Rum,
   Tema,
   Tradition,
   Vandring,
 } from '../content/redaktion/schema'
-import { byggSokindex, sokindexet, type Sokdokument } from './sokindex'
+import { byggSokindex, SOKTYPER, sokindexet, type Sokdokument } from './sokindex'
 
 type Status = Rum['status']
 
@@ -109,7 +110,18 @@ const tomtIndex = {
   källor: [],
   passager: [],
   traditioner: [],
+  personer: [],
 }
+
+const person = (id: string, status: Status = 'publicerad'): Person => ({
+  id,
+  slug: id,
+  namn: 'Alan Watts',
+  årtal: '1915–1973',
+  kortbeskrivning: 'Västs mest inflytelserika uttolkare av österländskt tänkande.',
+  status,
+  beskrivning: 'Alan Watts föddes 1915 i Chislehurst utanför London och blev rösten som bar österns tankar till väst.',
+})
 
 const hitta = (index: Sokdokument[], id: string): Sokdokument | undefined =>
   index.find((dok) => dok.id === id)
@@ -141,6 +153,30 @@ describe('byggSokindex — publiceringsgrind', () => {
     const dok = hitta(index, 'kalla-1')
     expect(dok?.text.join(' ')).toContain('synligt citat')
     expect(dok?.text.join(' ')).not.toContain('hemligt utkast')
+  })
+})
+
+describe('byggSokindex — personer', () => {
+  it('indexerar publicerade personer med personpost-mål, årtal och beskrivning', () => {
+    const index = byggSokindex({ ...tomtIndex, personer: [person('person-watts')] })
+    const dok = hitta(index, 'person-watts')
+    expect(dok?.typ).toBe('person')
+    expect(dok?.titel).toBe('Alan Watts')
+    expect(dok?.meta).toBe('1915–1973')
+    expect(dok?.mal).toEqual({ kind: 'personpost', slug: 'person-watts' })
+    expect(dok?.text.join(' ')).toContain('rösten som bar')
+  })
+
+  it('låter kortbeskrivningen vara underrad — inte porträttets födelsedata', () => {
+    const index = byggSokindex({ ...tomtIndex, personer: [person('person-watts')] })
+    expect(hitta(index, 'person-watts')?.underrad).toBe(
+      'Västs mest inflytelserika uttolkare av österländskt tänkande.',
+    )
+  })
+
+  it('släpper aldrig in utkastpersoner i indexet', () => {
+    const index = byggSokindex({ ...tomtIndex, personer: [person('person-utkast', 'utkast')] })
+    expect(index).toEqual([])
   })
 })
 
@@ -189,7 +225,7 @@ describe('sokindexet (det verkliga indexet)', () => {
   it('rymmer bara giltiga söktyper — inga läckta råposter', () => {
     const typer = new Set(sokindexet.map((dok) => dok.typ))
     for (const typ of typer) {
-      expect(['fraga', 'tema', 'rum', 'vandring', 'kalla', 'tradition']).toContain(typ)
+      expect(SOKTYPER).toContain(typ)
     }
   })
 })

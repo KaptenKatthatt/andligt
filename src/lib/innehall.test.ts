@@ -38,7 +38,7 @@ describe('innehållsladdaren', () => {
 })
 
 describe('tröskeln', () => {
-  it('ordnar temana redaktionellt och utan arkiverade', () => {
+  it('ordnar temana redaktionellt och visar bara publicerade', () => {
     expect(troskelTeman.map((tema) => tema.etikett)).toEqual([
       'Lugn',
       'Mening',
@@ -46,8 +46,9 @@ describe('tröskeln', () => {
       'Sanning',
       'Lidande',
       'Människan',
+      'Jesus',
     ])
-    expect(troskelTeman.every((tema) => tema.status !== 'arkiverad')).toBe(true)
+    expect(troskelTeman.every((tema) => tema.status === 'publicerad')).toBe(true)
   })
 })
 

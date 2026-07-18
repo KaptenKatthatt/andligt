@@ -7,11 +7,13 @@ import {
   fragaSchema,
   kallaSchema,
   kallpassageSchema,
+  personSchema,
   traditionSchema,
   vandringSchema,
   type Fraga,
   type Kalla,
   type Kallpassage,
+  type Person,
   type Rum,
   type Tema,
   type Tradition,
@@ -54,6 +56,13 @@ export const allaPassager: Kallpassage[] = samla(
   (fil) => tolkaPostfil(kallpassageSchema, fil),
 )
 
+/** Personer — referenspunkter i biblioteket, inte ingångar (library.md,
+ * People and Authors). Porträtt av gestalterna bakom eller kring källorna. */
+export const allaPersoner: Person[] = samla(
+  tillFiler(import.meta.glob<string>('../content/personer/*.md', { query: '?raw', import: 'default', eager: true })),
+  (fil) => tolkaPostfil(personSchema, fil),
+)
+
 export const allaTraditioner: Tradition[] = samla(
   tillFiler(import.meta.glob<string>('../content/traditioner/*.md', { query: '?raw', import: 'default', eager: true })),
   (fil) => tolkaPostfil(traditionSchema, fil),
@@ -91,6 +100,9 @@ export const hittaVandringViaSlug = (slug: string): Vandring | undefined =>
 
 export const hittaVandringViaId = (id: string): Vandring | undefined =>
   allaVandringar.find((vandring) => vandring.id === id)
+
+export const hittaPersonViaSlug = (slug: string): Person | undefined =>
+  allaPersoner.find((person) => person.slug === slug)
 
 export const hittaPassage = (id: string): Kallpassage | undefined =>
   allaPassager.find((passage) => passage.id === id)

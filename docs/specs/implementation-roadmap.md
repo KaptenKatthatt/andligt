@@ -810,7 +810,11 @@ Planned entry points for his themes, each anchored in older public-domain source
   popularised the idea; his music analogy is not reproduced)
 - **Historia:** Tolken i väst — a room about Watts himself as the West's most
   influential populariser of Asian thought, including the criticism of him,
-  possibly with one short verified quotation inside the analysis
+  possibly with one short verified quotation inside the analysis.
+  *Editor's decision 2026-07-18 (PR #52): not built as a room — a portrait of
+  the mediator is source context, not a reflection room. Published instead as
+  the library's first person page (see "Person Pages" below); no `historia`
+  theme is introduced.*
 
 Prerequisite: `taoism` and `buddhism` tradition records plus source records for
 Daodejing, Zhuangzi and Dhammapada, following the Phase 6 Stoicism pattern. The
@@ -1165,6 +1169,35 @@ A visual mock-up alone is not an implementation.
 A component that has not been connected to the real flow is not complete.
 
 Code that has not been verified is not complete.
+
+---
+
+# Person Pages (to do — decided, not yet designed)
+
+Editor's decision 2026-07-18 (PR #52): the library gets person pages —
+portraits of the figures behind or around the sources. A first minimal
+version exists (content under `src/content/personer/`, `personSchema`,
+route `/bibliotek/person/$slug`, a "Personer" section at the bottom of the
+library landing page, hidden while empty). This is a stopgap: the section's
+placement, the page's shape and its relations are to be properly designed
+later.
+
+To do when this is picked up:
+
+- candidates named by the editor: Jesus, Siddhartha who became the Buddha,
+  Alan Watts (done — the first person page), possibly portraits of gods
+  from the Norse pantheon (Asarna)
+- decide relations: person ↔ sources, person ↔ traditions, person ↔ rooms
+  (the schema's `traditioner` field exists but is not yet validated or shown)
+- cross-validation: a published person must not link unpublished records
+- search: done in PR #52 after review feedback — `person` is a `Soktyp`
+  (ranked last per search.md Result Priority), documents built from
+  published persons only, `kortbeskrivning` carries the "short identifying
+  description"; revisit ranking/fields when the model is properly designed
+- reconcile with the legacy people pages (`/personer`, `/person/$id`,
+  `people.ts`) — one model should win
+- sourcing: person portraits carry no `redaktion` block in the schema;
+  decide where editorial responsibility and source notes live
 
 ---
 
