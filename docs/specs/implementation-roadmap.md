@@ -944,11 +944,25 @@ Do not optimise for:
 
 The phase is complete when:
 
-- [ ] Analytics are documented.
-- [ ] Private notes are excluded.
-- [ ] Sensitive query data is minimised.
-- [ ] No engagement dashboard is used to shape room selection.
-- [ ] Error reporting does not collect unnecessary personal text.
+- [x] Analytics are documented.
+- [x] Private notes are excluded.
+- [x] Sensitive query data is minimised.
+- [x] No engagement dashboard is used to shape room selection.
+- [x] Error reporting does not collect unnecessary personal text.
+
+Uppfyllt 2026-07-18: felrapporteringen samlar bara tekniskt minimum och är
+dokumenterad i `docs/specs/analytics.md`. Sänkan är medvetet enkel (ägarens
+beslut): klientens tekniska fel loggas till webbläsarens konsol (`telemetri.ts`),
+serverns till serverloggen (Hono `onError`) — ingen tredjepart, ingen endpoint,
+ingen DSN. De enda händelserna är sidladdningsfel, offline-laddningsfel, brutna
+källänkar, ogiltiga innehållsrelationer, sökfel, anonymiserade nollträffar och
+okaught-fel; ingen instrumentering finns för session, återkomst, streaks,
+sparande, anteckningar, vandringsavslut eller engagemang. Privata anteckningar
+rörs aldrig; nollträffssökningar loggas bara som längd och ordantal (aldrig
+texten) och frågesträngen strippas ur alla resurs-URL:er; okaught-fel loggar bara
+meddelande och kodplats. Rumsvalet (`rumsval.ts`) förblir deterministiskt och
+läser aldrig någon telemetri. E2E-verifierat: nollträff loggas anonymiserat utan
+att läcka frågan, okaught-fel fångas, API-fel rapporteras utan `?q=`.
 
 ---
 

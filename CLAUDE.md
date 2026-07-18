@@ -172,6 +172,20 @@ Lugna svenska offline-fel i `api.ts` (verkläsarens texter; det bundlade innehå
 aldrig). PWA-ikoner (192/512/maskable ur `icon.svg`). localStorage-gränser täckta av
 `storage.test.ts`. Resultat: startbunt 147 kB gzip (från 242), start-CSS 17 kB (från 93).
 
+**Fas 14 — Analys och felrapportering (`docs/specs/analytics.md`) klar.** Appen samlar
+bara tekniskt minimum, aldrig engagemang. Sänkan är medvetet enkel (ägarens beslut):
+klientens tekniska fel loggas till webbläsarens konsol (`telemetri.ts` — `rapportera`,
+`installeraGlobalaFelfangare`), serverns till serverloggen (Hono `onError`). Ingen
+tredjepart, ingen endpoint, ingen DSN. Händelser: sidladdningsfel (felgräns `Felgrans`
+kring de kod-delade sidorna, innehålls-import i tröskeln, ej-ok API-svar),
+offline-laddningsfel, brutna källänkar/ogiltiga innehållsrelationer (`RumPage`), sökfel
+och anonymiserade nollträffar (`SokBibliotekPage`), okaught-fel (globala fångare). Privata
+anteckningar rörs aldrig; nollträffar loggas bara som längd/ordantal (aldrig texten,
+`anonymiseraFraga`) och frågesträngen strippas ur resurs-URL:er (`utanFraga`); okaught-fel
+loggar bara meddelande + kodplats. Rumsvalet förblir deterministiskt och läser aldrig
+någon telemetri — ingen engagemang-dashboard styr rumsval. Ingen instrumentering finns för
+de förbjudna storheterna (session, återkomst, streaks, sparande, notiser, vandringsavslut).
+
 ## Kända skulder
 
 - Sandlådefällor: `getbible.net` ger 403 vid ingest (ofarligt, bara Bibeln);

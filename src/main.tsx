@@ -15,9 +15,13 @@ import '@fontsource/eb-garamond/400-italic.css'
 import '@fontsource/eb-garamond/500-italic.css'
 import { router } from './app/router'
 import { AtlasProvider } from './lib/store'
+import { installeraGlobalaFelfangare } from './lib/telemetri'
 import './styles/global.css'
 
 registerSW()
+// Fas 14: fånga globala, annars osynliga fel (okaught-fel, avvisade promises)
+// och logga dem lugnt till konsolen. Ingen tredjepart, inget engagemang.
+installeraGlobalaFelfangare()
 
 const rootElement = document.getElementById('root')
 if (rootElement) {

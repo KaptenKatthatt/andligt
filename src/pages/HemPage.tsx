@@ -3,6 +3,7 @@ import { useState } from 'react'
 import type { Tema } from '../content/redaktion/schema'
 import { valjRum } from '../lib/rumsval'
 import { useAtlas } from '../lib/store'
+import { rapportera } from '../lib/telemetri'
 import { troskelTeman } from '../lib/troskeldata'
 import { useSidtitel } from '../lib/useSidtitel'
 import styles from './HemPage.module.css'
@@ -36,6 +37,7 @@ export const HemPage = () => {
     } catch {
       // Innehållschunken gick inte att hämta (t.ex. offline före första cachning).
       // Släpp knappen igen så valet kan göras om — inget kraschar, inget hänger.
+      rapportera({ typ: 'sidladdningsfel', resurs: 'innehall' })
     }
     setVäljer(false)
   }
