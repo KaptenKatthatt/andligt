@@ -65,9 +65,26 @@ export type BookHit = {
   bookName: string
 }
 
+/** Lugna, svenska felmeddelanden i stället för råa `TypeError: Failed to fetch`
+ * eller statuskoder. Källtexterna kommer från biblioteks-API:t (server/), så en
+ * bruten uppkoppling ska mötas begripligt (fas 13, provide calm offline errors) —
+ * inte som ett tekniskt haveri. Det redaktionella innehållet ligger i bunten och
+ * berörs aldrig av detta; bara verkläsarens texter hämtas över nätet. */
+const OFFLINE_TEXT = 'Du verkar vara offline. Texten går att läsa igen när du är ansluten.'
+const NAT_TEXT = 'Texten går inte att hämta just nu. Kontrollera din uppkoppling och försök igen.'
+const SVAR_TEXT = 'Kunde inte hämta texten just nu. Försök igen om en stund.'
+
+const ärOffline = (): boolean => typeof navigator !== 'undefined' && navigator.onLine === false
+
 const getJson = async <T>(url: string): Promise<T> => {
-  const response = await fetch(url, { headers: { Accept: 'application/json' } })
-  if (!response.ok) throw new Error(`Kunde inte hämta (${response.status})`)
+  let response: Response
+  try {
+    response = await fetch(url, { headers: { Accept: 'application/json' } })
+  } catch {
+    // fetch avvisar med TypeError vid nätverksfel (offline, avbruten uppkoppling).
+    throw new Error(ärOffline() ? OFFLINE_TEXT : NAT_TEXT)
+  }
+  if (!response.ok) throw new Error(SVAR_TEXT)
   return (await response.json()) as T
 }
 
