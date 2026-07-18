@@ -9,10 +9,10 @@ import { accessCookieValue, verifyAccessCode, verifyAccessCookie } from './auth'
 
 const COOKIE = 'va_access'
 const LOGIN_PATH = '/api/access'
-const EN_MANAD = 60 * 60 * 24 * 30
+const ONE_MONTH = 60 * 60 * 24 * 30
 
 /** Läser den inskickade koden ur ett formulär eller en JSON-kropp. */
-const laesKod = async (c: Context): Promise<string> => {
+const readCode = async (c: Context): Promise<string> => {
   const type = c.req.header('Content-Type') ?? ''
   if (type.includes('application/json')) {
     const body = await c.req.json<{ code?: unknown }>().catch(() => ({}) as { code?: unknown })
@@ -24,7 +24,7 @@ const laesKod = async (c: Context): Promise<string> => {
 }
 
 /** Minimal, mobilvänlig och emojifri kod-sida (inga externa beroenden). */
-const kodSida = (fel: boolean): string => `<!doctype html>
+const codePage = (hasError: boolean): string => `<!doctype html>
 <html lang="sv">
 <head>
 <meta charset="utf-8">
@@ -48,14 +48,14 @@ const kodSida = (fel: boolean): string => `<!doctype html>
     font-weight: 600; border: 0; border-radius: .5rem; background: #1a1a1a;
     color: #fff; cursor: pointer }
   @media (prefers-color-scheme: dark) { button { background: #ece8df; color: #14130f } }
-  .fel { margin: 0 0 1rem; color: #b3261e; font-size: .9rem }
+  .error { margin: 0 0 1rem; color: #b3261e; font-size: .9rem }
 </style>
 </head>
 <body>
 <main>
   <h1>Visdomsatlasen</h1>
   <p>Den här förhandsversionen är öppen för inbjudna testare.</p>
-  ${fel ? '<p class="fel" role="alert">Fel kod. Försök igen.</p>' : ''}
+  ${hasError ? '<p class="error" role="alert">Fel kod. Försök igen.</p>' : ''}
   <form method="post" action="${LOGIN_PATH}">
     <label for="code">Åtkomstkod</label>
     <input id="code" name="code" type="password" autocomplete="off"
@@ -75,18 +75,18 @@ export const createAccessGate = (accessCode: string): MiddlewareHandler => {
   return async (c, next) => {
     // Login: verifiera koden, sätt cookie, tillbaka till appen.
     if (c.req.method === 'POST' && c.req.path === LOGIN_PATH) {
-      const submitted = await laesKod(c)
+      const submitted = await readCode(c)
       if (verifyAccessCode(submitted, accessCode)) {
         setCookie(c, COOKIE, token, {
           httpOnly: true,
           secure: true,
           sameSite: 'Lax',
           path: '/',
-          maxAge: EN_MANAD,
+          maxAge: ONE_MONTH,
         })
         return c.redirect('/', 303)
       }
-      return c.html(kodSida(true), 401)
+      return c.html(codePage(true), 401)
     }
 
     // robots.txt släpps alltid igenom (säger ändå Disallow: /).
@@ -96,8 +96,8 @@ export const createAccessGate = (accessCode: string): MiddlewareHandler => {
     if (verifyAccessCookie(getCookie(c, COOKIE) ?? null, accessCode)) return next()
 
     // Neka: HTML-navigering får kod-sidan, allt annat (t.ex. /api) får 401.
-    const villHaHtml = (c.req.header('Accept') ?? '').includes('text/html')
-    if (c.req.method === 'GET' && villHaHtml) return c.html(kodSida(false), 200)
+    const wantsHtml = (c.req.header('Accept') ?? '').includes('text/html')
+    if (c.req.method === 'GET' && wantsHtml) return c.html(codePage(false), 200)
     return c.text('Unauthorized', 401)
   }
 }
