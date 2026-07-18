@@ -118,8 +118,9 @@ const person = (id: string, status: Status = 'publicerad'): Person => ({
   slug: id,
   namn: 'Alan Watts',
   årtal: '1915–1973',
+  kortbeskrivning: 'Västs mest inflytelserika uttolkare av österländskt tänkande.',
   status,
-  beskrivning: 'Västs mest inflytelserika uttolkare av österländskt tänkande.',
+  beskrivning: 'Alan Watts föddes 1915 i Chislehurst utanför London och blev rösten som bar österns tankar till väst.',
 })
 
 const hitta = (index: Sokdokument[], id: string): Sokdokument | undefined =>
@@ -163,7 +164,14 @@ describe('byggSokindex — personer', () => {
     expect(dok?.titel).toBe('Alan Watts')
     expect(dok?.meta).toBe('1915–1973')
     expect(dok?.mal).toEqual({ kind: 'personpost', slug: 'person-watts' })
-    expect(dok?.text.join(' ')).toContain('uttolkare')
+    expect(dok?.text.join(' ')).toContain('rösten som bar')
+  })
+
+  it('låter kortbeskrivningen vara underrad — inte porträttets födelsedata', () => {
+    const index = byggSokindex({ ...tomtIndex, personer: [person('person-watts')] })
+    expect(hitta(index, 'person-watts')?.underrad).toBe(
+      'Västs mest inflytelserika uttolkare av österländskt tänkande.',
+    )
   })
 
   it('släpper aldrig in utkastpersoner i indexet', () => {

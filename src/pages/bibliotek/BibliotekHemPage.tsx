@@ -128,14 +128,13 @@ const Personsektion = () => {
   return (
     <Sektion rubrik="Personer">
       {personer.map((person) => (
-        <Link
+        <ToLink
           key={person.id}
-          to="/bibliotek/person/$slug"
-          params={{ slug: person.slug }}
+          to={{ kind: 'personpost', slug: person.slug }}
           className={styles.rad}
         >
           <Rad titel={person.namn} sub={person.årtal} />
-        </Link>
+        </ToLink>
       ))}
     </Sektion>
   )

@@ -6,6 +6,7 @@ id: person-alan-watts
 slug: alan-watts
 namn: Alan Watts
 årtal: 1915–1973
+kortbeskrivning: Västs mest inflytelserika uttolkare av österländskt tänkande.
 status: publicerad
 ---
 

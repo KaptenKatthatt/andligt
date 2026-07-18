@@ -1190,7 +1190,10 @@ To do when this is picked up:
 - decide relations: person ↔ sources, person ↔ traditions, person ↔ rooms
   (the schema's `traditioner` field exists but is not yet validated or shown)
 - cross-validation: a published person must not link unpublished records
-- search: persons are not in the public search index (`SOKTYPER`) yet
+- search: done in PR #52 after review feedback — `person` is a `Soktyp`
+  (ranked last per search.md Result Priority), documents built from
+  published persons only, `kortbeskrivning` carries the "short identifying
+  description"; revisit ranking/fields when the model is properly designed
 - reconcile with the legacy people pages (`/personer`, `/person/$id`,
   `people.ts`) — one model should win
 - sourcing: person portraits carry no `redaktion` block in the schema;

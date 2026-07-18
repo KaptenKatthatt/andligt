@@ -195,6 +195,8 @@ sist på landningen (dold tills publicerat). Personsidorna är ett provisorium �
 kandidater och uppstyrning i roadmapens »Person Pages (to do)«. Eckhart-rummets
 källpassage återstår (Fields fulltext onåbar i byggmiljön). Tröskelns
 temafilter skärpt till bara publicerade (i `troskeldata.ts` efter Fas 13).
+Personer är sökbara (granskningsfynd i PR #52): `Soktyp` »person« rankas
+sist, målet `personpost` i To/ToLink, `kortbeskrivning` bär sökunderraden.
 
 ## Kända skulder
 

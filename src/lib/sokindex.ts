@@ -215,16 +215,21 @@ const dokumentUrTradition = (tradition: Tradition): Sokdokument => ({
 
 // Personresultatet visar namn, period och kort igenkännande beskrivning
 // (search.md, Person Result); personer rankas alltid sist (Result Priority).
+// Underraden tar den redaktionella kortbeskrivningen — porträttkroppens
+// första mening är födelsedata och dubblerar årtalet i meta.
 const dokumentUrPerson = (person: Person): Sokdokument => ({
   typ: 'person',
   id: person.id,
   titel: person.namn,
-  underrad: person.beskrivning ? utdrag(person.beskrivning, 110) : undefined,
+  underrad: person.kortbeskrivning ?? (person.beskrivning ? utdrag(person.beskrivning, 110) : undefined),
   meta: person.årtal,
   mal: { kind: 'personpost', slug: person.slug },
   alias: [],
   nyckelord: [],
-  text: person.beskrivning ? [person.beskrivning] : [],
+  text: [
+    ...(person.kortbeskrivning ? [person.kortbeskrivning] : []),
+    ...(person.beskrivning ? [person.beskrivning] : []),
+  ],
 })
 
 type Innehall = Pick<

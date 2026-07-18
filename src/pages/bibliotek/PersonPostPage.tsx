@@ -15,7 +15,7 @@ export const PersonPostPage = ({ slug }: { slug: string }) => {
     <div className="screenSub">
       <TopBar />
       <Sidhuvud kicker="Person" titel={person.namn} status={person.status}>
-        {person.årtal !== undefined && <p className={styles.originaltitel}>{person.årtal}</p>}
+        {person.årtal !== undefined && <p className={styles.artal}>{person.årtal}</p>}
       </Sidhuvud>
       <Beskrivning text={person.beskrivning} />
     </div>
