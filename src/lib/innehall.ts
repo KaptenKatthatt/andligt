@@ -40,9 +40,10 @@ export const allaTeman: Tema[] = samla(
   (fil) => tolkaPostfil(temaSchema, fil),
 )
 
-/** Tröskelns teman (home-and-entry.md): redaktionell ordning, aldrig arkiverade. */
+/** Tröskelns teman (home-and-entry.md): redaktionell ordning, bara publicerade —
+ * utkast får aldrig synas för läsare. */
 export const troskelTeman: Tema[] = allaTeman
-  .filter((tema) => tema.status !== 'arkiverad')
+  .filter((tema) => tema.status === 'publicerad')
   .sort(
     (a, b) =>
       (a.ordning ?? Number.MAX_SAFE_INTEGER) - (b.ordning ?? Number.MAX_SAFE_INTEGER) ||
