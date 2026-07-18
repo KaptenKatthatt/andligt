@@ -52,7 +52,7 @@ export const Beskrivning = ({ text }: { text?: string }) => (
   </>
 )
 
-export const Rumslista = ({ rum, tomtBesked }: { rum: Room[]; tomtBesked: string }) => (
+export const RoomList = ({ rum, tomtBesked }: { rum: Room[]; tomtBesked: string }) => (
   <>
     {rum.length === 0 ? (
       <p className={styles.tomt}>{tomtBesked}</p>

@@ -173,7 +173,7 @@ const themeRoute = createRoute({
   },
 })
 
-const rumlistaRoute = createRoute({
+const roomListRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/bibliotek/rum',
   component: RumlistaPage,
@@ -314,7 +314,7 @@ const routeTree = rootRoute.addChildren([
   libraryRoute,
   questionRoute,
   themeRoute,
-  rumlistaRoute,
+  roomListRoute,
   fragelistaRoute,
   sourceItemRoute,
   personPostRoute,

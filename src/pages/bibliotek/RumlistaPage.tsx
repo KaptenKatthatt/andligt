@@ -2,7 +2,7 @@ import { TopBar } from '../../components/TopBar'
 import { libraryRooms } from '../../lib/library'
 import { allRooms } from '../../lib/content'
 import styles from './Bibliotek.module.css'
-import { Rumslista, roomCount, Sidhuvud } from './Biblioteksdelar'
+import { RoomList, roomCount, Sidhuvud } from './Biblioteksdelar'
 
 /** Alla publicerade rum — en ändlig lista (library.md, Browsing): antalet
  * står överst så man ser hur mycket som finns. Ingen oändlig rullning. */
@@ -15,7 +15,7 @@ export const RumlistaPage = () => {
         <p className={styles.antal}>{roomCount(rooms.length)}</p>
       </Sidhuvud>
       <div className={styles.sektion}>
-        <Rumslista rum={rooms} tomtBesked="Det finns inga färdiga rum ännu." />
+        <RoomList rum={rooms} tomtBesked="Det finns inga färdiga rum ännu." />
       </div>
     </div>
   )

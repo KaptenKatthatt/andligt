@@ -27,7 +27,7 @@ const STOPORD = new Set([
 ])
 
 /** Sökfrågans meningsbärande tokens: normaliserade ord minus stopord. */
-export const soktokens = (question: string): string[] =>
+export const searchTokens = (question: string): string[] =>
   ordlista(question).filter((ord) => !STOPORD.has(ord))
 
 // Vanliga svenska böjningssuffix, längst först så -orna klipps före -or före -a.

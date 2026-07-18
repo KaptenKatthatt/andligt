@@ -5,9 +5,9 @@ import { allQuestions, allRooms, findThemeBySlug } from '../../lib/content'
 import { valbaraRoom } from '../../lib/roomSelection'
 import { NotFoundNote } from '../NotFoundNote'
 import styles from './Bibliotek.module.css'
-import { Beskrivning, Row, Rumslista, Section, Sidhuvud } from './Biblioteksdelar'
+import { Beskrivning, Row, RoomList, Section, Sidhuvud } from './Biblioteksdelar'
 
-const Fragedel = ({ temaId }: { temaId: string }) => {
+const QuestionPart = ({ temaId }: { temaId: string }) => {
   const questions = questionsForTheme(temaId, allQuestions)
   if (questions.length === 0) return null
   return (
@@ -31,9 +31,9 @@ export const TemaPage = ({ slug }: { slug: string }) => {
       <TopBar />
       <Sidhuvud kicker="Tema" title={theme.label} status={theme.status} />
       <Beskrivning text={theme.description} />
-      <Fragedel temaId={theme.id} />
+      <QuestionPart temaId={theme.id} />
       <Section rubrik="Rum">
-        <Rumslista
+        <RoomList
           rum={valbaraRoom(theme.id, allRooms)}
           tomtBesked="Det finns inga färdiga rum här ännu."
         />

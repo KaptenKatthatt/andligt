@@ -12,7 +12,7 @@ import {
 } from '../../lib/content'
 import { NotFoundNote } from '../NotFoundNote'
 import styles from './Bibliotek.module.css'
-import { Beskrivning, Rumslista, Section, Sidhuvud } from './Biblioteksdelar'
+import { Beskrivning, RoomList, Section, Sidhuvud } from './Biblioteksdelar'
 
 const TYPETIKETT: Record<Source['type'], string> = {
   'book': 'Bok',
@@ -43,7 +43,7 @@ const upphovsrad = (source: Source): string | undefined => {
   return source.attribution === 'attributed' ? `Tillskrivs ${name}` : name
 }
 
-const Metarad = ({ label, värde }: { label: string; värde?: string }) =>
+const MetaRow = ({ label, värde }: { label: string; värde?: string }) =>
   värde === undefined || värde === '' ? null : (
     <p className={styles.metarad}>
       <span className={styles.metaetikett}>{label}</span>
@@ -51,20 +51,20 @@ const Metarad = ({ label, värde }: { label: string; värde?: string }) =>
     </p>
   )
 
-const Kallmeta = ({ source }: { source: Source }) => {
+const SourceMeta = ({ source }: { source: Source }) => {
   const traditionsnamn = publishedThrough(source.traditions ?? [], findTradition).map(
     (tradition) => tradition.name,
   )
   return (
     <div className={styles.metablock}>
-      <Metarad label="Upphov" värde={upphovsrad(source)} />
-      <Metarad label="Tradition" värde={traditionsnamn.join(', ')} />
-      <Metarad
+      <MetaRow label="Upphov" värde={upphovsrad(source)} />
+      <MetaRow label="Tradition" värde={traditionsnamn.join(', ')} />
+      <MetaRow
         label="Tillkomst"
         värde={[source.approximateDating, source.place].filter(Boolean).join(' · ')}
       />
-      <Metarad label="Originalspråk" värde={source.originalLanguage} />
-      <Metarad label="Rättigheter" värde={RATTIGHETSETIKETT[source.rights]} />
+      <MetaRow label="Originalspråk" värde={source.originalLanguage} />
+      <MetaRow label="Rättigheter" värde={RATTIGHETSETIKETT[source.rights]} />
     </div>
   )
 }
@@ -125,7 +125,7 @@ export const KallaPostPage = ({ slug }: { slug: string }) => {
       <Sidhuvud kicker={TYPETIKETT[source.type]} title={source.title} status={source.status}>
         {source.originalTitle && <p className={styles.originalTitle}>{source.originalTitle}</p>}
       </Sidhuvud>
-      <Kallmeta source={source} />
+      <SourceMeta source={source} />
       <Beskrivning text={source.description} />
       {uncertainty.length > 0 && (
         <Section rubrik="Osäkerhet">
@@ -156,7 +156,7 @@ export const KallaPostPage = ({ slug }: { slug: string }) => {
         </Section>
       )}
       <Section rubrik="Rum ur denna source">
-        <Rumslista
+        <RoomList
           rum={roomsForSource(source.id, allRooms)}
           tomtBesked="Det finns inga färdiga rum ur källan ännu."
         />

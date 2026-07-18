@@ -25,7 +25,7 @@ import styles from './RumPage.module.css'
 
 /** En rad i rummets kolofon: spärrade versaler med nedåtpil. Öppnas på place
  * och leder aldrig bort — pilen lovar fördjupning här, inte förflyttning. */
-const Kolofonrad = ({
+const ColophonRow = ({
   label,
   öppen,
   onVaxla,
@@ -90,7 +90,7 @@ const groupBySource = (relations: SourceRelation[]): [Source, SourceRelation[]][
 
 // En källas rader i detaljen: bibliografi + use + edition per relation,
 // därefter källans osäkerhet en gång och länken till källsidan.
-const Kallblock = ({ source, relationer }: { source: Source; relationer: SourceRelation[] }) => {
+const SourceBlock = ({ source, relationer }: { source: Source; relationer: SourceRelation[] }) => {
   const rows = [
     ...relationer.flatMap((relation) => {
       const passage = relation.passage ? findPassage(relation.passage) : undefined
@@ -121,10 +121,10 @@ const Kallblock = ({ source, relationer }: { source: Source; relationer: SourceR
  * Visibility). Håller sig bibliografisk; källans ord och full passagetext
  * bor på källsidan, dit »Om texten« leder efter ett medvetet val. Rum med
  * flera sources visar alla relationer, grupperade per källpost. */
-const Kalldetalj = ({ rum }: { rum: Room }) => (
+const SourceDetail = ({ rum }: { rum: Room }) => (
   <>
     {groupBySource(rum.sources).map(([source, relationer]) => (
-      <Kallblock key={source.id} source={source} relationer={relationer} />
+      <SourceBlock key={source.id} source={source} relationer={relationer} />
     ))}
   </>
 )
@@ -134,7 +134,7 @@ const Kalldetalj = ({ rum }: { rum: Room }) => (
 const kolofonetikett = (room: Room, source: Source): string =>
   new Set(room.sources.map((relation) => relation.source)).size > 1 ? 'Källor' : sourceName(source)
 
-const Rumsavslut = ({ rum }: { rum: Room }) => {
+const RoomEnding = ({ rum }: { rum: Room }) => {
   const { savedRooms, toggleSavedRoom, notes, setNote, removeNote } = useAtlas()
   const [öppenRad, setÖppenRad] = useState<'source' | 'bakgrund' | null>(null)
   const [anteckningÖppen, setAnteckningÖppen] = useState(false)
@@ -148,17 +148,17 @@ const Rumsavslut = ({ rum }: { rum: Room }) => {
       <div className={styles.streck} />
       <div className={styles.kolofon}>
         {source && (
-          <Kolofonrad
+          <ColophonRow
             label={kolofonetikett(rum, source)}
             öppen={öppenRad === 'source'}
             onVaxla={() => toggle('source')}
             detaljId="kalldetalj"
           >
-            <Kalldetalj rum={rum} />
-          </Kolofonrad>
+            <SourceDetail rum={rum} />
+          </ColophonRow>
         )}
         {rum.historicalContext && (
-          <Kolofonrad
+          <ColophonRow
             label="Historisk bakgrund"
             öppen={öppenRad === 'bakgrund'}
             onVaxla={() => toggle('bakgrund')}
@@ -169,7 +169,7 @@ const Rumsavslut = ({ rum }: { rum: Room }) => {
                 {paragraph}
               </p>
             ))}
-          </Kolofonrad>
+          </ColophonRow>
         )}
       </div>
       <div className={styles.avslut}>
@@ -336,7 +336,7 @@ export const RumPage = ({ slug, vandringSlug }: { slug: string; vandringSlug?: s
           </p>
         ))}
       </div>
-      <Rumsavslut rum={room} />
+      <RoomEnding rum={room} />
       {path !== undefined && <Vandringsfot vandring={path} rum={room} />}
     </div>
   )

@@ -120,12 +120,12 @@ export const pathReadingTime = (rooms: Room[]): number =>
  * source traditions shown quietly): rum → source → traditions, bara
  * publicerade, unika, i svensk namnordning. */
 export const traditionsForPath = (
-  vandringensRum: Room[],
+  pathRooms: Room[],
   sources: Source[],
   traditions: Tradition[],
 ): Tradition[] => {
   const sourceIds = new Set(
-    vandringensRum.flatMap((room) => room.sources.map((relation) => relation.source)),
+    pathRooms.flatMap((room) => room.sources.map((relation) => relation.source)),
   )
   const traditionIds = new Set(
     sources

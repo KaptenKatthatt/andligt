@@ -3,7 +3,7 @@
 // så att frågor och themes rankas rätt och en berömd author aldrig slår en
 // mer relevant fråga. Ingen popularitets- eller beteendesignal existerar här.
 import type { SearchDoc, SearchType } from './searchIndex'
-import { inomSkrivfel, normalisera, ordlista, soktokens, stam } from './searchNormalize'
+import { inomSkrivfel, normalisera, ordlista, searchTokens, stam } from './searchNormalize'
 
 /** Vilket fält en träff kom ur — internt, visas aldrig för användaren. */
 export type HitLevel = 'title-exact' | 'alias-exact' | 'title' | 'keywords' | 'subtitle' | 'text'
@@ -94,7 +94,7 @@ const buildSynonymMap = (raw: Record<string, string[]>): Map<string, Set<string>
 
 const SYNONYM_MAP = buildSynonymMap(SYNONYMS)
 
-const synonymerFor = (token: string): string[] => [...(SYNONYM_MAP.get(token) ?? [])]
+const synonymsFor = (token: string): string[] => [...(SYNONYM_MAP.get(token) ?? [])]
 
 // Matchfaktor mellan två normaliserade ord: 1 för exakt/prefix/stam/delsträng,
 // nedvägt för skrivfel, 0 för ingen träff. Prefix och delsträng bara för längre
@@ -121,8 +121,8 @@ const factorAgainstBucket = (token: string, ord: string[]): number => {
     if (faktor > best) best = faktor
   }
   if (best >= 1) return best
-  const synonymer = synonymerFor(token)
-  const hit = synonymer.some((synonym) => ord.some((o) => synonymHit(synonym, o)))
+  const synonyms = synonymsFor(token)
+  const hit = synonyms.some((synonym) => ord.some((o) => synonymHit(synonym, o)))
   return hit ? Math.max(best, SYNONYM_FACTOR) : best
 }
 
@@ -156,20 +156,20 @@ const tokenBest = (token: string, buckets: Bucket[]): { score: number; level: Hi
 }
 
 // Exakt helfrågsträff (interpunktion och diakriter bortnormaliserade).
-const exactLevel = (nyckelfrågan: string, dok: SearchDoc): HitLevel | undefined => {
-  if (ordlista(dok.title).join(' ') === nyckelfrågan) return 'title-exact'
-  if (dok.alias.some((alias) => ordlista(alias).join(' ') === nyckelfrågan)) return 'alias-exact'
+const exactLevel = (keyQuery: string, dok: SearchDoc): HitLevel | undefined => {
+  if (ordlista(dok.title).join(' ') === keyQuery) return 'title-exact'
+  if (dok.alias.some((alias) => ordlista(alias).join(' ') === keyQuery)) return 'alias-exact'
   return undefined
 }
 
 // En dokumentträff eller inget. Alla tokens måste träffa (AND) — söket hittar
 // det man menar utan att bredda med löst besläktade resultat.
 const matchDocument = (
-  nyckelfrågan: string,
+  keyQuery: string,
   tokens: string[],
   dok: SearchDoc,
 ): SearchResult | undefined => {
-  const exact = exactLevel(nyckelfrågan, dok)
+  const exact = exactLevel(keyQuery, dok)
   if (exact) return { document: dok, score: LEVEL_SCORES[exact] + TYPE_BONUS[dok.type], matchedField: exact }
   if (tokens.length === 0) return undefined
   const buckets = documentBuckets(dok)
@@ -180,7 +180,7 @@ const matchDocument = (
   return { document: dok, score: mean + TYPE_BONUS[dok.type], matchedField: best.level }
 }
 
-const svTitel = (a: SearchResult, b: SearchResult): number =>
+const compareTitleSv = (a: SearchResult, b: SearchResult): number =>
   a.document.title.localeCompare(b.document.title, 'sv')
 
 const bestScore = (grupp: SearchGroup): number => grupp.hits[0]?.score ?? 0
@@ -197,7 +197,7 @@ const groupHits = (hits: SearchResult[]): SearchGroup[] => {
   const grupper = [...map.entries()].map(([type, lista]): SearchGroup => ({
     type,
     heading: HEADINGS[type],
-    hits: lista.sort((a, b) => b.score - a.score || svTitel(a, b)).slice(0, MAX_PER_GROUP),
+    hits: lista.sort((a, b) => b.score - a.score || compareTitleSv(a, b)).slice(0, MAX_PER_GROUP),
   }))
   return grupper.sort((a, b) => bestScore(b) - bestScore(a))
 }
@@ -205,11 +205,11 @@ const groupHits = (hits: SearchResult[]): SearchGroup[] => {
 /** Hela sökningen: en fråga kortare än två tecken ger inget. Grupperna kommer i
  * relevansordning; varje grupp är ändlig (aldrig oändlig scroll). */
 export const searchInLibrary = (question: string, index: SearchDoc[]): SearchGroup[] => {
-  const nyckelfrågan = ordlista(question).join(' ')
-  if (nyckelfrågan.length < 2) return []
-  const tokens = soktokens(question)
+  const keyQuery = ordlista(question).join(' ')
+  if (keyQuery.length < 2) return []
+  const tokens = searchTokens(question)
   const hits = index.flatMap((dok) => {
-    const hit = matchDocument(nyckelfrågan, tokens, dok)
+    const hit = matchDocument(keyQuery, tokens, dok)
     return hit ? [hit] : []
   })
   return groupHits(hits)

@@ -27,10 +27,10 @@ const LIBRARY_PATH = {
   vandring: '/bibliotek/vandring/$slug',
 } as const
 
-type BibliotekTo = Extract<To, { kind: keyof typeof LIBRARY_PATH }>
-const isLibraryTo = (to: To): to is BibliotekTo => to.kind in LIBRARY_PATH
+type LibraryTo = Extract<To, { kind: keyof typeof LIBRARY_PATH }>
+const isLibraryTo = (to: To): to is LibraryTo => to.kind in LIBRARY_PATH
 
-const LibraryLink = ({ to, ...shared }: Props & { to: BibliotekTo }) => (
+const LibraryLink = ({ to, ...shared }: Props & { to: LibraryTo }) => (
   <Link to={LIBRARY_PATH[to.kind]} params={{ slug: to.slug }} {...shared} />
 )
 

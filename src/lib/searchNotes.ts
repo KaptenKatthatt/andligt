@@ -3,7 +3,7 @@
 // indexet — den importerar aldrig sokindex/soklogik, så ingen anteckningstext
 // kan påverka eller läcka in i publika resultat (Fas 9 Privacy/AI Access).
 import type { Note } from './personal'
-import { ordlista, soktokens } from './searchNormalize'
+import { ordlista, searchTokens } from './searchNormalize'
 
 // Alla meningsbärande ord måste förekomma i anteckningen (AND), som exakt ord,
 // prefix eller — för längre ord — delsträng. Samma svenska normalisering som
@@ -24,7 +24,7 @@ export const searchNotes = (
   anteckningar: Record<string, Note>,
 ): Note[] => {
   if (ordlista(question).join(' ').length < 2) return []
-  const tokens = soktokens(question)
+  const tokens = searchTokens(question)
   if (tokens.length === 0) return []
   return Object.values(anteckningar)
     .filter((anteckning) => anteckning.text.trim().length > 0)

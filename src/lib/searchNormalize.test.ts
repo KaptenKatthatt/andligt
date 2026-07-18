@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { inomSkrivfel, normalisera, ordlista, soktokens, stam } from './searchNormalize'
+import { inomSkrivfel, normalisera, ordlista, searchTokens, stam } from './searchNormalize'
 
 describe('normalisera', () => {
   it('trimmar, gör gemener och viker svenska diakriter', () => {
@@ -21,11 +21,11 @@ describe('ordlista', () => {
 
 describe('soktokens', () => {
   it('filtrerar bort stopord', () => {
-    expect(soktokens('Hur lever man med osäkerhet?')).toEqual(['lever', 'osakerhet'])
+    expect(searchTokens('Hur lever man med osäkerhet?')).toEqual(['lever', 'osakerhet'])
   })
 
   it('ger tom lista när frågan bara är stopord', () => {
-    expect(soktokens('vad är det som')).toEqual([])
+    expect(searchTokens('vad är det som')).toEqual([])
   })
 })
 

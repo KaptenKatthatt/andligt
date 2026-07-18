@@ -342,7 +342,7 @@ export const personalCollections = (s: PersonalCollections): PersonalCollections
 
 // Allt personligt tömt; utseendet (dark/font/textStep/bg) rörs aldrig. Rensning
 // av lokal data ska bete sig förutsägbart (notes-and-saved.md, Local Storage).
-const tomtPersonligt = {
+const emptyPersonal = {
   notes: {},
   savedRooms: {},
   savedPaths: {},
@@ -360,7 +360,7 @@ const useDataActions = (setState: SetAtlasState): DataActions => {
     [setState],
   )
   const clearPersonal = useCallback(
-    () => setState((s) => ({ ...s, ...tomtPersonligt })),
+    () => setState((s) => ({ ...s, ...emptyPersonal })),
     [setState],
   )
   return { importPersonal, clearPersonal }

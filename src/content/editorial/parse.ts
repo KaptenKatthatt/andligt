@@ -39,10 +39,10 @@ const splitFrontmatter = (fil: ContentFile): Parsed<SplitFile> => {
   return { value: { frontmatter: { ...data }, kropp: hit[2] }, errors: [] }
 }
 
-const formateraError = (sökväg: string, issues: readonly z.core.$ZodIssue[]): string[] =>
+const formateraError = (filePath: string, issues: readonly z.core.$ZodIssue[]): string[] =>
   issues.map((issue) => {
     const field = issue.path.length > 0 ? issue.path.map(String).join('.') : '(rot)'
-    return `${sökväg}: ${field} — ${issue.message}`
+    return `${filePath}: ${field} — ${issue.message}`
   })
 
 /** Delar en markdown-kropp i sektioner per `## Rubrik`. Text före första
@@ -70,17 +70,17 @@ const splitSections = (body: string): Map<string, string> => {
 
 type RoomFields = Partial<Record<'opening' | 'core' | 'historicalContext', string>>
 
-const roomSections = (sökväg: string, body: string): Parsed<RoomFields> => {
+const roomSections = (filePath: string, body: string): Parsed<RoomFields> => {
   const fel: string[] = []
   const field: RoomFields = {}
   for (const [rubrik, text] of splitSections(body)) {
     const name = SECTIONS[rubrik]
-    if (!name) fel.push(`${sökväg}: okänd sektion "## ${rubrik}"`)
+    if (!name) fel.push(`${filePath}: okänd sektion "## ${rubrik}"`)
     else if (text.length > 0) field[name] = text
   }
   for (const required of ['Opening', 'Core'] as const) {
     const name = SECTIONS[required]
-    if (name && field[name] === undefined) fel.push(`${sökväg}: saknar sektionen "## ${required}"`)
+    if (name && field[name] === undefined) fel.push(`${filePath}: saknar sektionen "## ${required}"`)
   }
   return fel.length > 0 ? { value: null, errors: fel } : { value: field, errors: [] }
 }

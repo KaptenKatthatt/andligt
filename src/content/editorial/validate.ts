@@ -110,10 +110,10 @@ const publishError = (room: Room, lookup: Lookup): string[] => {
       : [`rum ${room.id}: lästid ${room.readingTimeMinutes} min utanför 1–10 för publicerat rum`]),
     ...room.sources.flatMap((relation) => sourceUseError(room, relation, lookup)),
   ]
-  const opublicerade = roomReferences(room, lookup)
+  const unpublished = roomReferences(room, lookup)
     .filter((reference) => reference.finns && !reference.publicerad)
     .map((reference) => `rum ${room.id}: länkar opublicerad(t) ${reference.type} "${reference.id}"`)
-  return [...grindar, ...opublicerade]
+  return [...grindar, ...unpublished]
 }
 
 // Språkgrind (review-language.md): öppningen ska landa i vardagen, inte teasa

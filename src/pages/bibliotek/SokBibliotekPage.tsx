@@ -14,7 +14,7 @@ import { useAsync } from '../../lib/useAsync'
 import { useAtlas } from '../../lib/store'
 import { useDebounced } from '../../lib/useDebounced'
 import { useSidtitel } from '../../lib/useSidtitel'
-import { Filter, SourceTextGroup, Resultatvy, Sokfalt, type SourceTextResponse, type SearchMode } from './SokDelar'
+import { Filter, SourceTextGroup, ResultView, SearchField, type SourceTextResponse, type SearchMode } from './SokDelar'
 
 // Vilka grupper som expanderats, ihågkommet per normaliserad fråga över
 // navigation inom sessionen (search.md: sökstate får vara tillfälligt).
@@ -163,9 +163,9 @@ export const SokBibliotekPage = ({ q, type, onNavigera }: Props) => {
   return (
     <div className="screenSub">
       <TopBar />
-      <Sokfalt query={query} onChange={ändraFråga} onSubmit={sökDirekt} />
+      <SearchField query={query} onChange={ändraFråga} onSubmit={sökDirekt} />
       <Filter aktiv={type} antal={antal} onVal={(nyTyp) => onNavigera(searchObject(term, nyTyp))} />
-      <Resultatvy
+      <ResultView
         läge={computeMode(key, fel)}
         ingaTraffar={ingaTraffar}
         synliga={synliga}

@@ -79,7 +79,7 @@ const Vandringssektion = () => {
   )
 }
 
-const Rumsektion = () => (
+const RoomSection = () => (
   <Section rubrik="Rum">
     <Link to="/bibliotek/rum" className={styles.rad}>
       <Row title="Alla rum" sub={roomCount(libraryRooms(allRooms).length)} />
@@ -87,7 +87,7 @@ const Rumsektion = () => (
   </Section>
 )
 
-const Kallsektion = () => (
+const SourceSection = () => (
   <Section rubrik="Källor">
     {librarySources(allSources).map((source) => (
       <ToLink key={source.id} to={{ kind: 'kallpost', slug: source.slug }} className={styles.rad}>
@@ -159,10 +159,10 @@ export const BibliotekHemPage = () => {
         Sök efter en fråga, tanke eller källa
                     </Link>
       <Traditionssektion />
-      <Kallsektion />
+      <SourceSection />
       <Temasektion />
       <Vandringssektion />
-      <Rumsektion />
+      <RoomSection />
       <Fragesektion />
       <Personsektion />
     </div>

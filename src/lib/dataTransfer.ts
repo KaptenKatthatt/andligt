@@ -155,8 +155,8 @@ export const toExport = (
 /** Tolkar en importfil. Fel format, fel version eller korrupt JSON → null, så
  * anroparen kan visa ett stilla felbesked utan att något går sönder. */
 export const readImport = (json: unknown): PersonalExport | null => {
-  const resultat = exportSchema.safeParse(json)
-  return resultat.success ? resultat.data : null
+  const result = exportSchema.safeParse(json)
+  return result.success ? result.data : null
 }
 
 // Anteckningskonflikt: den nyast uppdaterade vinner (spec: konflikter löses säkert).

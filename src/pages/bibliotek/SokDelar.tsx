@@ -165,7 +165,7 @@ export const SourceTextGroup = ({
 
 /** Sökfältet: programmatiskt kopplad label, Enter söker direkt, Escape rensar
  * (type=search). Normal tab-order. */
-export const Sokfalt = ({
+export const SearchField = ({
   query,
   onChange,
   onSubmit,
@@ -211,7 +211,7 @@ const NoHits = () => (
   </div>
 )
 
-const Fellage = () => (
+const ErrorState = () => (
   <div className={styles.tillstand} role="status">
     <p className={styles.tomtext}>Sökningen kunde inte genomföras just nu.</p>
     <p className={styles.tomhint}>Försök igen eller gå tillbaka till Biblioteket.</p>
@@ -226,7 +226,7 @@ const hitCount = (antal: number): string => (antal === 1 ? '1 träff' : `${antal
  * ändliga träffarna — redaktionella grupper, sedan »Ur källtexterna«, sist den
  * privata anteckningsgruppen. `ingaTraffar` avgörs av sidan (räknar även in
  * verssöket) så no-results aldrig visas medan källtextträffar är på väg. */
-export const Resultatvy = ({
+export const ResultView = ({
   läge,
   ingaTraffar,
   synliga,
@@ -246,7 +246,7 @@ export const Resultatvy = ({
   onVisaFler: (type: SearchType) => void
 }) => {
   if (läge === 'tom') return <SearchEmptyState />
-  if (läge === 'fel') return <Fellage />
+  if (läge === 'fel') return <ErrorState />
   if (ingaTraffar) return <NoHits />
   return (
     <>

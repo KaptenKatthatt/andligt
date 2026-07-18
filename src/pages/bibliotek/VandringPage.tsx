@@ -71,7 +71,7 @@ const Fragedel = ({ vandring }: { vandring: Path }) => {
  * (Accessibility). Varje rad öppnar rummet med vandringen som kontext. En
  * neutral »Fortsätt där du stannade« läggs överst om ett rum minns — bara
  * orientering, aldrig förlopp. */
-const Rumdel = ({ vandring, rummen }: { vandring: Path; rummen: Room[] }) => {
+const RoomPart = ({ vandring, rummen }: { vandring: Path; rummen: Room[] }) => {
   const { pathPositions } = useAtlas()
   const place = rummen.find((room) => room.id === pathPositions[vandring.id])
   return (
@@ -125,7 +125,7 @@ export const VandringPage = ({ slug }: { slug: string }) => {
       <SavePath vandring={path} />
       <Beskrivning text={path.introduction} />
       <Fragedel vandring={path} />
-      <Rumdel vandring={path} rummen={rooms} />
+      <RoomPart vandring={path} rummen={rooms} />
     </div>
   )
 }

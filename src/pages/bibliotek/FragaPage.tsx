@@ -12,7 +12,7 @@ import {
 } from '../../lib/content'
 import { NotFoundNote } from '../NotFoundNote'
 import styles from './Bibliotek.module.css'
-import { Beskrivning, Row, Rumslista, Section, Sidhuvud } from './Biblioteksdelar'
+import { Beskrivning, Row, RoomList, Section, Sidhuvud } from './Biblioteksdelar'
 
 const Temadel = ({ fråga }: { fråga: Question }) => {
   const themes = publishedThrough(fråga.themes, findTheme)
@@ -28,7 +28,7 @@ const Temadel = ({ fråga }: { fråga: Question }) => {
   )
 }
 
-const Kalldel = ({ fråga }: { fråga: Question }) => {
+const SourcePart = ({ fråga }: { fråga: Question }) => {
   const sources = sourcesForQuestion(fråga.id, allRooms, allSources)
   if (sources.length === 0) return null
   return (
@@ -72,13 +72,13 @@ export const FragaPage = ({ slug }: { slug: string }) => {
       <Sidhuvud kicker="Fråga" title={question.text} status={question.status} />
       <Beskrivning text={question.description} />
       <Section rubrik="Rum">
-        <Rumslista
+        <RoomList
           rum={roomsForQuestion(question.id, allRooms)}
           tomtBesked="Det finns inga färdiga rum kring frågan ännu."
         />
       </Section>
       <Temadel fråga={question} />
-      <Kalldel fråga={question} />
+      <SourcePart fråga={question} />
       <Narliggande fråga={question} />
     </div>
   )
