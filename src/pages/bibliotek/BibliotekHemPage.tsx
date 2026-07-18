@@ -3,6 +3,7 @@ import { ToLink } from '../../components/ToLink'
 import {
   bibliotekFragor,
   bibliotekKallor,
+  bibliotekPersoner,
   bibliotekRum,
   bibliotekTeman,
   bibliotekTraditioner,
@@ -14,6 +15,7 @@ import { useSidtitel } from '../../lib/useSidtitel'
 import {
   allaFragor,
   allaKallor,
+  allaPersoner,
   allaRum,
   allaTeman,
   allaTraditioner,
@@ -117,6 +119,28 @@ const Traditionssektion = () => {
   )
 }
 
+// Personer är referenspunkter, inte ingångar (library.md, People and Authors).
+// Sektionen står sist tills vidare (redaktörens beslut 2026-07-18) och döljs
+// tills publicerade personer finns — samma disciplin som vandringarna.
+const Personsektion = () => {
+  const personer = bibliotekPersoner(allaPersoner)
+  if (personer.length === 0) return null
+  return (
+    <Sektion rubrik="Personer">
+      {personer.map((person) => (
+        <Link
+          key={person.id}
+          to="/bibliotek/person/$slug"
+          params={{ slug: person.slug }}
+          className={styles.rad}
+        >
+          <Rad titel={person.namn} sub={person.årtal} />
+        </Link>
+      ))}
+    </Sektion>
+  )
+}
+
 /**
  * Bibliotekets landningssida (library.md) — den medvetna ingången till
  * utforskning. Sekundär till läsrummet; lugn, ändlig, utan engagemangsmått.
@@ -141,6 +165,7 @@ export const BibliotekHemPage = () => {
       <Vandringssektion />
       <Rumsektion />
       <Fragesektion />
+      <Personsektion />
     </div>
   )
 }

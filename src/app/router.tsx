@@ -10,6 +10,7 @@ import { BibliotekHemPage } from '../pages/bibliotek/BibliotekHemPage'
 import { FragaPage } from '../pages/bibliotek/FragaPage'
 import { FragelistaPage } from '../pages/bibliotek/FragelistaPage'
 import { KallaPostPage } from '../pages/bibliotek/KallaPostPage'
+import { PersonPostPage } from '../pages/bibliotek/PersonPostPage'
 import { RumlistaPage } from '../pages/bibliotek/RumlistaPage'
 import { TemaPage } from '../pages/bibliotek/TemaPage'
 import { VandringPage } from '../pages/bibliotek/VandringPage'
@@ -164,6 +165,15 @@ const kallaPostRoute = createRoute({
   },
 })
 
+// Bibliotekets personsidor (nya modellen) — skilda från legacy /person/$id.
+const personPostRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/bibliotek/person/$slug',
+  component: function PersonPostRoute() {
+    return <PersonPostPage slug={personPostRoute.useParams().slug} />
+  },
+})
+
 const vandringRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/bibliotek/vandring/$slug',
@@ -279,6 +289,7 @@ const routeTree = rootRoute.addChildren([
   rumlistaRoute,
   fragelistaRoute,
   kallaPostRoute,
+  personPostRoute,
   vandringRoute,
   verklistaRoute,
   verkRoute,

@@ -159,6 +159,15 @@ landa i vardagen — även för utkast. Öppningsreglerna står i
 egen båge och landar i en slutkläm; Kärnan låter källan bekräfta i stället för att
 introducera).
 
+**Watts-rummen (issue #44, PR #52):** Molnet av icke-vetande och Avskildheten
+publicerade (godkända av redaktören 2026-07-18); tema Jesus (tröskelordning 7)
+och traditionen kristen mystik nya. Tolken i väst blev **inte** ett rum
+(redaktörens beslut) utan bibliotekets första **personsida**:
+`src/content/personer/`, route `/bibliotek/person/$slug`, sektionen Personer
+sist på landningen (dold tills publicerat). Personsidorna är ett provisorium —
+kandidater och uppstyrning i roadmapens »Person Pages (to do)«. Eckhart-rummets
+källpassage återstår (Fields fulltext onåbar i byggmiljön).
+
 ## Kända skulder
 
 - PWA saknar PNG/maskable-ikoner (Fas 13).

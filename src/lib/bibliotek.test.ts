@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
-import type { Fraga, Kalla, Kallpassage, Rum, Tema, Tradition, Vandring } from '../content/redaktion/schema'
+import type { Fraga, Kalla, Kallpassage, Person, Rum, Tema, Tradition, Vandring } from '../content/redaktion/schema'
 import {
+  bibliotekPersoner,
   bibliotekRum,
   bibliotekTeman,
   bibliotekTraditioner,
@@ -219,6 +220,20 @@ describe('bibliotekTraditioner', () => {
   it('släpper bara igenom publicerade traditioner, i svensk namnordning', () => {
     const alla = [tradition('stoicism'), tradition('buddhism'), tradition('taoism', 'utkast')]
     expect(bibliotekTraditioner(alla).map((t) => t.namn)).toEqual(['buddhism', 'stoicism'])
+  })
+})
+
+describe('bibliotekPersoner', () => {
+  const person = (namn: string, status: Person['status'] = 'publicerad'): Person => ({
+    id: `person-${namn}`,
+    slug: namn,
+    namn,
+    status,
+  })
+
+  it('släpper bara igenom publicerade personer, i svensk namnordning', () => {
+    const alla = [person('Örjan'), person('Alan Watts'), person('Buddha', 'utkast')]
+    expect(bibliotekPersoner(alla).map((p) => p.namn)).toEqual(['Alan Watts', 'Örjan'])
   })
 })
 
