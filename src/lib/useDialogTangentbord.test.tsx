@@ -18,7 +18,7 @@ const Ark = ({ onStäng }: { onStäng: () => void }) => {
   )
 }
 
-const MedUtlösare = () => {
+const WithTrigger = () => {
   const [öppet, sättÖppet] = useState(false)
   return (
     <div>
@@ -37,56 +37,56 @@ describe('useDialogTangentbord', () => {
   })
 
   it('stänger på Escape', async () => {
-    const användare = userEvent.setup()
+    const user = userEvent.setup()
     const onStäng = vi.fn()
     render(<Ark onStäng={onStäng} />)
-    await användare.keyboard('{Escape}')
+    await user.keyboard('{Escape}')
     expect(onStäng).toHaveBeenCalledTimes(1)
   })
 
   it('cyklar Tab-fokus inom arket', async () => {
-    const användare = userEvent.setup()
+    const user = userEvent.setup()
     render(<Ark onStäng={() => {}} />)
-    const första = screen.getByRole('button', { name: 'Första' })
+    const first = screen.getByRole('button', { name: 'Första' })
     const sista = screen.getByRole('button', { name: 'Sista' })
 
-    await användare.tab()
-    expect(document.activeElement).toBe(första)
-    await användare.tab()
+    await user.tab()
+    expect(document.activeElement).toBe(first)
+    await user.tab()
     expect(document.activeElement).toBe(sista)
-    await användare.tab()
-    expect(document.activeElement).toBe(första)
-    await användare.tab({ shift: true })
+    await user.tab()
+    expect(document.activeElement).toBe(first)
+    await user.tab({ shift: true })
     expect(document.activeElement).toBe(sista)
   })
 
   it('återlämnar fokus till utlösaren när arket stängs', async () => {
-    const användare = userEvent.setup()
-    render(<MedUtlösare />)
-    const utlösare = screen.getByRole('button', { name: 'Öppna' })
+    const user = userEvent.setup()
+    render(<WithTrigger />)
+    const trigger = screen.getByRole('button', { name: 'Öppna' })
 
-    await användare.click(utlösare)
+    await user.click(trigger)
     expect(document.activeElement).toBe(screen.getByRole('dialog', { name: 'Testark' }))
 
-    await användare.keyboard('{Escape}')
+    await user.keyboard('{Escape}')
     expect(screen.queryByRole('dialog')).toBeNull()
-    expect(document.activeElement).toBe(utlösare)
+    expect(document.activeElement).toBe(trigger)
   })
 
   it('återlämnar fokus även under StrictMode-remontering', async () => {
-    const användare = userEvent.setup()
+    const user = userEvent.setup()
     render(
       <StrictMode>
-        <MedUtlösare />
+        <WithTrigger />
       </StrictMode>,
     )
-    const utlösare = screen.getByRole('button', { name: 'Öppna' })
+    const trigger = screen.getByRole('button', { name: 'Öppna' })
 
-    await användare.click(utlösare)
+    await user.click(trigger)
     expect(document.activeElement).toBe(screen.getByRole('dialog', { name: 'Testark' }))
 
-    await användare.keyboard('{Escape}')
+    await user.keyboard('{Escape}')
     expect(screen.queryByRole('dialog')).toBeNull()
-    expect(document.activeElement).toBe(utlösare)
+    expect(document.activeElement).toBe(trigger)
   })
 })

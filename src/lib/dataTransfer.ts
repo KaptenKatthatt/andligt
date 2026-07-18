@@ -5,8 +5,8 @@
 import { z } from 'zod'
 import {
   chapterKey,
-  sorteradeAnteckningar,
-  sparadeIdITidsordning,
+  sorteradeNotes,
+  savedIdsByTime,
   type Note,
   type ChapterBookmark,
   type SavedItem,
@@ -24,7 +24,7 @@ export type PersonalCollections = {
   chapterBookmarks: Record<string, ChapterBookmark>
 }
 
-const anteckningSchema = z.object({
+const noteSchema = z.object({
   ursprungTyp: z.enum(['rum', 'vandring', 'amne']),
   ursprungId: z.string(),
   text: z.string(),
@@ -33,13 +33,13 @@ const anteckningSchema = z.object({
   title: z.string().optional(),
 })
 
-const sparadSchema = z.object({
+const savedSchema = z.object({
   id: z.string(),
   title: z.string().optional(),
   sparadNar: z.string().nullable(),
 })
 
-const kapitelSchema = z.object({
+const chapterSchema = z.object({
   workId: z.string(),
   bookSlug: z.string(),
   chapter: z.number(),
@@ -53,20 +53,20 @@ const exportSchema = z.object({
   format: z.literal(EXPORT_FORMAT),
   version: z.literal(1),
   exporterad: z.string(),
-  anteckningar: z.array(anteckningSchema),
-  sparadeRum: z.array(sparadSchema),
-  sparadeVandringar: z.array(sparadSchema),
-  bokmarken: z.object({ kapitel: z.array(kapitelSchema), amnen: z.array(z.string()) }),
+  anteckningar: z.array(noteSchema),
+  sparadeRum: z.array(savedSchema),
+  sparadeVandringar: z.array(savedSchema),
+  bokmarken: z.object({ kapitel: z.array(chapterSchema), amnen: z.array(z.string()) }),
 })
 
 export type PersonalExport = z.infer<typeof exportSchema>
-type ExportSparad = z.infer<typeof sparadSchema>
+type ExportSparad = z.infer<typeof savedSchema>
 
-const sparadPoster = (
+const savedItems = (
   poster: Record<string, SavedItem>,
   titelFor: (id: string) => string | undefined,
 ): ExportSparad[] =>
-  sparadeIdITidsordning(poster).map((id) => ({
+  savedIdsByTime(poster).map((id) => ({
     id,
     title: titelFor(id),
     sparadNar: poster[id]?.sparadNar ?? null,
@@ -74,7 +74,7 @@ const sparadPoster = (
 
 /** Bygger en exportpost. `titelFor` slår upp läsbara titlar för anteckningarnas
  * ursprung och de sparade posterna, så exporten går att läsa fristående. */
-export const tillExport = (
+export const toExport = (
   samlingar: PersonalCollections,
   titelFor: (type: Origin, id: string) => string | undefined,
   nu: string,
@@ -82,12 +82,12 @@ export const tillExport = (
   format: EXPORT_FORMAT,
   version: 1,
   exporterad: nu,
-  anteckningar: sorteradeAnteckningar(samlingar.anteckningar).map((post) => ({
+  anteckningar: sorteradeNotes(samlingar.anteckningar).map((post) => ({
     ...post,
     title: titelFor(post.ursprungTyp, post.ursprungId),
   })),
-  sparadeRum: sparadPoster(samlingar.sparadeRum, (id) => titelFor('rum', id)),
-  sparadeVandringar: sparadPoster(samlingar.sparadeVandringar, (id) => titelFor('vandring', id)),
+  sparadeRum: savedItems(samlingar.sparadeRum, (id) => titelFor('rum', id)),
+  sparadeVandringar: savedItems(samlingar.sparadeVandringar, (id) => titelFor('vandring', id)),
   bokmarken: {
     kapitel: Object.values(samlingar.chapterBookmarks),
     amnen: Object.keys(samlingar.bookmarks).filter((id) => samlingar.bookmarks[id]),
@@ -96,13 +96,13 @@ export const tillExport = (
 
 /** Tolkar en importfil. Fel format, fel version eller korrupt JSON → null, så
  * anroparen kan visa ett stilla felbesked utan att något går sönder. */
-export const lasImport = (json: unknown): PersonalExport | null => {
+export const readImport = (json: unknown): PersonalExport | null => {
   const resultat = exportSchema.safeParse(json)
   return resultat.success ? resultat.data : null
 }
 
 // Anteckningskonflikt: den nyast uppdaterade vinner (spec: konflikter löses säkert).
-const mergaAnteckningar = (
+const mergeNotes = (
   nuvarande: Record<string, Note>,
   importerade: PersonalExport['anteckningar'],
 ): Record<string, Note> => {
@@ -121,7 +121,7 @@ const mergaAnteckningar = (
   return ut
 }
 
-const mergaSparade = (
+const mergeSaved = (
   nuvarande: Record<string, SavedItem>,
   importerade: ExportSparad[],
 ): Record<string, SavedItem> => {
@@ -132,36 +132,36 @@ const mergaSparade = (
   return ut
 }
 
-const mergaBokmarken = (nuvarande: Record<string, boolean>, amnen: string[]): Record<string, boolean> => {
+const mergaBookmarks = (nuvarande: Record<string, boolean>, amnen: string[]): Record<string, boolean> => {
   const ut = { ...nuvarande }
   for (const id of amnen) ut[id] = true
   return ut
 }
 
-const mergaKapitel = (
+const mergeChapterBookmarks = (
   nuvarande: Record<string, ChapterBookmark>,
   kapitel: ChapterBookmark[],
 ): Record<string, ChapterBookmark> => {
   const ut = { ...nuvarande }
-  for (const bokmarke of kapitel) ut[chapterKey(bokmarke.workId, bokmarke.bookSlug, bokmarke.chapter)] = bokmarke
+  for (const bookmark of kapitel) ut[chapterKey(bookmark.workId, bookmark.bookSlug, bookmark.chapter)] = bookmark
   return ut
 }
 
 /** Slår ihop en import med nuvarande data (spec: lokala kopian förblir användbar,
  * konflikter löses säkert). Union av sparade poster och bokmärken; anteckningar
  * löses med nyast-vinner. Aldrig destruktivt mot befintlig data. */
-export const mergaImport = (
+export const mergeImport = (
   nuvarande: PersonalCollections,
   importen: PersonalExport,
 ): PersonalCollections => ({
-  anteckningar: mergaAnteckningar(nuvarande.anteckningar, importen.anteckningar),
-  sparadeRum: mergaSparade(nuvarande.sparadeRum, importen.sparadeRum),
-  sparadeVandringar: mergaSparade(nuvarande.sparadeVandringar, importen.sparadeVandringar),
-  bookmarks: mergaBokmarken(nuvarande.bookmarks, importen.bokmarken.amnen),
-  chapterBookmarks: mergaKapitel(nuvarande.chapterBookmarks, importen.bokmarken.kapitel),
+  anteckningar: mergeNotes(nuvarande.anteckningar, importen.anteckningar),
+  sparadeRum: mergeSaved(nuvarande.sparadeRum, importen.sparadeRum),
+  sparadeVandringar: mergeSaved(nuvarande.sparadeVandringar, importen.sparadeVandringar),
+  bookmarks: mergaBookmarks(nuvarande.bookmarks, importen.bokmarken.amnen),
+  chapterBookmarks: mergeChapterBookmarks(nuvarande.chapterBookmarks, importen.bokmarken.kapitel),
 })
 
-const anteckningTillMarkdown = (post: PersonalExport['anteckningar'][number]): string =>
+const noteToMarkdown = (post: PersonalExport['anteckningar'][number]): string =>
   [
     `## ${post.title ?? 'Anteckning'}`,
     '',
@@ -172,16 +172,16 @@ const anteckningTillMarkdown = (post: PersonalExport['anteckningar'][number]): s
 
 /** Läsbar Markdown-spegel av exporten (spec föredrar öppna format). Inte
  * återimporterbar — JSON är round-trip-formatet. */
-export const tillMarkdown = (exporten: PersonalExport): string => {
+export const toMarkdown = (exporten: PersonalExport): string => {
   const delar: string[] = ['# Visdomsatlasen — mina anteckningar och sparat', '']
   if (exporten.anteckningar.length > 0) {
     delar.push('# Anteckningar', '')
-    for (const post of exporten.anteckningar) delar.push(anteckningTillMarkdown(post), '')
+    for (const post of exporten.anteckningar) delar.push(noteToMarkdown(post), '')
   }
-  const sparade = [...exporten.sparadeRum, ...exporten.sparadeVandringar]
-  if (sparade.length > 0) {
+  const saved = [...exporten.sparadeRum, ...exporten.sparadeVandringar]
+  if (saved.length > 0) {
     delar.push('# Sparat', '')
-    for (const post of sparade) delar.push(`- ${post.title ?? post.id}`)
+    for (const post of saved) delar.push(`- ${post.title ?? post.id}`)
     delar.push('')
   }
   return delar.join('\n')

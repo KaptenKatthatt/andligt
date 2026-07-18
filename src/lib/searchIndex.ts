@@ -14,33 +14,33 @@ import type {
   Path,
 } from '../content/editorial/schema'
 import {
-  bibliotekFragor,
-  bibliotekKallor,
-  bibliotekRum,
-  bibliotekTeman,
-  bibliotekTraditioner,
-  bibliotekVandringar,
-  passagerForKalla,
-  rumForVandring,
-  vandringLastid,
+  libraryQuestions,
+  librarySources,
+  libraryRoom,
+  libraryThemes,
+  libraryTraditions,
+  libraryPaths,
+  passagesForSource,
+  roomForPath,
+  pathReadingTime,
 } from './library'
 import {
-  allaFragor,
-  allaKallor,
-  allaPassager,
+  allQuestions,
+  allSources,
+  allPassages,
   allaRum,
-  allaTeman,
-  allaTraditioner,
-  allaVandringar,
-  kallnamn,
+  allThemes,
+  allTraditions,
+  allPaths,
+  sourceName,
 } from './content'
 import { utdrag } from './personal'
-import { SOKTYPER, type SearchType, type SearchParams } from './searchTypes'
+import { SEARCH_TYPES, type SearchType, type SearchParams } from './searchTypes'
 
 // Söktyperna bor i soktyper.ts (utan innehållsberoenden) så routern kan
 // validera URL:en utan att dra in indexbygget; här återexporteras de så
 // befintliga importvägar (soklogik, sidor) fortsatt kan gå via sokindex.
-export { SOKTYPER, type SearchType, type SearchParams }
+export { SEARCH_TYPES, type SearchType, type SearchParams }
 
 /** Sökmål = de To-varianter söket kan öppna (redaktionella sidor). Egen union,
  * strukturellt kompatibel med To, så sökindexet inte kopplas till legacy-eran i
@@ -67,10 +67,10 @@ export type SearchDoc = {
   text: string[]
 }
 
-const kartaViaId = <T extends { id: string }>(poster: T[]): Map<string, T> =>
+const kartaById = <T extends { id: string }>(poster: T[]): Map<string, T> =>
   new Map(poster.map((post) => [post.id, post]))
 
-const dokumentUrFraga = (fraga: Question): SearchDoc => ({
+const docFromQuestion = (fraga: Question): SearchDoc => ({
   type: 'fraga',
   id: fraga.id,
   title: fraga.text,
@@ -81,7 +81,7 @@ const dokumentUrFraga = (fraga: Question): SearchDoc => ({
   text: fraga.description ? [fraga.description] : [],
 })
 
-const dokumentUrTema = (tema: Theme): SearchDoc => ({
+const docFromTheme = (tema: Theme): SearchDoc => ({
   type: 'tema',
   id: tema.id,
   title: tema.label,
@@ -92,24 +92,24 @@ const dokumentUrTema = (tema: Theme): SearchDoc => ({
   text: tema.description ? [tema.description] : [],
 })
 
-const temaEtiketter = (rum: Room, themes: Map<string, Theme>): string[] =>
+const themeLabels = (rum: Room, themes: Map<string, Theme>): string[] =>
   rum.themes.flatMap((id) => {
     const tema = themes.get(id)
     return tema ? [tema.label] : []
   })
 
-const kallnamnFor = (rum: Room, sources: Map<string, Source>): string[] =>
+const sourceNameFor = (rum: Room, sources: Map<string, Source>): string[] =>
   rum.sources.flatMap((relation) => {
     const source = sources.get(relation.source)
-    return source ? [kallnamn(source)] : []
+    return source ? [sourceName(source)] : []
   })
 
-const rumMeta = (rum: Room, fråga: Question | undefined): string => {
-  const lästid = `ca ${rum.readingTimeMinutes} min`
-  return fråga ? `${fråga.text} · ${lästid}` : lästid
+const roomMeta = (rum: Room, fråga: Question | undefined): string => {
+  const readingTime = `ca ${rum.readingTimeMinutes} min`
+  return fråga ? `${fråga.text} · ${readingTime}` : readingTime
 }
 
-const dokumentUrRum = (
+const docFromRoom = (
   rum: Room,
   frågor: Map<string, Question>,
   themes: Map<string, Theme>,
@@ -121,7 +121,7 @@ const dokumentUrRum = (
     id: rum.id,
     title: rum.title,
     underrad: rum.summary,
-    meta: rumMeta(rum, fråga),
+    meta: roomMeta(rum, fråga),
     mal: { kind: 'rum', slug: rum.slug },
     alias: [],
     keywords: rum.tags ?? [],
@@ -129,18 +129,18 @@ const dokumentUrRum = (
       rum.thoughtToCarry,
       ...rum.reflectionQuestions,
       ...(fråga ? [fråga.text] : []),
-      ...temaEtiketter(rum, themes),
-      ...kallnamnFor(rum, sources),
+      ...themeLabels(rum, themes),
+      ...sourceNameFor(rum, sources),
     ],
   }
 }
 
-const vandringMeta = (rummen: Room[]): string => {
+const pathMeta = (rummen: Room[]): string => {
   const antal = rummen.length === 1 ? 'Ett rum' : `${rummen.length} rum`
-  return `${antal} · ca ${vandringLastid(rummen)} min`
+  return `${antal} · ca ${pathReadingTime(rummen)} min`
 }
 
-const dokumentUrVandring = (
+const docFromPath = (
   vandring: Path,
   frågor: Map<string, Question>,
   rummen: Room[],
@@ -151,7 +151,7 @@ const dokumentUrVandring = (
     id: vandring.id,
     title: vandring.title,
     underrad: utdrag(vandring.introduction, 110),
-    meta: vandringMeta(rummen),
+    meta: pathMeta(rummen),
     mal: { kind: 'vandring', slug: vandring.slug },
     alias: [],
     keywords: vandring.keywords ?? [],
@@ -159,7 +159,7 @@ const dokumentUrVandring = (
   }
 }
 
-const kallaAlias = (source: Source): string[] => [
+const sourceAlias = (source: Source): string[] => [
   ...(source.originalTitle ? [source.originalTitle] : []),
   ...(source.alias ?? []),
   ...(source.author ? [source.author] : []),
@@ -178,7 +178,7 @@ const passagetext = (passager: SourcePassage[]): string[] =>
     ...(passage.translation ? [passage.translation] : []),
   ])
 
-const dokumentUrKalla = (
+const docFromSource = (
   source: Source,
   traditions: Map<string, Tradition>,
   passager: SourcePassage[],
@@ -186,10 +186,10 @@ const dokumentUrKalla = (
   type: 'kalla',
   id: source.id,
   title: source.title,
-  underrad: kallnamn(source),
+  underrad: sourceName(source),
   meta: source.approximateDating,
   mal: { kind: 'kallpost', slug: source.slug },
-  alias: kallaAlias(source),
+  alias: sourceAlias(source),
   keywords: source.keywords ?? [],
   text: [
     ...(source.description ? [source.description] : []),
@@ -198,7 +198,7 @@ const dokumentUrKalla = (
   ],
 })
 
-const dokumentUrTradition = (tradition: Tradition): SearchDoc => ({
+const docFromTradition = (tradition: Tradition): SearchDoc => ({
   type: 'tradition',
   id: tradition.id,
   title: tradition.name,
@@ -218,31 +218,31 @@ type Innehall = Pick<
  * urvalen, så ingen utkasttext kan följa med in i ett sökbart fält ens via en
  * reference. */
 export const byggSokindex = (innehall: Innehall): SearchDoc[] => {
-  const frågor = kartaViaId(bibliotekFragor(innehall.frågor))
-  const themes = kartaViaId(bibliotekTeman(innehall.themes))
-  const sources = kartaViaId(bibliotekKallor(innehall.sources))
-  const traditions = kartaViaId(bibliotekTraditioner(innehall.traditions))
+  const frågor = kartaById(libraryQuestions(innehall.frågor))
+  const themes = kartaById(libraryThemes(innehall.themes))
+  const sources = kartaById(librarySources(innehall.sources))
+  const traditions = kartaById(libraryTraditions(innehall.traditions))
   return [
-    ...bibliotekFragor(innehall.frågor).map(dokumentUrFraga),
-    ...bibliotekTeman(innehall.themes).map(dokumentUrTema),
-    ...bibliotekRum(innehall.rum).map((rum) => dokumentUrRum(rum, frågor, themes, sources)),
-    ...bibliotekVandringar(innehall.vandringar).map((vandring) =>
-      dokumentUrVandring(vandring, frågor, rumForVandring(vandring, innehall.rum)),
+    ...libraryQuestions(innehall.frågor).map(docFromQuestion),
+    ...libraryThemes(innehall.themes).map(docFromTheme),
+    ...libraryRoom(innehall.rum).map((rum) => docFromRoom(rum, frågor, themes, sources)),
+    ...libraryPaths(innehall.vandringar).map((vandring) =>
+      docFromPath(vandring, frågor, roomForPath(vandring, innehall.rum)),
     ),
-    ...bibliotekKallor(innehall.sources).map((source) =>
-      dokumentUrKalla(source, traditions, passagerForKalla(source.id, innehall.passager)),
+    ...librarySources(innehall.sources).map((source) =>
+      docFromSource(source, traditions, passagesForSource(source.id, innehall.passager)),
     ),
-    ...bibliotekTraditioner(innehall.traditions).map(dokumentUrTradition),
+    ...libraryTraditions(innehall.traditions).map(docFromTradition),
   ]
 }
 
 /** Appens index, byggt en gång vid moduladdning ur allt laddat innehåll. */
-export const sokindexet: SearchDoc[] = byggSokindex({
+export const searchIndexData: SearchDoc[] = byggSokindex({
   rum: allaRum,
-  themes: allaTeman,
-  frågor: allaFragor,
-  vandringar: allaVandringar,
-  sources: allaKallor,
-  passager: allaPassager,
-  traditions: allaTraditioner,
+  themes: allThemes,
+  frågor: allQuestions,
+  vandringar: allPaths,
+  sources: allSources,
+  passager: allPassages,
+  traditions: allTraditions,
 })

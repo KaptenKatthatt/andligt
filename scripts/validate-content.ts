@@ -4,23 +4,23 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 import type { z } from 'zod'
-import { tolkaPostfil, tolkaRumsfil, type ContentFile, type Parsed } from '../src/content/editorial/parse'
+import { parsePostFile, parseRoomFile, type ContentFile, type Parsed } from '../src/content/editorial/parse'
 import {
-  fragaSchema,
-  kallaSchema,
+  questionSchema,
+  sourceSchema,
   kallpassageSchema,
   personSchema,
-  temaSchema,
+  themeSchema,
   traditionSchema,
-  vandringSchema,
+  pathSchema,
   type ContentSet,
 } from '../src/content/editorial/schema'
-import { valideraInnehall } from '../src/content/editorial/validate'
+import { validateContent } from '../src/content/editorial/validate'
 
-const INNEHALLSROT = path.join(process.cwd(), 'src', 'content')
+const CONTENT_ROOT = path.join(process.cwd(), 'src', 'content')
 
-const läsMarkdownfiler = (katalog: string): ContentFile[] => {
-  const dir = path.join(INNEHALLSROT, katalog)
+const readMarkdownFiles = (katalog: string): ContentFile[] => {
+  const dir = path.join(CONTENT_ROOT, katalog)
   if (!existsSync(dir)) return []
   return readdirSync(dir)
     .filter((name) => name.endsWith('.md'))
@@ -31,34 +31,34 @@ const läsMarkdownfiler = (katalog: string): ContentFile[] => {
     }))
 }
 
-const allaFel: string[] = []
+const allErrors: string[] = []
 
-const samla = <T>(filer: ContentFile[], tolka: (fil: ContentFile) => Parsed<T>): T[] =>
+const collect = <T>(filer: ContentFile[], tolka: (fil: ContentFile) => Parsed<T>): T[] =>
   filer.flatMap((fil) => {
     const tolkning = tolka(fil)
-    allaFel.push(...tolkning.fel)
+    allErrors.push(...tolkning.fel)
     return tolkning.värde ? [tolkning.värde] : []
   })
 
 const poster = <T>(katalog: string, schema: z.ZodType<T>): T[] =>
-  samla(läsMarkdownfiler(katalog), (fil) => tolkaPostfil(schema, fil))
+  collect(readMarkdownFiles(katalog), (fil) => parsePostFile(schema, fil))
 
 const mängd: ContentSet = {
-  rum: samla(läsMarkdownfiler('rooms'), tolkaRumsfil),
-  themes: poster('themes', temaSchema),
-  frågor: poster('questions', fragaSchema),
-  vandringar: poster('paths', vandringSchema),
-  sources: poster('sources', kallaSchema),
+  rum: collect(readMarkdownFiles('rooms'), parseRoomFile),
+  themes: poster('themes', themeSchema),
+  frågor: poster('questions', questionSchema),
+  vandringar: poster('paths', pathSchema),
+  sources: poster('sources', sourceSchema),
   passager: poster('passages', kallpassageSchema),
   traditions: poster('traditions', traditionSchema),
   personer: poster('personer', personSchema),
 }
 
-allaFel.push(...valideraInnehall(mängd))
+allErrors.push(...validateContent(mängd))
 
-if (allaFel.length > 0) {
-  console.error(`Innehållsvalidering: ${allaFel.length} fel\n`)
-  for (const fel of allaFel) console.error(`  ✗ ${fel}`)
+if (allErrors.length > 0) {
+  console.error(`Innehållsvalidering: ${allErrors.length} fel\n`)
+  for (const fel of allErrors) console.error(`  ✗ ${fel}`)
   process.exit(1)
 }
 

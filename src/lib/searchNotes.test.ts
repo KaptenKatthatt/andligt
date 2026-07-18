@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { Note } from './personal'
-import { sokAnteckningar } from './searchNotes'
+import { searchNotes } from './searchNotes'
 
 const anteckning = (id: string, text: string, updated: string): Note => ({
   ursprungTyp: 'rum',
@@ -18,24 +18,24 @@ const anteckningar: Record<string, Note> = {
 
 describe('sokAnteckningar', () => {
   it('hittar anteckningar på normaliserad text (forlatelse hittar förlåtelse)', () => {
-    expect(sokAnteckningar('forlatelse', anteckningar).map((a) => a.ursprungId)).toEqual(['a'])
+    expect(searchNotes('forlatelse', anteckningar).map((a) => a.ursprungId)).toEqual(['a'])
   })
 
   it('ger inget för tom eller för kort fråga', () => {
-    expect(sokAnteckningar('', anteckningar)).toEqual([])
-    expect(sokAnteckningar('a', anteckningar)).toEqual([])
+    expect(searchNotes('', anteckningar)).toEqual([])
+    expect(searchNotes('a', anteckningar)).toEqual([])
   })
 
   it('ger inget när frågan bara är stopord', () => {
-    expect(sokAnteckningar('om och att', anteckningar)).toEqual([])
+    expect(searchNotes('om och att', anteckningar)).toEqual([])
   })
 
   it('sorterar senast ändrad först', () => {
-    const utökade = { ...anteckningar, d: anteckning('d', 'Mer om förlåtelse.', '2026-07-14') }
-    expect(sokAnteckningar('förlåtelse', utökade).map((a) => a.ursprungId)).toEqual(['d', 'a'])
+    const extended = { ...anteckningar, d: anteckning('d', 'Mer om förlåtelse.', '2026-07-14') }
+    expect(searchNotes('förlåtelse', extended).map((a) => a.ursprungId)).toEqual(['d', 'a'])
   })
 
   it('utelämnar tomma anteckningar', () => {
-    expect(sokAnteckningar('tanke', anteckningar).some((a) => a.ursprungId === 'c')).toBe(false)
+    expect(searchNotes('tanke', anteckningar).some((a) => a.ursprungId === 'c')).toBe(false)
   })
 })

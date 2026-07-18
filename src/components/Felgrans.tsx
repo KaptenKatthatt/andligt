@@ -1,5 +1,5 @@
 import { Component, type ReactNode } from 'react'
-import { rapportera } from '../lib/telemetry'
+import { report } from '../lib/telemetry'
 import styles from './Felgrans.module.css'
 
 type Props = { children: ReactNode }
@@ -19,7 +19,7 @@ export class Felgrans extends Component<Props, State> {
   }
 
   override componentDidCatch(error: Error): void {
-    rapportera({ type: 'sidladdningsfel', resurs: 'sida', detalj: error.message })
+    report({ type: 'sidladdningsfel', resurs: 'sida', detalj: error.message })
   }
 
   override render(): ReactNode {

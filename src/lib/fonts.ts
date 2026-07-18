@@ -6,7 +6,7 @@
 // en gång, och webbläsaren cachar woff2-filerna (CacheFirst, se vite.config.ts).
 import type { FontChoice } from './theme'
 
-const laddare: Record<Exclude<FontChoice, 'garamond'>, () => Promise<unknown>> = {
+const loaders: Record<Exclude<FontChoice, 'garamond'>, () => Promise<unknown>> = {
   literata: () =>
     Promise.all([
       import('@fontsource/literata/400.css'),
@@ -30,14 +30,14 @@ const laddare: Record<Exclude<FontChoice, 'garamond'>, () => Promise<unknown>> =
     ]),
 }
 
-const laddade = new Set<Exclude<FontChoice, 'garamond'>>()
+const loaded = new Set<Exclude<FontChoice, 'garamond'>>()
 
 /** Registrerar det valda typsnittets @font-face första gången det väljs.
  * Garamond ligger redan i startbunten; övriga hämtas en gång och cachas. Ett
  * misslyckat CSS-anrop nollställs så valet kan försökas igen — under tiden
  * faller texten tillbaka på fontstackens Georgia/system-ui, aldrig blankt. */
-export const laddaFont = (val: FontChoice): void => {
-  if (val === 'garamond' || laddade.has(val)) return
-  laddade.add(val)
-  void laddare[val]().catch(() => laddade.delete(val))
+export const loadFont = (val: FontChoice): void => {
+  if (val === 'garamond' || loaded.has(val)) return
+  loaded.add(val)
+  void loaders[val]().catch(() => loaded.delete(val))
 }

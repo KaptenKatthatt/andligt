@@ -34,7 +34,7 @@ export type Resultat = {
   created: string
 }
 
-export const lasPassager = (katalog: string): Passage[] =>
+export const readPassages = (katalog: string): Passage[] =>
   readdirSync(katalog)
     .filter((fil) => fil.endsWith('.json'))
     .sort()

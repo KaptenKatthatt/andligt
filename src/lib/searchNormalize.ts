@@ -45,7 +45,7 @@ export const stam = (ord: string): string => {
 }
 
 // Exakt ett teckenbyte på samma position (två lika långa ord).
-const skiljerPaEttTecken = (a: string, b: string): boolean => {
+const skiljerPaTecken = (a: string, b: string): boolean => {
   let skillnader = 0
   for (let i = 0; i < a.length; i += 1) {
     if (a[i] !== b[i]) skillnader += 1
@@ -55,27 +55,27 @@ const skiljerPaEttTecken = (a: string, b: string): boolean => {
 }
 
 // Exakt en omkastning av två intilliggande tecken (två lika långa ord).
-const ärTransposition = (a: string, b: string): boolean => {
-  let första = -1
+const isTransposition = (a: string, b: string): boolean => {
+  let first = -1
   let andra = -1
   let antal = 0
   for (let i = 0; i < a.length; i += 1) {
     if (a[i] === b[i]) continue
     antal += 1
-    if (antal === 1) första = i
+    if (antal === 1) first = i
     else if (antal === 2) andra = i
     else return false
   }
   return (
     antal === 2 &&
-    andra === första + 1 &&
-    a[första] === b[andra] &&
-    a[andra] === b[första]
+    andra === first + 1 &&
+    a[first] === b[andra] &&
+    a[andra] === b[first]
   )
 }
 
 // `lang` blir `kort` genom att ta bort exakt ett tecken (längdskillnad 1).
-const ärEnInsättning = (kort: string, lang: string): boolean => {
+const isDeposit = (kort: string, lang: string): boolean => {
   let i = 0
   let hopp = 0
   for (let j = 0; j < lang.length; j += 1) {
@@ -90,11 +90,11 @@ const ärEnInsättning = (kort: string, lang: string): boolean => {
  * skiljer sig på högst ett skrivfel (byte, omkastning, in-/utskott) och båda är
  * minst fem tecken — annars kan ett enda fel byta ordets mening. Lika ord är
  * ingen felträff (de fångas som exakt match tidigare i kedjan). */
-export const inomEttSkrivfel = (a: string, b: string): boolean => {
+export const inomSkrivfel = (a: string, b: string): boolean => {
   if (a.length < 5 || b.length < 5) return false
   const diff = a.length - b.length
-  if (diff === 0) return skiljerPaEttTecken(a, b) || ärTransposition(a, b)
-  if (diff === 1) return ärEnInsättning(b, a)
-  if (diff === -1) return ärEnInsättning(a, b)
+  if (diff === 0) return skiljerPaTecken(a, b) || isTransposition(a, b)
+  if (diff === 1) return isDeposit(b, a)
+  if (diff === -1) return isDeposit(a, b)
   return false
 }

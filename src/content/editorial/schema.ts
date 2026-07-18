@@ -11,7 +11,7 @@ const statusSchema = z.enum(['utkast', 'granskning', 'publicerad', 'arkiverad'])
 // eftersom de används i URL:er.
 const slugSchema = z.string().regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, 'ogiltig slug (ascii-kebab)')
 const idSchema = z.string().min(1)
-const datumSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}/, 'datum som ÅÅÅÅ-MM-DD')
+const dateSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}/, 'datum som ÅÅÅÅ-MM-DD')
 
 // Redaktionella sök-keywords (search.md, Editorial Keywords): synonymer, vanligt
 // användarspråk och alternativa stavningar som bara förbättrar upptäckt i söket.
@@ -19,7 +19,7 @@ const datumSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}/, 'datum som ÅÅÅÅ-M
 const nyckelordSchema = z.array(z.string().min(1)).optional()
 
 /** Hur ett rum använder en source (source-and-context.md, Types of Source Use). */
-const brukSchema = z.enum([
+const useSchema = z.enum([
   'citat',
   'översättning',
   'parafras',
@@ -35,7 +35,7 @@ const kallrelationSchema = z.object({
   passage: idSchema.optional(),
   // Fritextreferens tills källpassager finns som egna poster, t.ex. "avsnitt 1".
   reference: z.string().min(1).optional(),
-  use: brukSchema,
+  use: useSchema,
   primary: z.boolean().default(false),
   editorialNote: z.string().optional(),
 })
@@ -45,14 +45,14 @@ const redaktionSchema = z.object({
   writer: z.string().optional(),
   sourceReviewer: z.string().optional(),
   languageReviewer: z.string().optional(),
-  reviewed: datumSchema.optional(),
+  reviewed: dateSchema.optional(),
   notes: z.string().optional(),
   version: z.number().int().min(1).default(1),
 })
 
 /** Ett reflektionsrum. `opening`/`core`/`historicalContext` fylls från
  * markdown-kroppens ##-sektioner av tolken, inte från frontmatter. */
-export const rumSchema = z.object({
+export const roomSchema = z.object({
   id: idSchema,
   slug: slugSchema,
   title: z.string().min(1),
@@ -65,8 +65,8 @@ export const rumSchema = z.object({
   readingTimeMinutes: z.number().int().min(1),
   language: z.string().default('sv'),
   status: statusSchema,
-  created: datumSchema,
-  updated: datumSchema,
+  created: dateSchema,
+  updated: dateSchema,
   editorial: redaktionSchema.optional(),
   tags: z.array(z.string().min(1)).optional(),
   relatedQuestions: z.array(idSchema).optional(),
@@ -74,11 +74,11 @@ export const rumSchema = z.object({
   core: z.string().min(1),
   historicalContext: z.string().optional(),
 })
-export type Room = z.infer<typeof rumSchema>
+export type Room = z.infer<typeof roomSchema>
 
 /** Tema — bred mänsklig ingång på tröskeln (home-and-entry.md). Rummen äger
  * relationen via `themes`; temat pekar bara ut sitt redaktionella standardrum. */
-export const temaSchema = z.object({
+export const themeSchema = z.object({
   id: idSchema,
   slug: slugSchema,
   label: z.string().min(1),
@@ -89,10 +89,10 @@ export const temaSchema = z.object({
   description: z.string().optional(),
   keywords: nyckelordSchema,
 })
-export type Theme = z.infer<typeof temaSchema>
+export type Theme = z.infer<typeof themeSchema>
 
 /** Mänsklig fråga — taxonomins hjärta (question-taxonomy.md). */
-export const fragaSchema = z.object({
+export const questionSchema = z.object({
   id: idSchema,
   slug: slugSchema,
   text: z.string().min(1),
@@ -102,10 +102,10 @@ export const fragaSchema = z.object({
   description: z.string().optional(),
   keywords: nyckelordSchema,
 })
-export type Question = z.infer<typeof fragaSchema>
+export type Question = z.infer<typeof questionSchema>
 
 /** Vandring — kuraterad följd av rum (paths.md, Data Requirements). */
-export const vandringSchema = z.object({
+export const pathSchema = z.object({
   id: idSchema,
   slug: slugSchema,
   title: z.string().min(1),
@@ -114,15 +114,15 @@ export const vandringSchema = z.object({
   rum: z.array(idSchema).min(3).max(7),
   closingReflection: z.string().optional(),
   status: statusSchema,
-  created: datumSchema,
-  updated: datumSchema,
+  created: dateSchema,
+  updated: dateSchema,
   editorialNotes: z.string().optional(),
   keywords: nyckelordSchema,
 })
-export type Path = z.infer<typeof vandringSchema>
+export type Path = z.infer<typeof pathSchema>
 
 /** Kanonisk källpost (source-and-context.md, Suggested Source Model). */
-export const kallaSchema = z.object({
+export const sourceSchema = z.object({
   id: idSchema,
   slug: slugSchema,
   title: z.string().min(1),
@@ -157,7 +157,7 @@ export const kallaSchema = z.object({
   alias: z.array(z.string().min(1)).optional(),
   keywords: nyckelordSchema,
 })
-export type Source = z.infer<typeof kallaSchema>
+export type Source = z.infer<typeof sourceSchema>
 
 /** Källpassage (source-and-context.md, Suggested Passage Model). */
 export const kallpassageSchema = z.object({

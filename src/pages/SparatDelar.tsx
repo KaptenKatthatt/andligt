@@ -5,8 +5,8 @@ import type { ReactNode } from 'react'
 import { ToLink } from '../components/ToLink'
 import type { Path } from '../content/editorial/schema'
 import { findTopic } from '../content/topics'
-import { hittaRumViaId } from '../lib/content'
-import { datumEtikett, utdrag, type Note } from '../lib/personal'
+import { findRoomById } from '../lib/content'
+import { dateLabel, utdrag, type Note } from '../lib/personal'
 import styles from './SparatDelar.module.css'
 
 /** Dit en anteckning länkar tillbaka: läsrummet (rum) eller topic-essän. En
@@ -28,11 +28,11 @@ export type Kort = {
 // Anteckningen kopplad till sitt ursprung (spec Notes and Sources): rum länkas
 // till läsrummet, topic-anteckningar till essän. Hittas inte ursprunget renderas
 // texten ändå — utan länk, men aldrig gömd. Delas av Sparat och söket.
-export const anteckningTillKort = (anteckning: Note): Kort => {
-  const datum = datumEtikett(anteckning.updated)
+export const noteToCard = (anteckning: Note): Kort => {
+  const datum = dateLabel(anteckning.updated)
   const bas = { key: anteckning.ursprungId, text: anteckning.text, datum }
   if (anteckning.ursprungTyp === 'rum') {
-    const rum = hittaRumViaId(anteckning.ursprungId)
+    const rum = findRoomById(anteckning.ursprungId)
     const to = rum ? ({ kind: 'rum', slug: rum.slug } as const) : undefined
     return { ...bas, title: rum?.title ?? 'Sparad tanke', to }
   }
@@ -42,7 +42,7 @@ export const anteckningTillKort = (anteckning: Note): Kort => {
 }
 
 /** En grupp visas bara när den har innehåll (spec Saved Section). */
-export const Grupp = ({ rubrik, children }: { rubrik: string; children: ReactNode }) => (
+export const Group = ({ rubrik, children }: { rubrik: string; children: ReactNode }) => (
   <section className={styles.grupp}>
     <h2 className="kicker sectionKicker">{rubrik}</h2>
     {children}
@@ -52,7 +52,7 @@ export const Grupp = ({ rubrik, children }: { rubrik: string; children: ReactNod
 /** Vandringens preview-kort: title, kort introduction och — bara för
  * orientering — senast öppnade rum. Aldrig antal rum, procent eller kvarvarande
  * (spec Saved Paths). */
-export const VandringKort = ({
+export const PathCard = ({
   vandring,
   senastRum,
 }: {
@@ -69,7 +69,7 @@ export const VandringKort = ({
 /** Anteckningens preview-kort: utdrag, kopplad title och datum. Länkar till
  * ursprunget när det kan slås upp; annars renderas texten utan länk — en
  * anteckning göms aldrig bara för att dess ursprung inte hittas. */
-export const AnteckningsKort = ({
+export const NoteCard = ({
   title,
   text,
   datum,
@@ -97,7 +97,7 @@ export const AnteckningsKort = ({
 
 /** Sparat-ytans tomläge (spec Empty State): lugnt och direkt, ingen uppmaning
  * att bygga en samling. */
-export const Tomlage = () => (
+export const EmptyState = () => (
   <div className={styles.tomlage}>
     <p className={styles.tomText}>Du har inte sparat något ännu.</p>
     <p className={styles.tomHint}>När en text berör dig kan du lägga ett bokmärke här.</p>

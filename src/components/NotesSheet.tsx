@@ -14,7 +14,7 @@ type Props = {
 /** Sheetens fot: stilla autospar-status till vänster, radering till höger.
  * Raderingen kräver en enkel bekräftelse på place — innehållet är personligt
  * och kanske inte återställbart (spec Deleting Notes). Ingen window.confirm. */
-const Fot = ({
+const Foot = ({
   sparadVisas,
   kanTaBort,
   onBekraftaTaBort,
@@ -56,7 +56,7 @@ const Fot = ({
 export const NotesSheet = ({ title, value, onChange, onClose, onDelete }: Props) => {
   const stabilt = useDebounced(value, 800)
   const sparadVisas = value.trim().length > 0 && stabilt === value
-  const taBort = () => {
+  const removeRemove = () => {
     onDelete?.()
     onClose()
   }
@@ -73,10 +73,10 @@ export const NotesSheet = ({ title, value, onChange, onClose, onDelete }: Props)
         rows={7}
         placeholder="Skriv det du vill bära med dig."
       />
-      <Fot
+      <Foot
         sparadVisas={sparadVisas}
         kanTaBort={onDelete !== undefined && value.trim().length > 0}
-        onBekraftaTaBort={taBort}
+        onBekraftaTaBort={removeRemove}
       />
     </BottomSheet>
   )

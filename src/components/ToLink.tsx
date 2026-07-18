@@ -18,7 +18,7 @@ const screenPath = (id: string) => {
 
 // Bibliotekets mål är alla slug-adresserade — en karta räcker, och ett nytt
 // mål är en rad här plus unionsmedlemmen i model.ts.
-const BIBLIOTEKSPATH = {
+const LIBRARY_PATH = {
   rum: '/rum/$slug',
   tema: '/bibliotek/tema/$slug',
   kallpost: '/bibliotek/kalla/$slug',
@@ -26,17 +26,17 @@ const BIBLIOTEKSPATH = {
   vandring: '/bibliotek/vandring/$slug',
 } as const
 
-type BibliotekTo = Extract<To, { kind: keyof typeof BIBLIOTEKSPATH }>
-const arBibliotekTo = (to: To): to is BibliotekTo => to.kind in BIBLIOTEKSPATH
+type BibliotekTo = Extract<To, { kind: keyof typeof LIBRARY_PATH }>
+const isLibraryTo = (to: To): to is BibliotekTo => to.kind in LIBRARY_PATH
 
-const BibliotekLink = ({ to, ...shared }: Props & { to: BibliotekTo }) => (
-  <Link to={BIBLIOTEKSPATH[to.kind]} params={{ slug: to.slug }} {...shared} />
+const LibraryLink = ({ to, ...shared }: Props & { to: BibliotekTo }) => (
+  <Link to={LIBRARY_PATH[to.kind]} params={{ slug: to.slug }} {...shared} />
 )
 
 /** Renders a router link for any content link target. */
 export const ToLink = ({ to, className, style, children }: Props) => {
   const shared = { className, style, children }
-  if (arBibliotekTo(to)) return <BibliotekLink to={to} {...shared} />
+  if (isLibraryTo(to)) return <LibraryLink to={to} {...shared} />
   switch (to.kind) {
     case 'topic':
       return <Link to="/amne/$id" params={{ id: to.id }} {...shared} />

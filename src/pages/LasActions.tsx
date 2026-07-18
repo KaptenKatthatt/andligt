@@ -10,7 +10,7 @@ type Props = {
 }
 
 /** Right-side actions in the reading top bar: bookmark, notes, reading settings. */
-export const LasActions = ({ topicId, onOpenNotes }: Props) => {
+export const ReadActions = ({ topicId, onOpenNotes }: Props) => {
   const { bookmarks, toggleBookmark } = useAtlas()
   return (
     <div className={styles.actions}>

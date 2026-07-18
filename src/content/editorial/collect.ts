@@ -5,10 +5,10 @@
 // dela den utan att koppla ihop tröskeln med rummens datalager.
 import type { ContentFile, Parsed } from './parse'
 
-export const tillFiler = (moduler: Record<string, string>): ContentFile[] =>
+export const toFiles = (moduler: Record<string, string>): ContentFile[] =>
   Object.entries(moduler).map(([sökväg, råtext]) => ({ sökväg, råtext }))
 
-export const samla = <T>(filer: ContentFile[], tolka: (fil: ContentFile) => Parsed<T>): T[] =>
+export const collect = <T>(filer: ContentFile[], tolka: (fil: ContentFile) => Parsed<T>): T[] =>
   filer.flatMap((fil) => {
     const tolkning = tolka(fil)
     for (const fel of tolkning.fel) console.error('[innehåll]', fel)

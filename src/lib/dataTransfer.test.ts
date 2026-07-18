@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest'
 import {
   EXPORT_FORMAT,
-  lasImport,
-  mergaImport,
-  tillExport,
-  tillMarkdown,
+  readImport,
+  mergeImport,
+  toExport,
+  toMarkdown,
   type PersonalCollections,
 } from './dataTransfer'
 import type { Origin } from './personal'
@@ -25,7 +25,7 @@ const samlingar = (): PersonalCollections => ({
 
 describe('tillExport', () => {
   it('bygger en exportpost med format, version och uppslagna titlar', () => {
-    const exporten = tillExport(samlingar(), titelFor, '2026-07-14T10:00:00.000Z')
+    const exporten = toExport(samlingar(), titelFor, '2026-07-14T10:00:00.000Z')
     expect(exporten.format).toBe(EXPORT_FORMAT)
     expect(exporten.version).toBe(1)
     expect(exporten.anteckningar[0]?.title).toBe('rum:rum-a')
@@ -38,18 +38,18 @@ describe('tillExport', () => {
 
 describe('lasImport', () => {
   it('round-trippar en export genom JSON tillbaka till samma data', () => {
-    const exporten = tillExport(samlingar(), titelFor, '2026-07-14T10:00:00.000Z')
-    const tillbaka = lasImport(JSON.parse(JSON.stringify(exporten)))
+    const exporten = toExport(samlingar(), titelFor, '2026-07-14T10:00:00.000Z')
+    const tillbaka = readImport(JSON.parse(JSON.stringify(exporten)))
     expect(tillbaka).toEqual(exporten)
   })
 
   it('avvisar fel format, fel version och korrupt indata med null', () => {
-    expect(lasImport(null)).toBeNull()
-    expect(lasImport('trasig')).toBeNull()
-    expect(lasImport({ format: 'något-annat', version: 1 })).toBeNull()
-    const exporten = tillExport(samlingar(), titelFor, '2026-07-14T10:00:00.000Z')
-    expect(lasImport({ ...exporten, version: 2 })).toBeNull()
-    expect(lasImport({ ...exporten, anteckningar: 'inte-en-lista' })).toBeNull()
+    expect(readImport(null)).toBeNull()
+    expect(readImport('trasig')).toBeNull()
+    expect(readImport({ format: 'något-annat', version: 1 })).toBeNull()
+    const exporten = toExport(samlingar(), titelFor, '2026-07-14T10:00:00.000Z')
+    expect(readImport({ ...exporten, version: 2 })).toBeNull()
+    expect(readImport({ ...exporten, anteckningar: 'inte-en-lista' })).toBeNull()
   })
 })
 
@@ -62,16 +62,16 @@ describe('mergaImport', () => {
       bookmarks: { egen: true },
       chapterBookmarks: {},
     }
-    const importen = tillExport(samlingar(), titelFor, '2026-07-14T10:00:00.000Z')
-    const ut = mergaImport(nuvarande, importen)
+    const importen = toExport(samlingar(), titelFor, '2026-07-14T10:00:00.000Z')
+    const ut = mergeImport(nuvarande, importen)
     expect(Object.keys(ut.sparadeRum).sort()).toEqual(['rum-a', 'rum-b'])
     expect(ut.bookmarks).toMatchObject({ egen: true, 'topic-1': true })
     expect(Object.keys(ut.chapterBookmarks)).toEqual(['w/b:3'])
   })
 
   it('låter den nyast uppdaterade anteckningen vinna vid konflikt', () => {
-    const importen = tillExport(samlingar(), titelFor, '2026-07-14T10:00:00.000Z')
-    const äldre: PersonalCollections = {
+    const importen = toExport(samlingar(), titelFor, '2026-07-14T10:00:00.000Z')
+    const older: PersonalCollections = {
       anteckningar: {
         'rum-a': { ursprungTyp: 'rum', ursprungId: 'rum-a', text: 'äldre', created: '2026-07-01T00:00:00.000Z', updated: '2026-07-03T00:00:00.000Z' },
       },
@@ -80,22 +80,22 @@ describe('mergaImport', () => {
       bookmarks: {},
       chapterBookmarks: {},
     }
-    const ut = mergaImport(äldre, importen)
+    const ut = mergeImport(older, importen)
     expect(ut.anteckningar['rum-a']?.text).toBe('en tanke')
 
     const nyare: PersonalCollections = {
-      ...äldre,
+      ...older,
       anteckningar: {
         'rum-a': { ursprungTyp: 'rum', ursprungId: 'rum-a', text: 'nyare', created: '2026-07-01T00:00:00.000Z', updated: '2026-07-20T00:00:00.000Z' },
       },
     }
-    expect(mergaImport(nyare, importen).anteckningar['rum-a']?.text).toBe('nyare')
+    expect(mergeImport(nyare, importen).anteckningar['rum-a']?.text).toBe('nyare')
   })
 })
 
 describe('tillMarkdown', () => {
   it('speglar anteckningar och sparat i läsbar Markdown', () => {
-    const md = tillMarkdown(tillExport(samlingar(), titelFor, '2026-07-14T10:00:00.000Z'))
+    const md = toMarkdown(toExport(samlingar(), titelFor, '2026-07-14T10:00:00.000Z'))
     expect(md).toContain('## rum:rum-a')
     expect(md).toContain('en tanke')
     expect(md).toContain('Skapad 2026-07-01T00:00:00.000Z')

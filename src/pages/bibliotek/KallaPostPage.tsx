@@ -1,18 +1,18 @@
 import { Link } from '@tanstack/react-router'
 import { TopBar } from '../../components/TopBar'
 import type { Source, SourcePassage } from '../../content/editorial/schema'
-import { passagerForKalla, publiceradeVia, rumForKalla } from '../../lib/library'
+import { passagesForSource, publishedThrough, roomForSource } from '../../lib/library'
 import {
-  allaPassager,
+  allPassages,
   allaRum,
-  hittaKallaViaSlug,
-  hittaTradition,
+  findSourceBySlug,
+  findTradition,
   osakerheter,
-  stycken,
+  paragraphs,
 } from '../../lib/content'
 import { NotFoundNote } from '../NotFoundNote'
 import styles from './Bibliotek.module.css'
-import { Beskrivning, Rumslista, Sektion, Sidhuvud } from './Biblioteksdelar'
+import { Beskrivning, Rumslista, Section, Sidhuvud } from './Biblioteksdelar'
 
 const TYPETIKETT: Record<Source['type'], string> = {
   'bok': 'Bok',
@@ -52,7 +52,7 @@ const Metarad = ({ label, värde }: { label: string; värde?: string }) =>
   )
 
 const Kallmeta = ({ source }: { source: Source }) => {
-  const traditionsnamn = publiceradeVia(source.traditions ?? [], hittaTradition).map(
+  const traditionsnamn = publishedThrough(source.traditions ?? [], findTradition).map(
     (tradition) => tradition.name,
   )
   return (
@@ -89,14 +89,14 @@ const Passageblock = ({ passage }: { passage: SourcePassage }) => {
       <p className={styles.passagref}>{passage.reference}</p>
       {passage.originalText && (
         <blockquote className={styles.passagetext}>
-          {stycken(passage.originalText).map((stycke, i) => (
+          {paragraphs(passage.originalText).map((stycke, i) => (
             <p key={i}>{stycke}</p>
           ))}
         </blockquote>
       )}
       {passage.translation && (
         <blockquote className={styles.passagetext}>
-          {stycken(passage.translation).map((stycke, i) => (
+          {paragraphs(passage.translation).map((stycke, i) => (
             <p key={i}>{stycke}</p>
           ))}
         </blockquote>
@@ -115,10 +115,10 @@ const Passageblock = ({ passage }: { passage: SourcePassage }) => {
  * in i biblioteksläsaren när hela texten finns där. Ingen auktoritetsprosa.
  * TopBar utan onBack ⇒ historiksteg bakåt — biblioteksplatsen bevaras. */
 export const KallaPostPage = ({ slug }: { slug: string }) => {
-  const source = hittaKallaViaSlug(slug)
+  const source = findSourceBySlug(slug)
   if (!source) return <NotFoundNote subject="Källan" />
-  const osäkerhet = osakerheter(source)
-  const passager = passagerForKalla(source.id, allaPassager)
+  const uncertainty = osakerheter(source)
+  const passager = passagesForSource(source.id, allPassages)
   return (
     <div className="screenSub">
       <TopBar />
@@ -127,24 +127,24 @@ export const KallaPostPage = ({ slug }: { slug: string }) => {
       </Sidhuvud>
       <Kallmeta source={source} />
       <Beskrivning text={source.description} />
-      {osäkerhet.length > 0 && (
-        <Sektion rubrik="Osäkerhet">
-          {osäkerhet.map((rad) => (
+      {uncertainty.length > 0 && (
+        <Section rubrik="Osäkerhet">
+          {uncertainty.map((rad) => (
             <p key={rad} className={styles.description}>
               {rad}
             </p>
           ))}
-        </Sektion>
+        </Section>
       )}
       {passager.length > 0 && (
-        <Sektion rubrik="Passager">
+        <Section rubrik="Passager">
           {passager.map((passage) => (
             <Passageblock key={passage.id} passage={passage} />
           ))}
-        </Sektion>
+        </Section>
       )}
       {source.libraryWork !== undefined && (
-        <Sektion rubrik="Hela texten">
+        <Section rubrik="Hela texten">
           <Link
             to="/bibliotek/verk/$workId"
             params={{ workId: source.libraryWork }}
@@ -153,14 +153,14 @@ export const KallaPostPage = ({ slug }: { slug: string }) => {
             <span className={styles.radTitel}>Läs hela texten</span>
             <span className={styles.chev}>›</span>
           </Link>
-        </Sektion>
+        </Section>
       )}
-      <Sektion rubrik="Rum ur denna källa">
+      <Section rubrik="Rum ur denna källa">
         <Rumslista
-          rum={rumForKalla(source.id, allaRum)}
+          rum={roomForSource(source.id, allaRum)}
           tomtBesked="Det finns inga färdiga rum ur källan ännu."
         />
-      </Sektion>
+      </Section>
     </div>
   )
 }

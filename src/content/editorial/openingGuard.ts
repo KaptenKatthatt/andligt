@@ -19,22 +19,22 @@ const TEMPORAL_UPPTAKT =
 
 // En öppen fråga bjuder in i stället för att locka; den är alltid tillåten,
 // även om den råkar innehålla ett annars presenterande ord.
-const ÄR_FRÅGA = /\?[»«"'”’)\]]*$/
+const IS_QUESTION = /\?[»«"'”’)\]]*$/
 
 const sistaStycket = (opening: string): string => {
-  const stycken = opening
+  const paragraphs = opening
     .trim()
     .split(/\n\s*\n/)
     .map((stycke) => stycke.trim())
     .filter((stycke) => stycke.length > 0)
-  return stycken[stycken.length - 1] ?? ''
+  return paragraphs[paragraphs.length - 1] ?? ''
 }
 
 /** Sant om öppningens sista stycke teasar/introducerar källan i stället för att
  * landa i det vardagliga. Tom eller frågeavslutad opening är aldrig en teaser. */
-export const ärTeaseröppning = (opening: string): boolean => {
+export const isTeaserOpening = (opening: string): boolean => {
   const sista = sistaStycket(opening)
   if (sista.length === 0) return false
-  if (ÄR_FRÅGA.test(sista)) return false
+  if (IS_QUESTION.test(sista)) return false
   return PRESENTERANDE.test(sista) || TEMPORAL_UPPTAKT.test(sista)
 }

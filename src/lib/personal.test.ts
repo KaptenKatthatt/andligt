@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest'
 import {
-  datumEtikett,
-  migreraAnteckningar,
-  migreraSparade,
-  sorteradeAnteckningar,
-  sparadeIdITidsordning,
-  uppdateradAnteckning,
+  dateLabel,
+  migrateNotes,
+  migrateSaved,
+  sorteradeNotes,
+  savedIdsByTime,
+  uppdateradNote,
   utdrag,
   type Note,
 } from './personal'
@@ -14,19 +14,19 @@ const NU = '2026-07-14T10:00:00.000Z'
 
 describe('migreraSparade', () => {
   it('migrerar gammal boolean-form: true blir post utan datum, false släpps', () => {
-    expect(migreraSparade({ a: true, b: false })).toEqual({ a: { sparadNar: null } })
+    expect(migrateSaved({ a: true, b: false })).toEqual({ a: { sparadNar: null } })
   })
 
   it('släpper igenom redan migrerad form orörd (idempotent)', () => {
     const redan = { a: { sparadNar: '2026-07-01T00:00:00.000Z' }, b: { sparadNar: null } }
-    expect(migreraSparade(redan)).toEqual(redan)
+    expect(migrateSaved(redan)).toEqual(redan)
   })
 
   it('faller tillbaka på tomt vid korrupt eller saknad indata', () => {
-    expect(migreraSparade(null)).toEqual({})
-    expect(migreraSparade('trasig')).toEqual({})
-    expect(migreraSparade(['a'])).toEqual({})
-    expect(migreraSparade({ a: 42 })).toEqual({})
+    expect(migrateSaved(null)).toEqual({})
+    expect(migrateSaved('trasig')).toEqual({})
+    expect(migrateSaved(['a'])).toEqual({})
+    expect(migrateSaved({ a: 42 })).toEqual({})
   })
 })
 
@@ -34,7 +34,7 @@ describe('migreraAnteckningar', () => {
   const klassificera = (id: string): 'rum' | 'amne' => (id.startsWith('rum-') ? 'rum' : 'amne')
 
   it('migrerar gamla string-notes till ursprungskopplade poster', () => {
-    const ut = migreraAnteckningar({ 'rum-a': 'en tanke', 'amne-b': 'en annan' }, undefined, klassificera, NU)
+    const ut = migrateNotes({ 'rum-a': 'en tanke', 'amne-b': 'en annan' }, undefined, klassificera, NU)
     expect(ut['rum-a']).toEqual({
       ursprungTyp: 'rum',
       ursprungId: 'rum-a',
@@ -46,7 +46,7 @@ describe('migreraAnteckningar', () => {
   })
 
   it('prunar tomma anteckningar', () => {
-    expect(migreraAnteckningar({ a: '   ', b: '' }, undefined, klassificera, NU)).toEqual({})
+    expect(migrateNotes({ a: '   ', b: '' }, undefined, klassificera, NU)).toEqual({})
   })
 
   it('låter redan migrerad post vinna över gammal string med samma id', () => {
@@ -57,7 +57,7 @@ describe('migreraAnteckningar', () => {
       created: '2026-06-01T00:00:00.000Z',
       updated: '2026-06-02T00:00:00.000Z',
     }
-    const ut = migreraAnteckningar({ 'rum-a': 'äldre' }, { 'rum-a': ny }, klassificera, NU)
+    const ut = migrateNotes({ 'rum-a': 'äldre' }, { 'rum-a': ny }, klassificera, NU)
     expect(ut['rum-a']).toEqual(ny)
   })
 
@@ -65,11 +65,11 @@ describe('migreraAnteckningar', () => {
     const redan = {
       x: { ursprungTyp: 'amne', ursprungId: 'x', text: 't', created: NU, updated: NU },
     }
-    expect(migreraAnteckningar(undefined, redan, klassificera, NU)).toEqual(redan)
+    expect(migrateNotes(undefined, redan, klassificera, NU)).toEqual(redan)
   })
 
   it('räddar en korrupt migrerad post med trygga fallbacks men bevarar texten', () => {
-    const ut = migreraAnteckningar(undefined, { x: { text: 'kvar' } }, klassificera, NU)
+    const ut = migrateNotes(undefined, { x: { text: 'kvar' } }, klassificera, NU)
     expect(ut.x).toEqual({ ursprungTyp: 'amne', ursprungId: 'x', text: 'kvar', created: NU, updated: NU })
   })
 })
@@ -83,14 +83,14 @@ describe('uppdateradAnteckning', () => {
       created: '2026-06-01T00:00:00.000Z',
       updated: '2026-06-01T00:00:00.000Z',
     }
-    const ut = uppdateradAnteckning(befintlig, 'rum', 'r', 'ny', NU)
+    const ut = uppdateradNote(befintlig, 'rum', 'r', 'ny', NU)
     expect(ut.created).toBe('2026-06-01T00:00:00.000Z')
     expect(ut.updated).toBe(NU)
     expect(ut.text).toBe('ny')
   })
 
   it('sätter created till nu för en helt ny anteckning', () => {
-    expect(uppdateradAnteckning(undefined, 'amne', 'a', 'text', NU).created).toBe(NU)
+    expect(uppdateradNote(undefined, 'amne', 'a', 'text', NU).created).toBe(NU)
   })
 })
 
@@ -103,7 +103,7 @@ describe('sorteradeAnteckningar', () => {
       created: updated,
       updated,
     })
-    const ut = sorteradeAnteckningar({
+    const ut = sorteradeNotes({
       a: anteckning('a', '2026-07-01T00:00:00.000Z'),
       b: anteckning('b', '2026-07-10T00:00:00.000Z'),
       c: anteckning('c', '2026-07-05T00:00:00.000Z', '  '),
@@ -114,7 +114,7 @@ describe('sorteradeAnteckningar', () => {
 
 describe('sparadeIdITidsordning', () => {
   it('sorterar senast sparat först och lägger daterade före odaterade', () => {
-    const ut = sparadeIdITidsordning({
+    const ut = savedIdsByTime({
       gammal: { sparadNar: '2026-07-01T00:00:00.000Z' },
       utandatum: { sparadNar: null },
       ny: { sparadNar: '2026-07-10T00:00:00.000Z' },
@@ -132,12 +132,12 @@ describe('utdrag', () => {
 
 describe('datumEtikett', () => {
   it('ger inget datum för null eller ogiltig sträng', () => {
-    expect(datumEtikett(null)).toBeUndefined()
-    expect(datumEtikett('inte-ett-datum')).toBeUndefined()
+    expect(dateLabel(null)).toBeUndefined()
+    expect(dateLabel('inte-ett-datum')).toBeUndefined()
   })
 
   it('ger en svensk datumsträng för giltigt ISO-datum', () => {
-    const label = datumEtikett('2026-07-14T10:00:00.000Z')
+    const label = dateLabel('2026-07-14T10:00:00.000Z')
     expect(label).toContain('2026')
     expect(label).toContain('juli')
   })

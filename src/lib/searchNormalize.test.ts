@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { inomEttSkrivfel, normalisera, ordlista, soktokens, stam } from './searchNormalize'
+import { inomSkrivfel, normalisera, ordlista, soktokens, stam } from './searchNormalize'
 
 describe('normalisera', () => {
   it('trimmar, gör gemener och viker svenska diakriter', () => {
@@ -43,27 +43,27 @@ describe('stam', () => {
 
 describe('inomEttSkrivfel', () => {
   it('tolererar ett utskott', () => {
-    expect(inomEttSkrivfel('förlåtele', 'förlåtelse')).toBe(true)
-    expect(inomEttSkrivfel(normalisera('förlåtele'), normalisera('förlåtelse'))).toBe(true)
+    expect(inomSkrivfel('förlåtele', 'förlåtelse')).toBe(true)
+    expect(inomSkrivfel(normalisera('förlåtele'), normalisera('förlåtelse'))).toBe(true)
   })
 
   it('tolererar ett teckenbyte och en omkastning', () => {
-    expect(inomEttSkrivfel('stoicsm', 'stoicism')).toBe(true)
-    expect(inomEttSkrivfel('meninng', 'menning')).toBe(true)
-    expect(inomEttSkrivfel('samtla', 'samtal')).toBe(true)
+    expect(inomSkrivfel('stoicsm', 'stoicism')).toBe(true)
+    expect(inomSkrivfel('meninng', 'menning')).toBe(true)
+    expect(inomSkrivfel('samtla', 'samtal')).toBe(true)
   })
 
   it('avvisar korta ord där ett fel byter mening', () => {
-    expect(inomEttSkrivfel('lugn', 'lung')).toBe(false)
-    expect(inomEttSkrivfel('ro', 'ru')).toBe(false)
+    expect(inomSkrivfel('lugn', 'lung')).toBe(false)
+    expect(inomSkrivfel('ro', 'ru')).toBe(false)
   })
 
   it('avvisar två eller fler fel', () => {
-    expect(inomEttSkrivfel('stoism', 'stoicism')).toBe(false)
-    expect(inomEttSkrivfel('förltse', 'förlåtelse')).toBe(false)
+    expect(inomSkrivfel('stoism', 'stoicism')).toBe(false)
+    expect(inomSkrivfel('förltse', 'förlåtelse')).toBe(false)
   })
 
   it('räknar inte lika ord som en felträff', () => {
-    expect(inomEttSkrivfel('förlåtelse', 'förlåtelse')).toBe(false)
+    expect(inomSkrivfel('förlåtelse', 'förlåtelse')).toBe(false)
   })
 })

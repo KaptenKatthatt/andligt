@@ -19,7 +19,7 @@ const matchar = (tokens: string[], text: string): boolean => {
 
 /** Söker användarens anteckningar, senast ändrad först. Tomma anteckningar och
  * frågor kortare än två meningsbärande tecken ger inget. */
-export const sokAnteckningar = (
+export const searchNotes = (
   fraga: string,
   anteckningar: Record<string, Note>,
 ): Note[] => {

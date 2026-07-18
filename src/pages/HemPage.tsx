@@ -1,10 +1,10 @@
 import { useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
 import type { Theme } from '../content/editorial/schema'
-import { valjRum } from '../lib/roomSelection'
+import { selectRoom } from '../lib/roomSelection'
 import { useAtlas } from '../lib/store'
-import { rapportera } from '../lib/telemetry'
-import { troskelTeman } from '../lib/homeData'
+import { report } from '../lib/telemetry'
+import { thresholdThemes } from '../lib/homeData'
 import { useSidtitel } from '../lib/useSidtitel'
 import styles from './HemPage.module.css'
 
@@ -22,13 +22,13 @@ export const HemPage = () => {
   const { senastLastaRum } = useAtlas()
   const [tomtVal, setTomtVal] = useState(false)
   const [väljer, setVäljer] = useState(false)
-  const valjTema = async (tema: Theme) => {
+  const selectTheme = async (tema: Theme) => {
     if (väljer) return
     setVäljer(true)
     setTomtVal(false)
     try {
       const { allaRum } = await import('../lib/content')
-      const rum = valjRum(tema, allaRum, senastLastaRum)
+      const rum = selectRoom(tema, allaRum, senastLastaRum)
       if (rum) {
         void navigate({ to: '/rum/$slug', params: { slug: rum.slug } })
         return
@@ -37,7 +37,7 @@ export const HemPage = () => {
     } catch {
       // Innehållschunken gick inte att hämta (t.ex. offline före första cachning).
       // Släpp knappen igen så valet kan göras om — inget kraschar, inget hänger.
-      rapportera({ type: 'sidladdningsfel', resurs: 'innehall' })
+      report({ type: 'sidladdningsfel', resurs: 'innehall' })
     }
     setVäljer(false)
   }
@@ -49,12 +49,12 @@ export const HemPage = () => {
         <p className={styles.stod}>Välj en tanke att stanna hos en stund.</p>
       </div>
       <div className={styles.themes}>
-        {troskelTeman.map((tema) => (
+        {thresholdThemes.map((tema) => (
           <button
             key={tema.id}
             type="button"
             className={styles.tema}
-            onClick={() => void valjTema(tema)}
+            onClick={() => void selectTheme(tema)}
           >
             {tema.label}
           </button>

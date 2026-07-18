@@ -3,31 +3,31 @@ import { ToLink } from '../../components/ToLink'
 import { TopBar } from '../../components/TopBar'
 import type { Room, Path } from '../../content/editorial/schema'
 import {
-  publiceradeVia,
-  rumForVandring,
-  traditionerForVandring,
-  vandringLastid,
+  publishedThrough,
+  roomForPath,
+  traditionsForPath,
+  pathReadingTime,
 } from '../../lib/library'
 import {
-  allaKallor,
+  allSources,
   allaRum,
-  allaTraditioner,
-  hittaFraga,
-  hittaVandringViaSlug,
+  allTraditions,
+  findQuestion,
+  findPathBySlug,
 } from '../../lib/content'
 import { useAtlas } from '../../lib/store'
 import { NotFoundNote } from '../NotFoundNote'
 import styles from './Bibliotek.module.css'
-import { Beskrivning, Rad, Sektion, Sidhuvud } from './Biblioteksdelar'
+import { Beskrivning, Row, Section, Sidhuvud } from './Biblioteksdelar'
 
 /** Stilla orienteringsrad: vandringens traditions följt av ungefärlig
  * sammanlagd lästid (paths.md, Path Overview — sources visas lågmält, tiden
  * är ungefärlig och aldrig ett mål). */
 const Metarad = ({ rummen }: { rummen: Room[] }) => {
-  const traditions = traditionerForVandring(rummen, allaKallor, allaTraditioner)
+  const traditions = traditionsForPath(rummen, allSources, allTraditions)
   const delar = [
     ...traditions.map((tradition) => tradition.name),
-    `ca ${vandringLastid(rummen)} min sammanlagt`,
+    `ca ${pathReadingTime(rummen)} min sammanlagt`,
   ]
   return <p className={styles.antal}>{delar.join(' · ')}</p>
 }
@@ -35,18 +35,18 @@ const Metarad = ({ rummen }: { rummen: Room[] }) => {
 /** En stilla spara-kontroll (notes-and-saved.md, Saving): »Spara«/»Sparad«,
  * ingen firande återkoppling, ingen räknare. En sparad vandring betyder bara
  * att läsaren vill kunna återvända — aldrig ett åtagande att slutföra. */
-const SparaVandring = ({ vandring }: { vandring: Path }) => {
+const SavePath = ({ vandring }: { vandring: Path }) => {
   const { sparadeVandringar, vaxlaSparadVandring } = useAtlas()
-  const sparad = !!sparadeVandringar[vandring.id]
+  const saved = !!sparadeVandringar[vandring.id]
   return (
     <div className={styles.spara}>
       <button
         type="button"
         className={styles.sparaknapp}
-        aria-pressed={sparad}
+        aria-pressed={saved}
         onClick={() => vaxlaSparadVandring(vandring.id)}
       >
-        {sparad ? 'Sparad' : 'Spara'}
+        {saved ? 'Sparad' : 'Spara'}
       </button>
     </div>
   )
@@ -55,14 +55,14 @@ const SparaVandring = ({ vandring }: { vandring: Path }) => {
 /** Den centrala frågan — vandringens hjärta. Visas bara när den är publicerad;
  * annars nås utkastfrågan via biblioteket, inte härifrån. */
 const Fragedel = ({ vandring }: { vandring: Path }) => {
-  const [fråga] = publiceradeVia([vandring.centralQuestion], hittaFraga)
+  const [fråga] = publishedThrough([vandring.centralQuestion], findQuestion)
   if (!fråga) return null
   return (
-    <Sektion rubrik="Fråga">
+    <Section rubrik="Fråga">
       <ToLink to={{ kind: 'fraga', slug: fråga.slug }} className={styles.rad}>
-        <Rad title={fråga.text} />
+        <Row title={fråga.text} />
       </ToLink>
-    </Sektion>
+    </Section>
   )
 }
 
@@ -75,7 +75,7 @@ const Rumdel = ({ vandring, rummen }: { vandring: Path; rummen: Room[] }) => {
   const { vandringsplatser } = useAtlas()
   const place = rummen.find((ettRum) => ettRum.id === vandringsplatser[vandring.id])
   return (
-    <Sektion rubrik="Rummen">
+    <Section rubrik="Rummen">
       {place && (
         <Link
           to="/rum/$slug"
@@ -83,7 +83,7 @@ const Rumdel = ({ vandring, rummen }: { vandring: Path; rummen: Room[] }) => {
           search={{ vandring: vandring.slug }}
           className={styles.rad}
         >
-          <Rad title="Fortsätt där du stannade" sub={place.title} />
+          <Row title="Fortsätt där du stannade" sub={place.title} />
         </Link>
       )}
       {rummen.length === 0 ? (
@@ -98,13 +98,13 @@ const Rumdel = ({ vandring, rummen }: { vandring: Path; rummen: Room[] }) => {
                 search={{ vandring: vandring.slug }}
                 className={styles.rad}
               >
-                <Rad title={ettRum.title} sub={`${ettRum.readingTimeMinutes} min`} />
+                <Row title={ettRum.title} sub={`${ettRum.readingTimeMinutes} min`} />
               </Link>
             </li>
           ))}
         </ol>
       )}
-    </Sektion>
+    </Section>
   )
 }
 
@@ -114,15 +114,15 @@ const Rumdel = ({ vandring, rummen }: { vandring: Path; rummen: Room[] }) => {
  * taget — här väljer man bara var man kliver in. TopBar utan onBack ⇒
  * historiksteg bakåt, så biblioteksplatsen bevaras. */
 export const VandringPage = ({ slug }: { slug: string }) => {
-  const vandring = hittaVandringViaSlug(slug)
+  const vandring = findPathBySlug(slug)
   if (!vandring) return <NotFoundNote subject="Vandringen" />
-  const rummen = rumForVandring(vandring, allaRum)
+  const rummen = roomForPath(vandring, allaRum)
   return (
     <div className="screenSub">
       <TopBar />
       <Sidhuvud kicker="Vandring" title={vandring.title} status={vandring.status} />
       <Metarad rummen={rummen} />
-      <SparaVandring vandring={vandring} />
+      <SavePath vandring={vandring} />
       <Beskrivning text={vandring.introduction} />
       <Fragedel vandring={vandring} />
       <Rumdel vandring={vandring} rummen={rummen} />

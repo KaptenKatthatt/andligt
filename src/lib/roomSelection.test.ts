@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { Room, Theme } from '../content/editorial/schema'
-import { valbaraRum, valjRum } from './roomSelection'
+import { valbaraRoom, selectRoom } from './roomSelection'
 
 // Fabricerade poster: bara fälten urvalet läser behöver vara meningsfulla.
 const rum = (id: string, themes: string[], status: Room['status'] = 'publicerad'): Room => ({
@@ -32,52 +32,52 @@ const tema = (id: string, defaultRoom?: string): Theme => ({
 
 describe('valbaraRum', () => {
   it('släpper bara igenom publicerade rum med temat', () => {
-    const alla = [
+    const all = [
       rum('a', ['lugn']),
       rum('b', ['lugn'], 'utkast'),
       rum('c', ['lugn'], 'granskning'),
       rum('d', ['lugn'], 'arkiverad'),
       rum('e', ['mod']),
     ]
-    expect(valbaraRum('lugn', alla).map((r) => r.id)).toEqual(['a'])
+    expect(valbaraRoom('lugn', all).map((r) => r.id)).toEqual(['a'])
   })
 })
 
 describe('valjRum', () => {
   it('ger null när temat saknar publicerade rum', () => {
-    expect(valjRum(tema('lugn'), [rum('a', ['lugn'], 'utkast')], [])).toBeNull()
+    expect(selectRoom(tema('lugn'), [rum('a', ['lugn'], 'utkast')], [])).toBeNull()
   })
 
   it('väljer standardrummet vid första besöket', () => {
-    const alla = [rum('a', ['lugn']), rum('b', ['lugn'])]
-    expect(valjRum(tema('lugn', 'b'), alla, [])?.id).toBe('b')
+    const all = [rum('a', ['lugn']), rum('b', ['lugn'])]
+    expect(selectRoom(tema('lugn', 'b'), all, [])?.id).toBe('b')
   })
 
   it('undviker nyligen läst standardrum när alternativ finns', () => {
-    const alla = [rum('a', ['lugn']), rum('b', ['lugn'])]
-    expect(valjRum(tema('lugn', 'b'), alla, ['b'])?.id).toBe('a')
+    const all = [rum('a', ['lugn']), rum('b', ['lugn'])]
+    expect(selectRoom(tema('lugn', 'b'), all, ['b'])?.id).toBe('a')
   })
 
   it('tillåter upprepning när allt är nyligen läst', () => {
-    const alla = [rum('a', ['lugn'])]
-    expect(valjRum(tema('lugn', 'a'), alla, ['a'])?.id).toBe('a')
+    const all = [rum('a', ['lugn'])]
+    expect(selectRoom(tema('lugn', 'a'), all, ['a'])?.id).toBe('a')
   })
 
   it('föredrar aldrig lästa alternativ före längst-sedan-lästa', () => {
-    const alla = [rum('a', ['lugn']), rum('b', ['lugn']), rum('c', ['lugn'])]
+    const all = [rum('a', ['lugn']), rum('b', ['lugn']), rum('c', ['lugn'])]
     // a är standard men nyss läst; b lästes tidigare; c har aldrig lästs.
-    expect(valjRum(tema('lugn', 'a'), alla, ['a', 'b'])?.id).toBe('c')
+    expect(selectRoom(tema('lugn', 'a'), all, ['a', 'b'])?.id).toBe('c')
   })
 
   it('glömmer historik bortom de tre senaste', () => {
-    const alla = [rum('a', ['lugn']), rum('b', ['lugn'])]
+    const all = [rum('a', ['lugn']), rum('b', ['lugn'])]
     // a lästes för länge sedan (fjärde platsen) — får väljas som standard igen.
-    expect(valjRum(tema('lugn', 'a'), alla, ['x1', 'x2', 'x3', 'a'])?.id).toBe('a')
+    expect(selectRoom(tema('lugn', 'a'), all, ['x1', 'x2', 'x3', 'a'])?.id).toBe('a')
   })
 
   it('väljer deterministiskt bland lika kandidater i innehållsordning', () => {
-    const alla = [rum('a', ['lugn']), rum('b', ['lugn'])]
+    const all = [rum('a', ['lugn']), rum('b', ['lugn'])]
     // Inget standardrum, ingen historik: första i innehållsordningen vinner.
-    expect(valjRum(tema('lugn'), alla, [])?.id).toBe('a')
+    expect(selectRoom(tema('lugn'), all, [])?.id).toBe('a')
   })
 })

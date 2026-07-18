@@ -9,15 +9,15 @@ import { useEffect } from 'react'
 export const useInertBakgrund = (skal: HTMLElement | null): void => {
   useEffect(() => {
     if (!skal) return
-    const berörda = Array.from(skal.children).filter(
+    const affected = Array.from(skal.children).filter(
       (barn): barn is HTMLElement =>
         barn instanceof HTMLElement &&
         !barn.hasAttribute('data-overlay') &&
         !barn.hasAttribute('inert'),
     )
-    for (const barn of berörda) barn.setAttribute('inert', '')
+    for (const barn of affected) barn.setAttribute('inert', '')
     return () => {
-      for (const barn of berörda) barn.removeAttribute('inert')
+      for (const barn of affected) barn.removeAttribute('inert')
     }
   }, [skal])
 }

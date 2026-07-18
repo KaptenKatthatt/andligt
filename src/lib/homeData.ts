@@ -3,17 +3,17 @@
 // helt utan rumsberoenden, så HemPage kan importera `troskelTeman` utan att dra
 // in hela innehållssamlingen i startbunten. Rummen laddas först när ett tema
 // väljs (dynamisk import i HemPage) eller när läsrummet/biblioteket öppnas.
-import { temaSchema, type Theme } from '../content/editorial/schema'
-import { samla, tillFiler } from '../content/editorial/collect'
-import { tolkaPostfil } from '../content/editorial/parse'
+import { themeSchema, type Theme } from '../content/editorial/schema'
+import { collect, toFiles } from '../content/editorial/collect'
+import { parsePostFile } from '../content/editorial/parse'
 
-export const allaTeman: Theme[] = samla(
-  tillFiler(import.meta.glob<string>('../content/themes/*.md', { query: '?raw', import: 'default', eager: true })),
-  (fil) => tolkaPostfil(temaSchema, fil),
+export const allThemes: Theme[] = collect(
+  toFiles(import.meta.glob<string>('../content/themes/*.md', { query: '?raw', import: 'default', eager: true })),
+  (fil) => parsePostFile(themeSchema, fil),
 )
 
 /** Tröskelns themes (home-and-entry.md): redaktionell order, aldrig arkiverade. */
-export const troskelTeman: Theme[] = allaTeman
+export const thresholdThemes: Theme[] = allThemes
   .filter((tema) => tema.status !== 'arkiverad')
   .sort(
     (a, b) =>

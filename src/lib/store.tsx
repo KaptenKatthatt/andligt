@@ -9,13 +9,13 @@ import {
   type SetStateAction,
 } from 'react'
 import type { ReadMode } from '../content/model'
-import { mergaImport, type PersonalCollections, type PersonalExport } from './dataTransfer'
-import { laddaFont } from './fonts'
+import { mergeImport, type PersonalCollections, type PersonalExport } from './dataTransfer'
+import { loadFont } from './fonts'
 import {
   chapterKey,
-  migreraAnteckningar,
-  migreraSparade,
-  uppdateradAnteckning,
+  migrateNotes,
+  migrateSaved,
+  uppdateradNote,
   type Note,
   type ChapterBookmark,
   type SavedItem,
@@ -130,10 +130,10 @@ const restoredCollections = (
 > => ({
   bookmarks: saved.bookmarks ?? {},
   chapterBookmarks: saved.chapterBookmarks ?? {},
-  anteckningar: migreraAnteckningar(saved.notes, saved.anteckningar, klassificeraUrsprung, nu()),
+  anteckningar: migrateNotes(saved.notes, saved.anteckningar, klassificeraUrsprung, nu()),
   lastRead: saved.lastRead ?? null,
-  sparadeRum: migreraSparade(saved.sparadeRum),
-  sparadeVandringar: migreraSparade(saved.sparadeVandringar),
+  sparadeRum: migrateSaved(saved.sparadeRum),
+  sparadeVandringar: migrateSaved(saved.sparadeVandringar),
   senastLastaRum: saved.senastLastaRum ?? [],
   vandringsplatser: saved.vandringsplatser ?? {},
 })
@@ -261,26 +261,26 @@ const useCollectionActions = (setState: SetAtlasState): CollectionActions => {
 }
 
 // Toggle mot ett sparat-record: sätter post med datum, eller tar bort nyckeln.
-const vaxlaSparad = (
+const toggleSaved = (
   poster: Record<string, SavedItem>,
   id: string,
 ): Record<string, SavedItem> => {
-  const nästa = { ...poster }
-  if (nästa[id]) delete nästa[id]
-  else nästa[id] = { sparadNar: nu() }
-  return nästa
+  const next = { ...poster }
+  if (next[id]) delete next[id]
+  else next[id] = { sparadNar: nu() }
+  return next
 }
 
 const usePersonligtActions = (setState: SetAtlasState): PersonligtActions => {
   const vaxlaSparatRum = useCallback(
     // Anteckningen är en egen post och överlever av-sparning, så ingen varning
     // behövs (notes-and-saved.md: varning bara när borttag även raderar anteckning).
-    (id: string) => setState((s) => ({ ...s, sparadeRum: vaxlaSparad(s.sparadeRum, id) })),
+    (id: string) => setState((s) => ({ ...s, sparadeRum: toggleSaved(s.sparadeRum, id) })),
     [setState],
   )
   const vaxlaSparadVandring = useCallback(
     (id: string) =>
-      setState((s) => ({ ...s, sparadeVandringar: vaxlaSparad(s.sparadeVandringar, id) })),
+      setState((s) => ({ ...s, sparadeVandringar: toggleSaved(s.sparadeVandringar, id) })),
     [setState],
   )
   const sattAnteckning = useCallback(
@@ -289,7 +289,7 @@ const usePersonligtActions = (setState: SetAtlasState): PersonligtActions => {
         ...s,
         anteckningar: {
           ...s.anteckningar,
-          [ursprungId]: uppdateradAnteckning(s.anteckningar[ursprungId], type, ursprungId, text, nu()),
+          [ursprungId]: uppdateradNote(s.anteckningar[ursprungId], type, ursprungId, text, nu()),
         },
       })),
     [setState],
@@ -297,9 +297,9 @@ const usePersonligtActions = (setState: SetAtlasState): PersonligtActions => {
   const taBortAnteckning = useCallback(
     (ursprungId: string) =>
       setState((s) => {
-        const nästa = { ...s.anteckningar }
-        delete nästa[ursprungId]
-        return { ...s, anteckningar: nästa }
+        const next = { ...s.anteckningar }
+        delete next[ursprungId]
+        return { ...s, anteckningar: next }
       }),
     [setState],
   )
@@ -314,7 +314,7 @@ const usePersonligtActions = (setState: SetAtlasState): PersonligtActions => {
 
 /** Plockar ut den personliga delen av storen — delas av importmerge och av
  * exporten i Inställningar (Dina data), så samma femfältiga form byggs på ett ställe. */
-export const personligaSamlingar = (s: PersonalCollections): PersonalCollections => ({
+export const personalCollections = (s: PersonalCollections): PersonalCollections => ({
   anteckningar: s.anteckningar,
   sparadeRum: s.sparadeRum,
   sparadeVandringar: s.sparadeVandringar,
@@ -338,7 +338,7 @@ const tomtPersonligt = {
 const useDataActions = (setState: SetAtlasState): DataActions => {
   const importeraPersonligt = useCallback(
     (importen: PersonalExport) =>
-      setState((s) => ({ ...s, ...mergaImport(personligaSamlingar(s), importen) })),
+      setState((s) => ({ ...s, ...mergeImport(personalCollections(s), importen) })),
     [setState],
   )
   const rensaPersonligt = useCallback(
@@ -374,7 +374,7 @@ const useThemeMirror = (state: AtlasState, dark: boolean): void => {
   // om ett sparat val inte är standardtypsnittet). Garamond är no-op — redan i
   // startbunten. Håller start-CSS:en liten utan att någon får fel font (fas 13).
   useEffect(() => {
-    laddaFont(state.font)
+    loadFont(state.font)
   }, [state.font])
 }
 

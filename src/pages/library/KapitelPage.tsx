@@ -14,7 +14,7 @@ type Props = { workId: string; bookSlug: string; chapter: string }
 
 /** Bokmärke + "Aa" i kapitelläsarens topbar. Kräver boknamnet för att kunna
  * spara ett bokmärke som Samling kan visa, så den lever i den laddade grenen. */
-const KapitelActions = ({
+const ChapterActions = ({
   workId,
   bookSlug,
   chapter,
@@ -83,7 +83,7 @@ export const KapitelPage = ({ workId, bookSlug, chapter }: Props) => {
     <div className="screenReader">
       <TopBar
         right={
-          <KapitelActions
+          <ChapterActions
             workId={workId}
             bookSlug={bookSlug}
             chapter={n}

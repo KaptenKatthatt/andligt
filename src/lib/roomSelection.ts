@@ -10,7 +10,7 @@ export const HISTORIKLANGD = 3
 
 /** Urvalsmängden: publicerade rum som bär temat. Att ett rum är publicerat
  * och taggat med temat är godkännandet — utkast kan aldrig väljas. */
-export const valbaraRum = (temaId: string, rum: Room[]): Room[] =>
+export const valbaraRoom = (temaId: string, rum: Room[]): Room[] =>
   rum.filter((ettRum) => ettRum.status === 'publicerad' && ettRum.themes.includes(temaId))
 
 // Lägre värde = mer nyligen läst; aldrig lästa rum hamnar längst bort.
@@ -23,8 +23,8 @@ const avstand = (id: string, senastLasta: string[]): number => {
  * lästs; annars det alternativ som lästs längst sedan (aldrig lästa vinner,
  * lika avgörs av innehållsordningen). Är allt nyligen läst tillåts
  * upprepning — den är aldrig ett misslyckande. Null = lugnt tomläge. */
-export const valjRum = (tema: Theme, rum: Room[], senastLasta: string[]): Room | null => {
-  const mangd = valbaraRum(tema.id, rum)
+export const selectRoom = (tema: Theme, rum: Room[], senastLasta: string[]): Room | null => {
+  const mangd = valbaraRoom(tema.id, rum)
   if (mangd.length === 0) return null
   // Ett enda fönster styr både "nyligen läst" och längst-sedan-ordningen,
   // så poster utanför fönstret aldrig påverkar valet. Urvalsregeln äger
@@ -34,8 +34,8 @@ export const valjRum = (tema: Theme, rum: Room[], senastLasta: string[]): Room |
   const standard = mangd.find((ettRum) => ettRum.id === tema.defaultRoom)
   if (standard && !nyligen.has(standard.id)) return standard
   const kandidater = mangd.filter((ettRum) => !nyligen.has(ettRum.id))
-  const urval = kandidater.length > 0 ? kandidater : mangd
-  return urval.reduce((basta, ettRum) =>
+  const selection = kandidater.length > 0 ? kandidater : mangd
+  return selection.reduce((basta, ettRum) =>
     avstand(ettRum.id, historik) > avstand(basta.id, historik) ? ettRum : basta,
   )
 }

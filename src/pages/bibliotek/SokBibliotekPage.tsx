@@ -5,24 +5,24 @@ import { useEffect, useState } from 'react'
 import { TopBar } from '../../components/TopBar'
 import { searchLibrary } from '../../lib/api'
 import type { Note } from '../../lib/personal'
-import { sokAnteckningar } from '../../lib/searchNotes'
-import { sokindexet, type SearchType, type SearchParams } from '../../lib/searchIndex'
-import { sokIBiblioteket, synligaTraffar, type SearchGroup, type VisibleGroup } from '../../lib/searchLogic'
+import { searchNotes } from '../../lib/searchNotes'
+import { searchIndexData, type SearchType, type SearchParams } from '../../lib/searchIndex'
+import { searchInLibrary, visibleHits, type SearchGroup, type VisibleGroup } from '../../lib/searchLogic'
 import { normalisera } from '../../lib/searchNormalize'
-import { anonymiseraFraga, rapportera } from '../../lib/telemetry'
+import { anonymizeQuestion, report } from '../../lib/telemetry'
 import { useAsync } from '../../lib/useAsync'
 import { useAtlas } from '../../lib/store'
 import { useDebounced } from '../../lib/useDebounced'
 import { useSidtitel } from '../../lib/useSidtitel'
-import { Filter, KalltextGrupp, Resultatvy, Sokfalt, type SourceTextResponse, type SearchMode } from './SokDelar'
+import { Filter, SourceTextGroup, Resultatvy, Sokfalt, type SourceTextResponse, type SearchMode } from './SokDelar'
 
 // Vilka grupper som expanderats, ihågkommet per normaliserad fråga över
 // navigation inom sessionen (search.md: sökstate får vara tillfälligt).
 const expansionsminne = new Map<string, Set<SearchType>>()
-const hämtaExpansion = (nyckel: string): Set<SearchType> => new Set(expansionsminne.get(nyckel))
+const getExpansion = (nyckel: string): Set<SearchType> => new Set(expansionsminne.get(nyckel))
 
 // Den delbara sökparametern; tom fråga och intet filter utelämnas ur URL:en.
-const sökObjekt = (term: string, type: SearchType | undefined): SearchParams => ({
+const searchObject = (term: string, type: SearchType | undefined): SearchParams => ({
   ...(term ? { q: term } : {}),
   ...(type ? { type } : {}),
 })
@@ -36,7 +36,7 @@ type Härlett = {
 
 // Härleder de redaktionella resultaten och den privata anteckningsgruppen ur
 // termen. Ren funktion (utanför komponenten) så sidan hålls liten och läsbar.
-const härledResultat = (
+const deriveResult = (
   term: string,
   type: SearchType | undefined,
   expanderade: ReadonlySet<SearchType>,
@@ -45,29 +45,29 @@ const härledResultat = (
   let grupper: SearchGroup[] = []
   let fel = false
   try {
-    grupper = sokIBiblioteket(term, sokindexet)
+    grupper = searchInLibrary(term, searchIndexData)
   } catch {
     fel = true
   }
   const filtrerade = type ? grupper.filter((grupp) => grupp.type === type) : grupper
-  const synliga = synligaTraffar(filtrerade, expanderade)
-  const notes = type ? [] : sokAnteckningar(term, anteckningar)
+  const synliga = visibleHits(filtrerade, expanderade)
+  const notes = type ? [] : searchNotes(term, anteckningar)
   const redaktionellaOchNoter =
     filtrerade.reduce((summa, grupp) => summa + grupp.traffar.length, 0) + notes.length
   return { synliga, notes, redaktionellaOchNoter, fel }
 }
 
-const beräknaLäge = (nyckel: string, fel: boolean): SearchMode =>
+const computeMode = (nyckel: string, fel: boolean): SearchMode =>
   nyckel.length < 2 ? 'tom' : fel ? 'fel' : 'klar'
 
 const TOMT_KALLTEXTSVAR: SourceTextResponse = { books: [], hits: [] }
 
-const kalltextAntalAv = (svar: SourceTextResponse | null): number =>
+const sourceTextCountOf = (svar: SourceTextResponse | null): number =>
   (svar?.books.length ?? 0) + (svar?.hits.length ?? 0)
 
 // Inga träffar alls (och verssöket är inte längre på väg): först då visas
 // no-results, aldrig medan källtextträffar fortfarande laddas.
-const ärHeltTomt = (redaktionellaOchNoter: number, kalltextAntal: number, laddar: boolean): boolean =>
+const isCompletelyEmpty = (redaktionellaOchNoter: number, kalltextAntal: number, laddar: boolean): boolean =>
   redaktionellaOchNoter === 0 && kalltextAntal === 0 && !laddar
 
 // Lägger till en expanderad grupp och sparar det i sessionsminnet.
@@ -76,9 +76,9 @@ const nyExpansion = (
   nyckel: string,
   grupptyp: SearchType,
 ): Set<SearchType> => {
-  const nästa = new Set(föregående).add(grupptyp)
-  expansionsminne.set(nyckel, nästa)
-  return nästa
+  const next = new Set(föregående).add(grupptyp)
+  expansionsminne.set(nyckel, next)
+  return next
 }
 
 // Sökfältets tillstånd: debouncat värde, Enter söker direkt, termen speglas i
@@ -94,14 +94,14 @@ const useSoktillstand = (
   const debounced = useDebounced(query.trim(), 250)
   const term = direkt ?? debounced
   const nyckel = normalisera(term)
-  const [expanderade, setExpanderade] = useState<Set<SearchType>>(() => hämtaExpansion(nyckel))
+  const [expanderade, setExpanderade] = useState<Set<SearchType>>(() => getExpansion(nyckel))
 
   useEffect(() => {
-    if (term !== q) onNavigera(sökObjekt(term, type))
+    if (term !== q) onNavigera(searchObject(term, type))
   }, [term, q, type, onNavigera])
 
   useEffect(() => {
-    setExpanderade(hämtaExpansion(normalisera(term)))
+    setExpanderade(getExpansion(normalisera(term)))
   }, [term])
 
   return {
@@ -135,43 +135,43 @@ export const SokBibliotekPage = ({ q, type, onNavigera }: Props) => {
 
   // Verssöket (verkläsarens FTS) körs bara utan typfilter och för fråga ≥ 2
   // tecken; annars ett tomt svar utan nätanrop. Egen väg, egen laddning.
-  const sökKalltext = nyckel.length >= 2 && type === undefined
+  const searchSourceText = nyckel.length >= 2 && type === undefined
   const kalltext = useAsync<SourceTextResponse>(
-    () => (sökKalltext ? searchLibrary(term) : Promise.resolve(TOMT_KALLTEXTSVAR)),
-    [term, sökKalltext],
+    () => (searchSourceText ? searchLibrary(term) : Promise.resolve(TOMT_KALLTEXTSVAR)),
+    [term, searchSourceText],
   )
 
-  const { synliga, notes, redaktionellaOchNoter, fel } = härledResultat(
+  const { synliga, notes, redaktionellaOchNoter, fel } = deriveResult(
     term,
     type,
     expanderade,
     anteckningar,
   )
-  const kalltextAntal = kalltextAntalAv(kalltext.data)
+  const kalltextAntal = sourceTextCountOf(kalltext.data)
   const antal = redaktionellaOchNoter + kalltextAntal
-  const ingaTraffar = ärHeltTomt(redaktionellaOchNoter, kalltextAntal, kalltext.loading)
+  const ingaTraffar = isCompletelyEmpty(redaktionellaOchNoter, kalltextAntal, kalltext.loading)
 
   // Fas 14: rapportera bara tekniskt minimum ur söket — ett index-fel eller en
   // helt tom sökning (anonymiserat). Anteckningssöket rör detta aldrig, och
   // frågans text loggas aldrig — bara längd och ordantal.
   useEffect(() => {
     if (nyckel.length < 2) return
-    if (fel) rapportera({ type: 'sokfel', detalj: 'index' })
-    else if (ingaTraffar) rapportera({ type: 'sok-nolltraff', ...anonymiseraFraga(term) })
+    if (fel) report({ type: 'sokfel', detalj: 'index' })
+    else if (ingaTraffar) report({ type: 'sok-nolltraff', ...anonymizeQuestion(term) })
   }, [nyckel, fel, ingaTraffar, term])
 
   return (
     <div className="screenSub">
       <TopBar />
       <Sokfalt query={query} onChange={ändraFråga} onSubmit={sökDirekt} />
-      <Filter aktiv={type} antal={antal} onVal={(nyTyp) => onNavigera(sökObjekt(term, nyTyp))} />
+      <Filter aktiv={type} antal={antal} onVal={(nyTyp) => onNavigera(searchObject(term, nyTyp))} />
       <Resultatvy
-        läge={beräknaLäge(nyckel, fel)}
+        läge={computeMode(nyckel, fel)}
         ingaTraffar={ingaTraffar}
         synliga={synliga}
         kalltext={
           type === undefined ? (
-            <KalltextGrupp key={nyckel} svar={kalltext.data} fel={kalltext.error} />
+            <SourceTextGroup key={nyckel} svar={kalltext.data} fel={kalltext.error} />
           ) : null
         }
         notes={notes}

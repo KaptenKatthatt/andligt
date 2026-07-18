@@ -2,7 +2,7 @@
 // dubbletter, brutna relationer och publiceringskrav. Fältkraven per post tas
 // av zod-schemana vid tolkningen; här kontrolleras det som kräver helheten.
 // Publicerat innehåll får aldrig peka på opublicerat — utkast är fria.
-import { ärTeaseröppning } from './openingGuard'
+import { isTeaserOpening } from './openingGuard'
 import type { Question, ContentSet, Source, SourcePassage, Room, Theme } from './schema'
 
 type Kallrelation = Room['sources'][number]
@@ -39,7 +39,7 @@ const publicerad = (status: string | undefined): boolean => status === 'publicer
 // En refererad post: finns den, och (för publicerade rum) är den publicerad?
 type Reference = { type: string; id: string; finns: boolean; publicerad: boolean }
 
-const rumsreferenser = (rum: Room, uppslag: Lookup): Reference[] => {
+const roomReferences = (rum: Room, uppslag: Lookup): Reference[] => {
   const fråga = (type: string, id: string): Reference => ({
     type,
     id,
@@ -73,7 +73,7 @@ const rumsreferenser = (rum: Room, uppslag: Lookup): Reference[] => {
 }
 
 const relationsfel = (rum: Room, uppslag: Lookup): string[] =>
-  rumsreferenser(rum, uppslag)
+  roomReferences(rum, uppslag)
     .filter((reference) => !reference.finns)
     .map((reference) => `rum ${rum.id}: ${reference.type} "${reference.id}" finns inte`)
 
@@ -81,25 +81,25 @@ const relationsfel = (rum: Room, uppslag: Lookup): string[] =>
 // edition (source-and-context.md, Types of Source Use): så hålls källans ord
 // belagda och åtskilda från redaktionell prosa. Bearbetning/parafras/inspiration
 // får nöja sig med fritextreferens och passerar orörda.
-const KRÄVER_PASSAGE: ReadonlySet<Kallrelation['use']> = new Set(['citat', 'översättning'])
+const REQUIRES_PASSAGE: ReadonlySet<Kallrelation['use']> = new Set(['citat', 'översättning'])
 
 const bruksgrind = (rum: Room, relation: Kallrelation, uppslag: Lookup): string[] => {
-  if (!KRÄVER_PASSAGE.has(relation.use)) return []
-  const märke = `rum ${rum.id}: ${relation.use}`
+  if (!REQUIRES_PASSAGE.has(relation.use)) return []
+  const mark = `rum ${rum.id}: ${relation.use}`
   if (relation.passage === undefined)
-    return [`${märke} kräver en källpassage med exakt referens och utgåva`]
+    return [`${mark} kräver en källpassage med exakt referens och utgåva`]
   const passage = uppslag.passager.get(relation.passage)
   if (!passage) return [] // saknad passage rapporteras redan som bruten relation
   return [
-    ...(passage.edition ? [] : [`${märke} kräver utgåva (edition) på passagen "${passage.id}"`]),
+    ...(passage.edition ? [] : [`${mark} kräver utgåva (edition) på passagen "${passage.id}"`]),
     ...(relation.use === 'översättning' && !passage.translator
-      ? [`${märke} kräver angiven översättare på passagen "${passage.id}"`]
+      ? [`${mark} kräver angiven översättare på passagen "${passage.id}"`]
       : []),
   ]
 }
 
 // Publiceringskraven (source-and-context.md Publication Gate, room-schema.md).
-const publiceringsfel = (rum: Room, uppslag: Lookup): string[] => {
+const publishError = (rum: Room, uppslag: Lookup): string[] => {
   if (!publicerad(rum.status)) return []
   const grindar = [
     ...(rum.sources.some((relation) => relation.primary)
@@ -110,7 +110,7 @@ const publiceringsfel = (rum: Room, uppslag: Lookup): string[] => {
       : [`rum ${rum.id}: lästid ${rum.readingTimeMinutes} min utanför 1–10 för publicerat rum`]),
     ...rum.sources.flatMap((relation) => bruksgrind(rum, relation, uppslag)),
   ]
-  const opublicerade = rumsreferenser(rum, uppslag)
+  const opublicerade = roomReferences(rum, uppslag)
     .filter((reference) => reference.finns && !reference.publicerad)
     .map((reference) => `rum ${rum.id}: länkar opublicerad(t) ${reference.type} "${reference.id}"`)
   return [...grindar, ...opublicerade]
@@ -119,14 +119,14 @@ const publiceringsfel = (rum: Room, uppslag: Lookup): string[] => {
 // Språkgrind (review-language.md): öppningen ska landa i vardagen, inte teasa
 // eller introducera källan (det gör Kärnan). Gäller alla rum, även utkast, så en
 // teaser aldrig ens kan committas — inte bara stoppas vid publicering.
-const öppningsfel = (rum: Room): string[] =>
-  ärTeaseröppning(rum.opening)
+const openingError = (rum: Room): string[] =>
+  isTeaserOpening(rum.opening)
     ? [
         `rum ${rum.id}: öppningens sista stycke teasar/introducerar källan — låt öppningen landa i det vardagliga (eller en öppen fråga) och Kärnan introducera källan (review-language.md)`,
       ]
     : []
 
-const temafel = (tema: Theme, uppslag: Lookup): string[] => {
+const themeError = (tema: Theme, uppslag: Lookup): string[] => {
   if (tema.defaultRoom === undefined) return []
   const rum = uppslag.rum.get(tema.defaultRoom)
   if (!rum) return [`tema ${tema.id}: standardrum "${tema.defaultRoom}" finns inte`]
@@ -140,7 +140,7 @@ const temafel = (tema: Theme, uppslag: Lookup): string[] => {
 
 // Samma grindprincip som rummen: en publicerad fråga är en synlig ingång
 // i biblioteket och får inte leda till opublicerat innehåll.
-const fragereferens = (
+const questionReference = (
   fråga: Question,
   type: string,
   id: string,
@@ -152,14 +152,14 @@ const fragereferens = (
   return []
 }
 
-const fragefel = (fråga: Question, uppslag: Lookup): string[] => [
-  ...fråga.themes.flatMap((id) => fragereferens(fråga, 'tema', id, uppslag.themes.get(id))),
+const questionError = (fråga: Question, uppslag: Lookup): string[] => [
+  ...fråga.themes.flatMap((id) => questionReference(fråga, 'tema', id, uppslag.themes.get(id))),
   ...(fråga.relatedQuestions ?? []).flatMap((id) =>
-    fragereferens(fråga, 'relaterad fråga', id, uppslag.frågor.get(id)),
+    questionReference(fråga, 'relaterad fråga', id, uppslag.frågor.get(id)),
   ),
 ]
 
-const vandringsfel = (mängd: ContentSet, uppslag: Lookup): string[] =>
+const pathError = (mängd: ContentSet, uppslag: Lookup): string[] =>
   mängd.vandringar.flatMap((vandring) => {
     const fel: string[] = []
     // Central fråga: samma grind som rummen — en publicerad vandring är en
@@ -183,7 +183,7 @@ const vandringsfel = (mängd: ContentSet, uppslag: Lookup): string[] =>
 // En publicerad source måste ta ställning till attribution och dating (även svaret
 // "okänt"/"omtvistat") så osäkerhet representeras i stället för att döljas
 // (source-and-context.md, Uncertainty; Publication Gate).
-const kallosakerhet = (source: Source): string[] =>
+const sourceUncertainty = (source: Source): string[] =>
   publicerad(source.status)
     ? [
         ...(source.attribution === undefined
@@ -195,7 +195,7 @@ const kallosakerhet = (source: Source): string[] =>
       ]
     : []
 
-const kalltraditionsfel = (source: Source, uppslag: Lookup): string[] =>
+const sourceTraditionError = (source: Source, uppslag: Lookup): string[] =>
   (source.traditions ?? []).flatMap((traditionId) => {
     if (!uppslag.traditionsstatus.has(traditionId))
       return [`källa ${source.id}: tradition "${traditionId}" finns inte`]
@@ -204,10 +204,10 @@ const kalltraditionsfel = (source: Source, uppslag: Lookup): string[] =>
     return []
   })
 
-const kallfel = (mängd: ContentSet, uppslag: Lookup): string[] =>
+const sourceError = (mängd: ContentSet, uppslag: Lookup): string[] =>
   mängd.sources.flatMap((source) => [
-    ...kalltraditionsfel(source, uppslag),
-    ...kallosakerhet(source),
+    ...sourceTraditionError(source, uppslag),
+    ...sourceUncertainty(source),
   ])
 
 const passagefel = (mängd: ContentSet, uppslag: Lookup): string[] =>
@@ -219,7 +219,7 @@ const passagefel = (mängd: ContentSet, uppslag: Lookup): string[] =>
 
 /** Validerar relationer och publiceringskrav över hela innehållsmängden.
  * Tom lista = konsistent innehåll. */
-export const valideraInnehall = (mängd: ContentSet): string[] => {
+export const validateContent = (mängd: ContentSet): string[] => {
   const uppslag: Lookup = {
     rum: perId(mängd.rum),
     themes: perId(mängd.themes),
@@ -240,12 +240,12 @@ export const valideraInnehall = (mängd: ContentSet): string[] => {
     ...dublettfel('tradition', mängd.traditions),
     ...dublettfel('person', mängd.personer),
     ...mängd.rum.flatMap((rum) => relationsfel(rum, uppslag)),
-    ...mängd.rum.flatMap((rum) => öppningsfel(rum)),
-    ...mängd.rum.flatMap((rum) => publiceringsfel(rum, uppslag)),
-    ...mängd.themes.flatMap((tema) => temafel(tema, uppslag)),
-    ...mängd.frågor.flatMap((fråga) => fragefel(fråga, uppslag)),
-    ...vandringsfel(mängd, uppslag),
-    ...kallfel(mängd, uppslag),
+    ...mängd.rum.flatMap((rum) => openingError(rum)),
+    ...mängd.rum.flatMap((rum) => publishError(rum, uppslag)),
+    ...mängd.themes.flatMap((tema) => themeError(tema, uppslag)),
+    ...mängd.frågor.flatMap((fråga) => questionError(fråga, uppslag)),
+    ...pathError(mängd, uppslag),
+    ...sourceError(mängd, uppslag),
     ...passagefel(mängd, uppslag),
   ]
 }

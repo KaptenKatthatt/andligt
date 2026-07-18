@@ -10,10 +10,10 @@ import { mkdirSync, existsSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { chat, probaModell, visaModell, listaModeller } from '../zen-experiment/ollama'
 import { promptA, promptC1, promptC2, promptGranska, systemSv } from '../zen-experiment/prompter'
-import { lasPassager, type Passage, type Steg } from '../zen-experiment/typer'
+import { readPassages, type Passage, type Steg } from '../zen-experiment/typer'
 
-const PASSAGER = 'docs/research/zen-experiment/passages'
-const RADATA = 'docs/oversattningar/radata'
+const Passages = 'docs/research/zen-experiment/passages'
+const RAW_DATA = 'docs/oversattningar/radata'
 const MAL = ['p1-hakuin-zazen-wasan', 'p2-mumonkan-fall7', 'p3-dogen-genjokoan', 'p5-dogen-uji']
 
 // Primärmodell (translator) och granskare enligt rapportens §1: glm-5.2 översätter,
@@ -65,7 +65,7 @@ const oversattPassage = async (passage: Passage, oversattare: string): Promise<{
 }
 
 const korPassage = async (passage: Passage, oversattare: string, granskare: string): Promise<void> => {
-  const fil = join(RADATA, `${passage.id}.json`)
+  const fil = join(RAW_DATA, `${passage.id}.json`)
   if (existsSync(fil)) {
     console.log(`  hoppar över (finns): ${passage.id}`)
     return
@@ -86,7 +86,7 @@ const korPassage = async (passage: Passage, oversattare: string, granskare: stri
   console.log(`  klar: ${fil} (flöde ${flode})`)
 }
 
-const valjModell = async (kandidater: string[], probstatus: Record<string, boolean>): Promise<string | null> => {
+const selectModel = async (kandidater: string[], probstatus: Record<string, boolean>): Promise<string | null> => {
   for (const kandidat of kandidater) {
     const ok = await probaModell(kandidat)
     probstatus[kandidat] = ok
@@ -105,7 +105,7 @@ const skrivModellDokumentation = async (
   const valda = [...new Set([oversattare, granskare])]
   const metadata = await Promise.all(valda.map(async (modell) => [modell, await visaModell(modell)] as const))
   writeFileSync(
-    join(RADATA, 'modeller.json'),
+    join(RAW_DATA, 'modeller.json'),
     `${JSON.stringify(
       { datum: new Date().toISOString(), oversattare, granskare, probstatus, kanda, metadata: Object.fromEntries(metadata) },
       null,
@@ -115,15 +115,15 @@ const skrivModellDokumentation = async (
 }
 
 const main = async (): Promise<void> => {
-  mkdirSync(RADATA, { recursive: true })
-  const passager = lasPassager(PASSAGER).filter((passage) => MAL.includes(passage.id))
+  mkdirSync(RAW_DATA, { recursive: true })
+  const passager = readPassages(Passages).filter((passage) => MAL.includes(passage.id))
   console.log(`${passager.length} målpassager inlästa: ${passager.map((passage) => passage.id).join(', ')}`)
 
   const kanda = await listaModeller().catch(() => [] as string[])
   console.log(`Gatewayens kända modeller: ${kanda.join(', ') || '(inga)'}`)
   const probstatus: Record<string, boolean> = {}
-  const oversattare = await valjModell(OVERSATTARE, probstatus)
-  const granskare = await valjModell(GRANSKARE, probstatus)
+  const oversattare = await selectModel(OVERSATTARE, probstatus)
+  const granskare = await selectModel(GRANSKARE, probstatus)
   if (oversattare === null) throw new Error('Ingen körbar översättarmodell hittades på gatewayen.')
   if (granskare === null) throw new Error('Ingen körbar granskarmodell hittades på gatewayen.')
   console.log(`Översättare: ${oversattare} · granskare: ${granskare}`)

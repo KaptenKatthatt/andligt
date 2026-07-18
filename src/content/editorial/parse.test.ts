@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
-import { tolkaPostfil, tolkaRumsfil } from './parse'
-import { temaSchema } from './schema'
+import { parsePostFile, parseRoomFile } from './parse'
+import { themeSchema } from './schema'
 
-const rumsMarkdown = `---
+const roomMarkdown = `---
 id: rum-det-du-inte-kan-styra
 slug: det-du-inte-kan-styra
 title: Det du inte kan styra
@@ -38,7 +38,7 @@ Valfri bakgrund.
 
 describe('tolkaRumsfil', () => {
   it('tolkar frontmatter och sektioner till ett validerat rum', () => {
-    const tolkning = tolkaRumsfil({ sökväg: 'rum/det-du-inte-kan-styra.md', råtext: rumsMarkdown })
+    const tolkning = parseRoomFile({ sökväg: 'rum/det-du-inte-kan-styra.md', råtext: roomMarkdown })
     expect(tolkning.fel).toEqual([])
     expect(tolkning.värde?.id).toBe('rum-det-du-inte-kan-styra')
     expect(tolkning.värde?.opening).toContain('öppnar rummet')
@@ -49,20 +49,20 @@ describe('tolkaRumsfil', () => {
   })
 
   it('felar med sökväg och sektionsnamn när obligatoriskt saknas', () => {
-    const utanKarna = rumsMarkdown.replace(/## Core[\s\S]*?(?=## Historical)/, '')
-    const tolkning = tolkaRumsfil({ sökväg: 'rum/trasig.md', råtext: utanKarna })
+    const withoutKarna = roomMarkdown.replace(/## Core[\s\S]*?(?=## Historical)/, '')
+    const tolkning = parseRoomFile({ sökväg: 'rum/trasig.md', råtext: withoutKarna })
     expect(tolkning.värde).toBeNull()
     expect(tolkning.fel.some((f) => f.includes('rum/trasig.md') && f.includes('Core'))).toBe(true)
   })
 
   it('felar begripligt på trasig frontmatter-yaml', () => {
-    const tolkning = tolkaRumsfil({ sökväg: 'rum/yaml.md', råtext: '---\n: [ogiltig\n---\ntext' })
+    const tolkning = parseRoomFile({ sökväg: 'rum/yaml.md', råtext: '---\n: [ogiltig\n---\ntext' })
     expect(tolkning.värde).toBeNull()
     expect(tolkning.fel.length).toBeGreaterThan(0)
   })
 
   it('felar när frontmatter-avgränsare saknas', () => {
-    const tolkning = tolkaRumsfil({ sökväg: 'rum/naken.md', råtext: 'bara text utan frontmatter' })
+    const tolkning = parseRoomFile({ sökväg: 'rum/naken.md', råtext: 'bara text utan frontmatter' })
     expect(tolkning.värde).toBeNull()
     expect(tolkning.fel[0]).toContain('frontmatter')
   })
@@ -79,7 +79,7 @@ status: utkast
 
 Om det som stillnar när ingenting kräver något.
 `
-    const tolkning = tolkaPostfil(temaSchema, { sökväg: 'themes/lugn.md', råtext })
+    const tolkning = parsePostFile(themeSchema, { sökväg: 'themes/lugn.md', råtext })
     expect(tolkning.fel).toEqual([])
     expect(tolkning.värde?.label).toBe('Lugn')
     expect(tolkning.värde?.description).toContain('stillnar')
@@ -93,7 +93,7 @@ label: Lugn
 status: utkast
 ---
 `
-    const tolkning = tolkaPostfil(temaSchema, { sökväg: 'themes/lugn.md', råtext })
+    const tolkning = parsePostFile(themeSchema, { sökväg: 'themes/lugn.md', råtext })
     expect(tolkning.fel).toEqual([])
     expect(tolkning.värde?.description).toBeUndefined()
   })
@@ -106,7 +106,7 @@ label: Lugn
 status: hemlig
 ---
 `
-    const tolkning = tolkaPostfil(temaSchema, { sökväg: 'themes/lugn.md', råtext })
+    const tolkning = parsePostFile(themeSchema, { sökväg: 'themes/lugn.md', råtext })
     expect(tolkning.värde).toBeNull()
     expect(tolkning.fel.some((f) => f.includes('slug'))).toBe(true)
     expect(tolkning.fel.some((f) => f.includes('status'))).toBe(true)

@@ -52,27 +52,27 @@ describe('BottomSheet', () => {
   })
 
   it('stänger på Escape', async () => {
-    const användare = userEvent.setup()
+    const user = userEvent.setup()
     const onClose = vi.fn()
     render(
       <BottomSheet label="Anteckning" onClose={onClose}>
         <p>Innehåll</p>
       </BottomSheet>,
     )
-    await användare.keyboard('{Escape}')
+    await user.keyboard('{Escape}')
     expect(onClose).toHaveBeenCalledTimes(1)
   })
 
   it('anropar onClose via Klar-knappen och scrimmen', async () => {
-    const användare = userEvent.setup()
+    const user = userEvent.setup()
     const onClose = vi.fn()
     render(
       <BottomSheet label="Anteckning" onClose={onClose}>
         <p>Innehåll</p>
       </BottomSheet>,
     )
-    await användare.click(screen.getByRole('button', { name: 'Klar' }))
-    await användare.click(screen.getByRole('button', { name: 'Stäng anteckning' }))
+    await user.click(screen.getByRole('button', { name: 'Klar' }))
+    await user.click(screen.getByRole('button', { name: 'Stäng anteckning' }))
     expect(onClose).toHaveBeenCalledTimes(2)
   })
 
@@ -82,11 +82,11 @@ describe('BottomSheet', () => {
     const main = screen.getByRole('main', { hidden: true })
     const nav = skal.querySelector('nav')
 
-    const överlägg = skal.querySelector(':scope > [data-overlay]')
-    expect(överlägg).not.toBeNull()
+    const overlay = skal.querySelector(':scope > [data-overlay]')
+    expect(overlay).not.toBeNull()
     expect(main).toHaveAttribute('inert')
     expect(nav).toHaveAttribute('inert')
-    expect(överlägg).not.toHaveAttribute('inert')
+    expect(overlay).not.toHaveAttribute('inert')
 
     rerender(<Skal arkÖppet={false} />)
     expect(main).not.toHaveAttribute('inert')

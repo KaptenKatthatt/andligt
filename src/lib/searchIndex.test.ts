@@ -8,7 +8,7 @@ import type {
   Tradition,
   Path,
 } from '../content/editorial/schema'
-import { byggSokindex, sokindexet, type SearchDoc } from './searchIndex'
+import { byggSokindex, searchIndexData, type SearchDoc } from './searchIndex'
 
 type Status = Room['status']
 
@@ -183,11 +183,11 @@ describe('byggSokindex — fält per typ', () => {
 
 describe('sokindexet (det verkliga indexet)', () => {
   it('byggs ur laddat innehåll och är icke-tomt', () => {
-    expect(sokindexet.length).toBeGreaterThan(0)
+    expect(searchIndexData.length).toBeGreaterThan(0)
   })
 
   it('rymmer bara giltiga söktyper — inga läckta råposter', () => {
-    const typer = new Set(sokindexet.map((dok) => dok.type))
+    const typer = new Set(searchIndexData.map((dok) => dok.type))
     for (const type of typer) {
       expect(['fraga', 'tema', 'rum', 'vandring', 'kalla', 'tradition']).toContain(type)
     }

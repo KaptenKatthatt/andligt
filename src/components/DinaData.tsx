@@ -1,20 +1,20 @@
 import { useState } from 'react'
 import { findTopic } from '../content/topics'
-import { lasImport, tillExport, tillMarkdown, type PersonalExport } from '../lib/dataTransfer'
-import { hittaRumViaId, hittaVandringViaId } from '../lib/content'
+import { readImport, toExport, toMarkdown, type PersonalExport } from '../lib/dataTransfer'
+import { findRoomById, findPathById } from '../lib/content'
 import type { Origin } from '../lib/personal'
-import { personligaSamlingar, useAtlas } from '../lib/store'
+import { personalCollections, useAtlas } from '../lib/store'
 import styles from './DinaData.module.css'
 
 // Läsbara titlar för exportens anteckningar och sparade poster, per ursprung.
 const titelFor = (type: Origin, id: string): string | undefined => {
-  if (type === 'rum') return hittaRumViaId(id)?.title
-  if (type === 'vandring') return hittaVandringViaId(id)?.title
+  if (type === 'rum') return findRoomById(id)?.title
+  if (type === 'vandring') return findPathById(id)?.title
   return findTopic(id)?.title
 }
 
 // Laddar ner en textfil via en objekt-URL och ett osynligt ankare.
-const laddaNer = (innehåll: string, filnamn: string, mediatyp: string): void => {
+const download = (innehåll: string, filnamn: string, mediatyp: string): void => {
   const blob = new Blob([innehåll], { type: mediatyp })
   const url = URL.createObjectURL(blob)
   const ankare = document.createElement('a')
@@ -26,9 +26,9 @@ const laddaNer = (innehåll: string, filnamn: string, mediatyp: string): void =>
   setTimeout(() => URL.revokeObjectURL(url), 0)
 }
 
-const lasImportSäkert = (text: string): PersonalExport | null => {
+const readImportSafely = (text: string): PersonalExport | null => {
   try {
-    return lasImport(JSON.parse(text))
+    return readImport(JSON.parse(text))
   } catch {
     return null
   }
@@ -78,11 +78,11 @@ export const DinaData = () => {
   const [fel, setFel] = useState<string | undefined>(undefined)
 
   const bygg = (): PersonalExport =>
-    tillExport(personligaSamlingar(store), titelFor, new Date().toISOString())
-  const stämpel = new Date().toISOString().slice(0, 10)
+    toExport(personalCollections(store), titelFor, new Date().toISOString())
+  const stamp = new Date().toISOString().slice(0, 10)
 
   const importera = async (fil: File): Promise<void> => {
-    const data = lasImportSäkert(await fil.text())
+    const data = readImportSafely(await fil.text())
     if (data === null) {
       setFel('Filen kunde inte läsas.')
       return
@@ -97,14 +97,14 @@ export const DinaData = () => {
         <button
           type="button"
           className={styles.knapp}
-          onClick={() => laddaNer(JSON.stringify(bygg(), null, 2), `visdomsatlasen-${stämpel}.json`, 'application/json')}
+          onClick={() => download(JSON.stringify(bygg(), null, 2), `visdomsatlasen-${stamp}.json`, 'application/json')}
         >
           Exportera
         </button>
         <button
           type="button"
           className={styles.knapp}
-          onClick={() => laddaNer(tillMarkdown(bygg()), `visdomsatlasen-${stämpel}.md`, 'text/markdown')}
+          onClick={() => download(toMarkdown(bygg()), `visdomsatlasen-${stamp}.md`, 'text/markdown')}
         >
           Exportera som text
         </button>

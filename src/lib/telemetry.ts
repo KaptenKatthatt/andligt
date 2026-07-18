@@ -21,20 +21,20 @@ export type TechnicalEvent =
  * spår utan tredjepart. `console.warn` så det syns i loggen men aldrig fäller
  * appen. Bara händelsens egna, redan minimerade fält loggas: ingen personlig
  * text, ingen rå sökfråga, aldrig anteckningsinnehåll. */
-export const rapportera = (handelse: TechnicalEvent): void => {
+export const report = (handelse: TechnicalEvent): void => {
   console.warn('[telemetri]', handelse.type, handelse)
 }
 
 /** Anonymiserar en sökfråga till ofarliga mått (analytics.md, Sensitive Query
  * Data): bara längd och ordantal, aldrig själva texten. */
-export const anonymiseraFraga = (fraga: string): { langd: number; ord: number } => {
+export const anonymizeQuestion = (fraga: string): { langd: number; ord: number } => {
   const trimmad = fraga.trim()
   return { langd: trimmad.length, ord: trimmad === '' ? 0 : trimmad.split(/\s+/).length }
 }
 
 /** Rensar bort en frågesträng ur en resurs-URL innan den loggas, så en sökfrågas
  * text aldrig läcker in via ett fel-anrop (t.ex. /api/library/search?q=…). */
-export const utanFraga = (url: string): string => url.split('?')[0] ?? url
+export const withoutQuestion = (url: string): string => url.split('?')[0] ?? url
 
 let installerad = false
 
@@ -50,7 +50,7 @@ export const installeraGlobalaFelfangare = (): void => {
     // i DOM-typerna; smalna av till unknown innan use.
     const fel = (event as { error?: unknown }).error
     if (!event.message && !fel) return
-    rapportera({
+    report({
       type: 'okaught-fel',
       meddelande: event.message || 'Okänt fel',
       ...(event.filename ? { source: `${event.filename}:${event.lineno}` } : {}),
@@ -59,6 +59,6 @@ export const installeraGlobalaFelfangare = (): void => {
   window.addEventListener('unhandledrejection', (event) => {
     // event.reason är `any` i DOM-typerna; smalna av till unknown innan use.
     const orsak = (event as { reason?: unknown }).reason
-    rapportera({ type: 'okaught-fel', meddelande: orsak instanceof Error ? orsak.message : String(orsak) })
+    report({ type: 'okaught-fel', meddelande: orsak instanceof Error ? orsak.message : String(orsak) })
   })
 }
