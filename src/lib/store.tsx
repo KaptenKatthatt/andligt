@@ -15,7 +15,7 @@ import {
   chapterKey,
   migrateNotes,
   migrateSaved,
-  uppdateradNote,
+  updatedNote,
   type Note,
   type ChapterBookmark,
   type SavedItem,
@@ -44,7 +44,7 @@ const nu = (): string => new Date().toISOString()
 // alla rum bär) blir `rum`, allt annat (topic-id ur gamla appen, oidentifierbart)
 // hamnar i `amne` — texten bevaras alltid, oavsett ursprung. Prefixkollen håller
 // storen fri från innehållssamlingen så startbunten slipper hela biblioteket (fas 13).
-const klassificeraUrsprung = (id: string): Origin => (id.startsWith('rum-') ? 'rum' : 'amne')
+const klassificeraUrsprung = (id: string): Origin => (id.startsWith('rum-') ? 'room' : 'topic')
 
 type AtlasState = {
   // null = inget manuellt val: temat följer systemets färgschema, även när
@@ -58,21 +58,21 @@ type AtlasState = {
   // Anteckningar (notes-and-saved.md): privata reflektioner kopplade till sitt
   // ursprung (rum/topic). Nyckel = ursprungId — en anteckning per place. Privat:
   // rör aldrig rumsvalet, publik sök, AI eller analytics.
-  anteckningar: Record<string, Note>
+  notes: Record<string, Note>
   lastRead: LastRead | null
   // Sparade reflektionsrum (rum-id → post med sparat-datum). Skilt från
   // bookmarks: rum sparas hela, bokmärken märker kapitelpositioner i biblioteket.
-  sparadeRum: Record<string, SavedItem>
+  savedRooms: Record<string, SavedItem>
   // Sparade vandringar (vandring-id → post). Aldrig förlopp eller completion —
   // bara att läsaren vill kunna återvända (notes-and-saved.md, Saved Paths).
-  sparadeVandringar: Record<string, SavedItem>
+  savedPaths: Record<string, SavedItem>
   // De senast öppnade rummen (nyast först, max HISTORIKLANGD). Finns bara
   // för att rumsvalet ska undvika omedelbar upprepning — ingen aktivitetslogg.
-  senastLastaRum: string[]
+  recentRooms: string[]
   // Senast öppnade rum per vandring (vandring-id → rum-id). Enbart orientering
   // så läsaren kan återvända dit hen stannade (paths.md, Returning to a Path) —
   // aldrig förlopp, procent eller påminnelse.
-  vandringsplatser: Record<string, string>
+  pathPositions: Record<string, string>
 }
 
 type AtlasActions = {
@@ -104,38 +104,57 @@ const clampStep = (step: number): number =>
   Math.min(MAX_TEXT_STEP, Math.max(MIN_TEXT_STEP, Math.round(step)))
 
 // Vad `readJson` ger tillbaka innan migrering: samlingsfälten kan bära gammal
-// form (boolean-sparadeRum, string-notes) från en tidigare version.
-type SavedRaw = Partial<Omit<AtlasState, 'sparadeRum' | 'anteckningar'>> & {
+// form (boolean-savedRooms, string-notes) från en tidigare version. `notes`,
+// `savedRooms` och `savedPaths` läses som `unknown` (migreras), och de svenska
+// nycklarna en tidigare version skrev (anteckningar/sparadeRum/…) läses som
+// fallback så äldre lagrad data fortfarande går att läsa in utan förlust.
+export type SavedRaw = Partial<Omit<AtlasState, 'notes' | 'savedRooms' | 'savedPaths'>> & {
+  notes?: unknown
+  savedRooms?: unknown
+  savedPaths?: unknown
+  anteckningar?: unknown
   sparadeRum?: unknown
   sparadeVandringar?: unknown
-  anteckningar?: unknown
-  notes?: unknown
+  senastLastaRum?: string[]
+  vandringsplatser?: Record<string, string>
 }
 
+// Anteckningar och sparat-poster migreras tyst och förlustfritt från äldre
+// former — både gammal datastruktur och de svenska nycklarna (anteckningar/
+// sparadeRum/sparadeVandringar) före engelsk-migreringen.
+const restoredPersonal = (saved: SavedRaw): Pick<AtlasState, 'notes' | 'savedRooms' | 'savedPaths'> => ({
+  notes: migrateNotes(saved.notes, saved.anteckningar ?? saved.notes, klassificeraUrsprung, nu()),
+  savedRooms: migrateSaved(saved.savedRooms ?? saved.sparadeRum),
+  savedPaths: migrateSaved(saved.savedPaths ?? saved.sparadeVandringar),
+})
+
+// Orienteringsminnet: senast lästa rum och senast öppnat rum per vandring, med
+// de svenska nycklarna (senastLastaRum/vandringsplatser) som fallback.
+const restoredOrientation = (saved: SavedRaw): Pick<AtlasState, 'recentRooms' | 'pathPositions'> => ({
+  recentRooms: saved.recentRooms ?? saved.senastLastaRum ?? [],
+  pathPositions: saved.pathPositions ?? saved.vandringsplatser ?? {},
+})
+
 // Samlingsfälten behöver bara falla tillbaka på tomt — ingen värdevalidering av
-// bokmärken/senast läst, till skillnad från temafälten. Sparade poster och
-// anteckningar migreras däremot tyst och förlustfritt från äldre former.
-const restoredCollections = (
+// bokmärken/senast läst, till skillnad från temafälten.
+export const restoredCollections = (
   saved: SavedRaw,
 ): Pick<
   AtlasState,
   | 'bookmarks'
   | 'chapterBookmarks'
-  | 'anteckningar'
+  | 'notes'
   | 'lastRead'
-  | 'sparadeRum'
-  | 'sparadeVandringar'
-  | 'senastLastaRum'
-  | 'vandringsplatser'
+  | 'savedRooms'
+  | 'savedPaths'
+  | 'recentRooms'
+  | 'pathPositions'
 > => ({
   bookmarks: saved.bookmarks ?? {},
   chapterBookmarks: saved.chapterBookmarks ?? {},
-  anteckningar: migrateNotes(saved.notes, saved.anteckningar, klassificeraUrsprung, nu()),
   lastRead: saved.lastRead ?? null,
-  sparadeRum: migrateSaved(saved.sparadeRum),
-  sparadeVandringar: migrateSaved(saved.sparadeVandringar),
-  senastLastaRum: saved.senastLastaRum ?? [],
-  vandringsplatser: saved.vandringsplatser ?? {},
+  ...restoredPersonal(saved),
+  ...restoredOrientation(saved),
 })
 
 // Äldre sparad state saknar de nya fälten, och korrupt JSON får inte läcka in
@@ -235,7 +254,7 @@ const useCollectionActions = (setState: SetAtlasState): CollectionActions => {
     (id: string) =>
       setState((s) => ({
         ...s,
-        senastLastaRum: [id, ...s.senastLastaRum.filter((last) => last !== id)].slice(
+        recentRooms: [id, ...s.recentRooms.filter((last) => last !== id)].slice(
           0,
           HISTORIKLANGD,
         ),
@@ -247,7 +266,7 @@ const useCollectionActions = (setState: SetAtlasState): CollectionActions => {
     (vandringId: string, rumId: string) =>
       setState((s) => ({
         ...s,
-        vandringsplatser: { ...s.vandringsplatser, [vandringId]: rumId },
+        pathPositions: { ...s.pathPositions, [vandringId]: rumId },
       })),
     [setState],
   )
@@ -267,7 +286,7 @@ const toggleSaved = (
 ): Record<string, SavedItem> => {
   const next = { ...poster }
   if (next[id]) delete next[id]
-  else next[id] = { sparadNar: nu() }
+  else next[id] = { savedWhen: nu() }
   return next
 }
 
@@ -275,21 +294,20 @@ const usePersonligtActions = (setState: SetAtlasState): PersonligtActions => {
   const vaxlaSparatRum = useCallback(
     // Anteckningen är en egen post och överlever av-sparning, så ingen varning
     // behövs (notes-and-saved.md: varning bara när borttag även raderar anteckning).
-    (id: string) => setState((s) => ({ ...s, sparadeRum: toggleSaved(s.sparadeRum, id) })),
+    (id: string) => setState((s) => ({ ...s, savedRooms: toggleSaved(s.savedRooms, id) })),
     [setState],
   )
   const vaxlaSparadVandring = useCallback(
-    (id: string) =>
-      setState((s) => ({ ...s, sparadeVandringar: toggleSaved(s.sparadeVandringar, id) })),
+    (id: string) => setState((s) => ({ ...s, savedPaths: toggleSaved(s.savedPaths, id) })),
     [setState],
   )
   const sattAnteckning = useCallback(
     (type: Origin, ursprungId: string, text: string) =>
       setState((s) => ({
         ...s,
-        anteckningar: {
-          ...s.anteckningar,
-          [ursprungId]: uppdateradNote(s.anteckningar[ursprungId], type, ursprungId, text, nu()),
+        notes: {
+          ...s.notes,
+          [ursprungId]: updatedNote(s.notes[ursprungId], type, ursprungId, text, nu()),
         },
       })),
     [setState],
@@ -297,16 +315,16 @@ const usePersonligtActions = (setState: SetAtlasState): PersonligtActions => {
   const taBortAnteckning = useCallback(
     (ursprungId: string) =>
       setState((s) => {
-        const next = { ...s.anteckningar }
+        const next = { ...s.notes }
         delete next[ursprungId]
-        return { ...s, anteckningar: next }
+        return { ...s, notes: next }
       }),
     [setState],
   )
   const rensaSenastBesokt = useCallback(
     // Tömmer bara orienteringshistoriken. Ofarligt för rumsvalet: utan historik
     // undviks ingen upprepning tillfälligt, aldrig ett fel val.
-    () => setState((s) => ({ ...s, senastLastaRum: [] })),
+    () => setState((s) => ({ ...s, recentRooms: [] })),
     [setState],
   )
   return { vaxlaSparatRum, vaxlaSparadVandring, sattAnteckning, taBortAnteckning, rensaSenastBesokt }
@@ -315,9 +333,9 @@ const usePersonligtActions = (setState: SetAtlasState): PersonligtActions => {
 /** Plockar ut den personliga delen av storen — delas av importmerge och av
  * exporten i Inställningar (Dina data), så samma femfältiga form byggs på ett ställe. */
 export const personalCollections = (s: PersonalCollections): PersonalCollections => ({
-  anteckningar: s.anteckningar,
-  sparadeRum: s.sparadeRum,
-  sparadeVandringar: s.sparadeVandringar,
+  notes: s.notes,
+  savedRooms: s.savedRooms,
+  savedPaths: s.savedPaths,
   bookmarks: s.bookmarks,
   chapterBookmarks: s.chapterBookmarks,
 })
@@ -325,14 +343,14 @@ export const personalCollections = (s: PersonalCollections): PersonalCollections
 // Allt personligt tömt; utseendet (dark/font/textStep/bg) rörs aldrig. Rensning
 // av lokal data ska bete sig förutsägbart (notes-and-saved.md, Local Storage).
 const tomtPersonligt = {
-  anteckningar: {},
-  sparadeRum: {},
-  sparadeVandringar: {},
+  notes: {},
+  savedRooms: {},
+  savedPaths: {},
   bookmarks: {},
   chapterBookmarks: {},
   lastRead: null,
-  senastLastaRum: [],
-  vandringsplatser: {},
+  recentRooms: [],
+  pathPositions: {},
 } satisfies Partial<AtlasState>
 
 const useDataActions = (setState: SetAtlasState): DataActions => {

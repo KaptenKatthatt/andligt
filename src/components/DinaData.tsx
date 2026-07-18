@@ -8,8 +8,8 @@ import styles from './DinaData.module.css'
 
 // Läsbara titlar för exportens anteckningar och sparade poster, per ursprung.
 const titelFor = (type: Origin, id: string): string | undefined => {
-  if (type === 'rum') return findRoomById(id)?.title
-  if (type === 'vandring') return findPathById(id)?.title
+  if (type === 'room') return findRoomById(id)?.title
+  if (type === 'path') return findPathById(id)?.title
   return findTopic(id)?.title
 }
 

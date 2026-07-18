@@ -19,7 +19,7 @@ import styles from './HemPage.module.css'
 export const HemPage = () => {
   useSidtitel('Läsrummet')
   const navigate = useNavigate()
-  const { senastLastaRum } = useAtlas()
+  const { recentRooms } = useAtlas()
   const [tomtVal, setTomtVal] = useState(false)
   const [väljer, setVäljer] = useState(false)
   const selectTheme = async (tema: Theme) => {
@@ -28,7 +28,7 @@ export const HemPage = () => {
     setTomtVal(false)
     try {
       const { allRooms } = await import('../lib/content')
-      const rum = selectRoom(tema, allRooms, senastLastaRum)
+      const rum = selectRoom(tema, allRooms, recentRooms)
       if (rum) {
         void navigate({ to: '/rum/$slug', params: { slug: rum.slug } })
         return

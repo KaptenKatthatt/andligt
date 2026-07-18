@@ -131,7 +131,7 @@ export const SokBibliotekPage = ({ q, type, onNavigera }: Props) => {
     type,
     onNavigera,
   )
-  const anteckningar = useAtlas().anteckningar
+  const anteckningar = useAtlas().notes
 
   // Verssöket (verkläsarens FTS) körs bara utan typfilter och för fråga ≥ 2
   // tecken; annars ett tomt svar utan nätanrop. Egen väg, egen laddning.

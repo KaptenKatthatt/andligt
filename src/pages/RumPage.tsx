@@ -135,12 +135,12 @@ const kolofonetikett = (rum: Room, source: Source): string =>
   new Set(rum.sources.map((relation) => relation.source)).size > 1 ? 'Källor' : sourceName(source)
 
 const Rumsavslut = ({ rum }: { rum: Room }) => {
-  const { sparadeRum, vaxlaSparatRum, anteckningar, sattAnteckning, taBortAnteckning } = useAtlas()
+  const { savedRooms, vaxlaSparatRum, notes, sattAnteckning, taBortAnteckning } = useAtlas()
   const [öppenRad, setÖppenRad] = useState<'source' | 'bakgrund' | null>(null)
   const [anteckningÖppen, setAnteckningÖppen] = useState(false)
   const primarySource = rum.sources.find((k) => k.primary) ?? rum.sources[0]
   const source = primarySource ? findSource(primarySource.source) : undefined
-  const sparat = !!sparadeRum[rum.id]
+  const sparat = !!savedRooms[rum.id]
   const toggle = (rad: 'source' | 'bakgrund') =>
     setÖppenRad((nuvarande) => (nuvarande === rad ? null : rad))
   return (
@@ -192,8 +192,8 @@ const Rumsavslut = ({ rum }: { rum: Room }) => {
       {anteckningÖppen && (
         <NotesSheet
           title={rum.title}
-          value={anteckningar[rum.id]?.text ?? ''}
-          onChange={(text) => sattAnteckning('rum', rum.id, text)}
+          value={notes[rum.id]?.text ?? ''}
+          onChange={(text) => sattAnteckning('room', rum.id, text)}
           onDelete={() => taBortAnteckning(rum.id)}
           onClose={() => setAnteckningÖppen(false)}
         />

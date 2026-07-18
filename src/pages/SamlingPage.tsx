@@ -5,7 +5,7 @@ import { findTopic } from '../content/topics'
 import { findRoomById, findPathById } from '../lib/content'
 import {
   chapterKey,
-  sorteradeNotes,
+  sortedNotes,
   savedIdsByTime,
   type ChapterBookmark,
   type SavedItem,
@@ -126,17 +126,17 @@ const savedPathsList = (
 export const SamlingPage = () => {
   useSidtitel('Sparat')
   const store = useAtlas()
-  const rum = savedIdsByTime(store.sparadeRum)
+  const rum = savedIdsByTime(store.savedRooms)
     .map((id) => findRoomById(id))
     .filter((ettRum): ettRum is Room => ettRum !== undefined)
-  const vandringar = savedPathsList(store.sparadeVandringar, store.vandringsplatser)
+  const vandringar = savedPathsList(store.savedPaths, store.pathPositions)
   const topics = Object.keys(store.bookmarks)
     .filter((id) => store.bookmarks[id])
     .map(findTopic)
     .filter((topic) => topic !== undefined)
   const kapitel = Object.values(store.chapterBookmarks).sort((a, b) => b.savedAt - a.savedAt)
-  const kort = sorteradeNotes(store.anteckningar).map(noteToCard)
-  const recent = store.senastLastaRum
+  const kort = sortedNotes(store.notes).map(noteToCard)
+  const recent = store.recentRooms
     .map((id) => findRoomById(id))
     .filter((ettRum): ettRum is Room => ettRum !== undefined)
 

@@ -3,8 +3,8 @@ import type { Note } from './personal'
 import { searchNotes } from './searchNotes'
 
 const anteckning = (id: string, text: string, updated: string): Note => ({
-  ursprungTyp: 'rum',
-  ursprungId: id,
+  originType: 'room',
+  originId: id,
   text,
   created: '2026-07-01',
   updated,
@@ -18,7 +18,7 @@ const anteckningar: Record<string, Note> = {
 
 describe('sokAnteckningar', () => {
   it('hittar anteckningar på normaliserad text (forlatelse hittar förlåtelse)', () => {
-    expect(searchNotes('forlatelse', anteckningar).map((a) => a.ursprungId)).toEqual(['a'])
+    expect(searchNotes('forlatelse', anteckningar).map((a) => a.originId)).toEqual(['a'])
   })
 
   it('ger inget för tom eller för kort fråga', () => {
@@ -32,10 +32,10 @@ describe('sokAnteckningar', () => {
 
   it('sorterar senast ändrad först', () => {
     const extended = { ...anteckningar, d: anteckning('d', 'Mer om förlåtelse.', '2026-07-14') }
-    expect(searchNotes('förlåtelse', extended).map((a) => a.ursprungId)).toEqual(['d', 'a'])
+    expect(searchNotes('förlåtelse', extended).map((a) => a.originId)).toEqual(['d', 'a'])
   })
 
   it('utelämnar tomma anteckningar', () => {
-    expect(searchNotes('tanke', anteckningar).some((a) => a.ursprungId === 'c')).toBe(false)
+    expect(searchNotes('tanke', anteckningar).some((a) => a.originId === 'c')).toBe(false)
   })
 })

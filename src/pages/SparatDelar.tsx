@@ -30,13 +30,13 @@ export type Kort = {
 // texten ändå — utan länk, men aldrig gömd. Delas av Sparat och söket.
 export const noteToCard = (anteckning: Note): Kort => {
   const datum = dateLabel(anteckning.updated)
-  const bas = { key: anteckning.ursprungId, text: anteckning.text, datum }
-  if (anteckning.ursprungTyp === 'rum') {
-    const rum = findRoomById(anteckning.ursprungId)
+  const bas = { key: anteckning.originId, text: anteckning.text, datum }
+  if (anteckning.originType === 'room') {
+    const rum = findRoomById(anteckning.originId)
     const to = rum ? ({ kind: 'rum', slug: rum.slug } as const) : undefined
     return { ...bas, title: rum?.title ?? 'Sparad tanke', to }
   }
-  const topic = findTopic(anteckning.ursprungId)
+  const topic = findTopic(anteckning.originId)
   const to = topic ? ({ kind: 'las', id: topic.id, mode: 'essa' } as const) : undefined
   return { ...bas, title: topic?.title ?? 'Sparad tanke', to }
 }

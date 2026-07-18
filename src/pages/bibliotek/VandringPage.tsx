@@ -36,8 +36,8 @@ const Metarad = ({ rummen }: { rummen: Room[] }) => {
  * ingen firande återkoppling, ingen räknare. En sparad vandring betyder bara
  * att läsaren vill kunna återvända — aldrig ett åtagande att slutföra. */
 const SavePath = ({ vandring }: { vandring: Path }) => {
-  const { sparadeVandringar, vaxlaSparadVandring } = useAtlas()
-  const saved = !!sparadeVandringar[vandring.id]
+  const { savedPaths, vaxlaSparadVandring } = useAtlas()
+  const saved = !!savedPaths[vandring.id]
   return (
     <div className={styles.spara}>
       <button
@@ -72,8 +72,8 @@ const Fragedel = ({ vandring }: { vandring: Path }) => {
  * neutral »Fortsätt där du stannade« läggs överst om ett rum minns — bara
  * orientering, aldrig förlopp. */
 const Rumdel = ({ vandring, rummen }: { vandring: Path; rummen: Room[] }) => {
-  const { vandringsplatser } = useAtlas()
-  const place = rummen.find((ettRum) => ettRum.id === vandringsplatser[vandring.id])
+  const { pathPositions } = useAtlas()
+  const place = rummen.find((ettRum) => ettRum.id === pathPositions[vandring.id])
   return (
     <Section rubrik="Rummen">
       {place && (
