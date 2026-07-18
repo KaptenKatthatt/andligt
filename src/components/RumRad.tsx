@@ -10,7 +10,7 @@ export const RoomRow = ({ rum }: { rum: Room }) => {
   const theme = findTheme(rum.themes[0] ?? '')
   const meta = [theme?.label, `${rum.readingTimeMinutes} min`].filter(Boolean).join(' · ')
   return (
-    <ToLink to={{ kind: 'rum', slug: rum.slug }} className={styles.rad}>
+    <ToLink to={{ kind: 'rum', slug: rum.slug }} className={styles.row}>
       <span className={styles.title}>{rum.title}</span>
       <span className={styles.summary}>{rum.summary}</span>
       <span className={styles.meta}>{meta}</span>

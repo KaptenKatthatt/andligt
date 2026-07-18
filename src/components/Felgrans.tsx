@@ -29,7 +29,7 @@ export class Felgrans extends Component<Props, State> {
         <p className={styles.text}>Sidan gick inte att visa just nu.</p>
         <button
           type="button"
-          className={styles.knapp}
+          className={styles.button}
           onClick={() => window.location.reload()}
         >
           Försök igen

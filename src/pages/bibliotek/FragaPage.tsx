@@ -20,7 +20,7 @@ const Temadel = ({ fråga }: { fråga: Question }) => {
   return (
     <Section rubrik="Teman">
       {themes.map((theme) => (
-        <ToLink key={theme.id} to={{ kind: 'tema', slug: theme.slug }} className={styles.rad}>
+        <ToLink key={theme.id} to={{ kind: 'tema', slug: theme.slug }} className={styles.row}>
           <Row title={theme.label} />
         </ToLink>
       ))}
@@ -34,7 +34,7 @@ const SourcePart = ({ fråga }: { fråga: Question }) => {
   return (
     <Section rubrik="Källor">
       {sources.map((source) => (
-        <ToLink key={source.id} to={{ kind: 'kallpost', slug: source.slug }} className={styles.rad}>
+        <ToLink key={source.id} to={{ kind: 'kallpost', slug: source.slug }} className={styles.row}>
           <Row title={source.title} sub={sourceName(source)} />
         </ToLink>
       ))}
@@ -51,7 +51,7 @@ const Narliggande = ({ fråga }: { fråga: Question }) => {
         <ToLink
           key={relaterad.id}
           to={{ kind: 'fraga', slug: relaterad.slug }}
-          className={styles.rad}
+          className={styles.row}
         >
           <Row title={relaterad.text} />
         </ToLink>

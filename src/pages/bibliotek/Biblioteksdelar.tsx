@@ -30,12 +30,12 @@ export const Sidhuvud = ({
 }) => {
   useSidtitel(title)
   return (
-    <header className={styles.huvud}>
+    <header className={styles.head}>
       <div className="kicker">
         {kicker}
         {status !== undefined && status !== 'published' && ' · Utkast'}
       </div>
-      <h1 className={styles.huvudTitel}>{title}</h1>
+      <h1 className={styles.headTitle}>{title}</h1>
       {children}
     </header>
   )
@@ -55,7 +55,7 @@ export const Beskrivning = ({ text }: { text?: string }) => (
 export const RoomList = ({ rum, tomtBesked }: { rum: Room[]; tomtBesked: string }) => (
   <>
     {rum.length === 0 ? (
-      <p className={styles.tomt}>{tomtBesked}</p>
+      <p className={styles.empty}>{tomtBesked}</p>
     ) : (
       rum.map((room) => <RoomRow key={room.id} rum={room} />)
     )}
@@ -65,15 +65,15 @@ export const RoomList = ({ rum, tomtBesked }: { rum: Room[]; tomtBesked: string 
 export const Row = ({ title, sub }: { title: string; sub?: string }) => (
   <>
     <span>
-      <span className={styles.radTitel}>{title}</span>
-      {sub !== undefined && <span className={styles.radSub}>{sub}</span>}
+      <span className={styles.rowTitle}>{title}</span>
+      {sub !== undefined && <span className={styles.rowSub}>{sub}</span>}
     </span>
     <span className={styles.chev}>›</span>
   </>
 )
 
 export const Section = ({ rubrik, children }: { rubrik: string; children: ReactNode }) => (
-  <div className={styles.sektion}>
+  <div className={styles.section}>
     <h2 className="kicker sectionKicker">{rubrik}</h2>
     {children}
   </div>

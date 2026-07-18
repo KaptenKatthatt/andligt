@@ -14,7 +14,7 @@ export const RumlistaPage = () => {
       <Sidhuvud kicker="Rum" title="Alla rum">
         <p className={styles.antal}>{roomCount(rooms.length)}</p>
       </Sidhuvud>
-      <div className={styles.sektion}>
+      <div className={styles.section}>
         <RoomList rum={rooms} tomtBesked="Det finns inga färdiga rum ännu." />
       </div>
     </div>

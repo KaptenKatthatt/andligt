@@ -16,17 +16,17 @@
 
 /* Senast besökt: orientering, hålls stilla och skild från de sparade grupperna
    av lite mer luft ovanför. */
-.senast {
+.recent {
   margin-top: 56px;
 }
 
-.senastHuvud {
+.recentHead {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
 }
 
-.rensa {
+.clear {
   composes: hitArea from global;
   background: none;
   border: none;

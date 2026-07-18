@@ -27,14 +27,14 @@ const HitRow = ({ traff }: { traff: SearchResult }) => {
   const { title, subtitle, meta, target } = traff.document
   const innehåll = (
     <span>
-      <span className={styles.radTitel}>{title}</span>
-      {subtitle !== undefined && <span className={styles.radSub}>{subtitle}</span>}
-      {meta !== undefined && <span className={styles.radMeta}>{meta}</span>}
+      <span className={styles.rowTitle}>{title}</span>
+      {subtitle !== undefined && <span className={styles.rowSub}>{subtitle}</span>}
+      {meta !== undefined && <span className={styles.rowMeta}>{meta}</span>}
     </span>
   )
-  if (target === undefined) return <div className={styles.stillaRad}>{innehåll}</div>
+  if (target === undefined) return <div className={styles.quietRow}>{innehåll}</div>
   return (
-    <ToLink to={target} className={styles.rad}>
+    <ToLink to={target} className={styles.row}>
       {innehåll}
       <span className={styles.chev}>›</span>
     </ToLink>
@@ -101,11 +101,11 @@ const BookRow = ({ hit }: { hit: BookHit }) => (
   <Link
     to="/bibliotek/verk/$workId/$bookSlug"
     params={{ workId: hit.workId, bookSlug: slugOfBook(hit.workId, hit.bookId) }}
-    className={styles.rad}
+    className={styles.row}
   >
     <span>
-      <span className={styles.radTitel}>{hit.bookName}</span>
-      <span className={styles.radSub}>{hit.workTitle}</span>
+      <span className={styles.rowTitle}>{hit.bookName}</span>
+      <span className={styles.rowSub}>{hit.workTitle}</span>
     </span>
     <span className={styles.chev}>›</span>
   </Link>
@@ -119,7 +119,7 @@ const VerseRow = ({ hit }: { hit: SearchHit }) => (
       bookSlug: slugOfBook(hit.workId, hit.bookId),
       chapter: String(hit.chapter),
     }}
-    className={styles.kalltextHit}
+    className={styles.sourceTextHit}
   >
     <span className={styles.hitRef}>
       {hit.workTitle} · {hit.bookName} {hit.chapter}:{hit.verse}
@@ -143,7 +143,7 @@ export const SourceTextGroup = ({
     return (
       <section className={styles.grupp}>
         <h2 className="kicker sectionKicker">Ur källtexterna</h2>
-        <p className={styles.tomhint}>Sökningen i källtexterna kunde inte genomföras just nu.</p>
+        <p className={styles.emptyHint}>Sökningen i källtexterna kunde inte genomföras just nu.</p>
       </section>
     )
   if (svar === null || (svar.books.length === 0 && svar.hits.length === 0)) return null
@@ -187,7 +187,7 @@ export const SearchField = ({
     <input
       id="bibliotekssok"
       type="search"
-      className={styles.falt}
+      className={styles.field}
       value={query}
       onChange={(händelse) => onChange(händelse.target.value)}
       placeholder="Sök efter en fråga, tanke eller källa"
@@ -199,13 +199,13 @@ export const SearchField = ({
 )
 
 const SearchEmptyState = () => (
-  <p className={styles.tomtext}>Sök bland frågor, rum, källor och traditioner.</p>
+  <p className={styles.emptyText}>Sök bland frågor, rum, källor och traditioner.</p>
 )
 
 const NoHits = () => (
   <div className={styles.tillstand} role="status">
-    <p className={styles.tomtext}>Vi hittade inget som stämde med din sökning.</p>
-    <p className={styles.tomhint}>
+    <p className={styles.emptyText}>Vi hittade inget som stämde med din sökning.</p>
+    <p className={styles.emptyHint}>
       Prova ett bredare ord eller sök efter en fråga, ett tema eller en källa.
                             </p>
   </div>
@@ -213,8 +213,8 @@ const NoHits = () => (
 
 const ErrorState = () => (
   <div className={styles.tillstand} role="status">
-    <p className={styles.tomtext}>Sökningen kunde inte genomföras just nu.</p>
-    <p className={styles.tomhint}>Försök igen eller gå tillbaka till Biblioteket.</p>
+    <p className={styles.emptyText}>Sökningen kunde inte genomföras just nu.</p>
+    <p className={styles.emptyHint}>Försök igen eller gå tillbaka till Biblioteket.</p>
   </div>
 )
 
@@ -291,14 +291,14 @@ export const Filter = ({
     <div className={styles.filter}>
       <button
         type="button"
-        className={styles.filterknapp}
+        className={styles.filterButton}
         aria-expanded={öppen}
         onClick={() => setÖppen((v) => !v)}
       >
         Filtrera
       </button>
       {öppen && (
-        <div className={styles.filterrad}>
+        <div className={styles.filterRow}>
           {TYPVAL.map((val) => {
             const vald = val.värde === 'alla' ? aktiv === undefined : aktiv === val.värde
             return (
@@ -316,9 +316,9 @@ export const Filter = ({
         </div>
       )}
       {aktiv !== undefined && (
-        <p className={styles.filterinfo}>
+        <p className={styles.filterInfo}>
           {hitCount(antal)} ·{' '}
-          <button type="button" className={styles.rensa} onClick={() => onVal(undefined)}>
+          <button type="button" className={styles.clear} onClick={() => onVal(undefined)}>
             Rensa filter
           </button>
         </p>

@@ -35,9 +35,9 @@ const Foot = ({
         </button>
       )}
       {kanTaBort && bekraftar && (
-        <span className={styles.bekrafta}>
-          <span className={styles.bekraftaFraga}>Ta bort anteckningen?</span>
-          <button type="button" className={styles.bekraftaJa} onClick={onBekraftaTaBort}>
+        <span className={styles.confirm}>
+          <span className={styles.confirmQuestion}>Ta bort anteckningen?</span>
+          <button type="button" className={styles.confirmYes} onClick={onBekraftaTaBort}>
             Ta bort
           </button>
           <button type="button" className={styles.taBort} onClick={() => setBekraftar(false)}>

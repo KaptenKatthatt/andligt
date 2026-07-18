@@ -45,8 +45,8 @@ const upphovsrad = (source: Source): string | undefined => {
 
 const MetaRow = ({ label, värde }: { label: string; värde?: string }) =>
   värde === undefined || värde === '' ? null : (
-    <p className={styles.metarad}>
-      <span className={styles.metaetikett}>{label}</span>
+    <p className={styles.metaRow}>
+      <span className={styles.metaLabel}>{label}</span>
       {värde}
     </p>
   )
@@ -56,7 +56,7 @@ const SourceMeta = ({ source }: { source: Source }) => {
     (tradition) => tradition.name,
   )
   return (
-    <div className={styles.metablock}>
+    <div className={styles.metaBlock}>
       <MetaRow label="Upphov" värde={upphovsrad(source)} />
       <MetaRow label="Tradition" värde={traditionsnamn.join(', ')} />
       <MetaRow
@@ -86,24 +86,24 @@ const Passageblock = ({ passage }: { passage: SourcePassage }) => {
   const meta = passagemeta(passage)
   return (
     <div className={styles.passage}>
-      <p className={styles.passagref}>{passage.reference}</p>
+      <p className={styles.passageRef}>{passage.reference}</p>
       {passage.originalText && (
-        <blockquote className={styles.passagetext}>
+        <blockquote className={styles.passageText}>
           {paragraphs(passage.originalText).map((paragraph, i) => (
             <p key={i}>{paragraph}</p>
           ))}
         </blockquote>
       )}
       {passage.translation && (
-        <blockquote className={styles.passagetext}>
+        <blockquote className={styles.passageText}>
           {paragraphs(passage.translation).map((paragraph, i) => (
             <p key={i}>{paragraph}</p>
           ))}
         </blockquote>
       )}
-      {meta && <p className={styles.passagmeta}>{meta}</p>}
+      {meta && <p className={styles.passageMeta}>{meta}</p>}
       {passage.url && (
-        <a className={styles.passaglank} href={passage.url} target="_blank" rel="noreferrer">
+        <a className={styles.passageLink} href={passage.url} target="_blank" rel="noreferrer">
           Källa på nätet
         </a>
       )}
@@ -148,9 +148,9 @@ export const KallaPostPage = ({ slug }: { slug: string }) => {
           <Link
             to="/bibliotek/verk/$workId"
             params={{ workId: source.libraryWork }}
-            className={styles.rad}
+            className={styles.row}
           >
-            <span className={styles.radTitel}>Läs hela texten</span>
+            <span className={styles.rowTitle}>Läs hela texten</span>
             <span className={styles.chev}>›</span>
           </Link>
         </Section>

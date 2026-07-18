@@ -40,7 +40,7 @@ const Rensning = ({ onRensa }: { onRensa: () => void }) => {
   const [bekräftar, setBekräftar] = useState(false)
   if (!bekräftar)
     return (
-      <button type="button" className={styles.knapp} onClick={() => setBekräftar(true)}>
+      <button type="button" className={styles.button} onClick={() => setBekräftar(true)}>
         Rensa lokal data
       </button>
     )
@@ -50,10 +50,10 @@ const Rensning = ({ onRensa }: { onRensa: () => void }) => {
         Detta tar bort alla anteckningar, sparade rum och vandringar, bokmärken och läshistorik
         från den här enheten. Utseendet behålls. Exportera först om du vill spara en kopia.
       </p>
-      <div className={styles.rad}>
+      <div className={styles.row}>
         <button
           type="button"
-          className={styles.knapp}
+          className={styles.button}
           onClick={() => {
             onRensa()
             setBekräftar(false)
@@ -61,7 +61,7 @@ const Rensning = ({ onRensa }: { onRensa: () => void }) => {
         >
           Ta bort allt
         </button>
-        <button type="button" className={styles.knapp} onClick={() => setBekräftar(false)}>
+        <button type="button" className={styles.button} onClick={() => setBekräftar(false)}>
           Avbryt
         </button>
       </div>
@@ -93,22 +93,22 @@ export const DinaData = () => {
 
   return (
     <div>
-      <div className={styles.rad}>
+      <div className={styles.row}>
         <button
           type="button"
-          className={styles.knapp}
+          className={styles.button}
           onClick={() => download(JSON.stringify(bygg(), null, 2), `visdomsatlasen-${stamp}.json`, 'application/json')}
         >
           Exportera
         </button>
         <button
           type="button"
-          className={styles.knapp}
+          className={styles.button}
           onClick={() => download(toMarkdown(bygg()), `visdomsatlasen-${stamp}.md`, 'text/markdown')}
         >
           Exportera som text
         </button>
-        <label className={styles.knapp}>
+        <label className={styles.button}>
           Importera
           <input
             type="file"

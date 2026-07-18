@@ -15,12 +15,12 @@ export const FragelistaPage = () => {
       <Sidhuvud kicker="Frågor" title="Alla frågor">
         <p className={styles.antal}>{questionCount(questions.length)}</p>
       </Sidhuvud>
-      <div className={styles.sektion}>
+      <div className={styles.section}>
         {questions.length === 0 ? (
-          <p className={styles.tomt}>Inga frågor ännu.</p>
+          <p className={styles.empty}>Inga frågor ännu.</p>
         ) : (
           questions.map((question) => (
-            <ToLink key={question.id} to={{ kind: 'fraga', slug: question.slug }} className={styles.rad}>
+            <ToLink key={question.id} to={{ kind: 'fraga', slug: question.slug }} className={styles.row}>
               <Row title={question.text} />
             </ToLink>
           ))

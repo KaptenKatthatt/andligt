@@ -1,7 +1,7 @@
 /* Bibliotekssöket (search.md): en lugn, ändlig upptäcktsyta — aldrig en
    uppmärksamhetsmotor. Radstilen delas i känsla med resten av biblioteket. */
 
-.falt {
+.field {
   width: 100%;
   background: none;
   border: none;
@@ -14,7 +14,7 @@
   outline: none;
 }
 
-.falt::placeholder {
+.field::placeholder {
   color: var(--soft-strong);
 }
 
@@ -45,7 +45,7 @@
   margin: 0;
 }
 
-.rad {
+.row {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -57,19 +57,19 @@
 }
 
 /* Olänkad rad (traditioner har inga egna sidor). */
-.stillaRad {
+.quietRow {
   display: block;
   padding: 14px 0;
   border-bottom: 1px solid var(--faint);
 }
 
-.radTitel {
+.rowTitle {
   display: block;
   font-size: 1.1875rem;
   line-height: 1.25;
 }
 
-.radSub {
+.rowSub {
   display: block;
   font-size: 0.9375rem;
   color: var(--soft-strong);
@@ -77,7 +77,7 @@
   text-wrap: pretty;
 }
 
-.radMeta {
+.rowMeta {
   display: block;
   font-size: 0.8125rem;
   color: var(--soft-strong);
@@ -112,7 +112,7 @@
   margin-top: 40px;
 }
 
-.tomtext {
+.emptyText {
   font-size: 1.03125rem;
   color: var(--soft-strong);
   font-style: italic;
@@ -120,7 +120,7 @@
   margin: 40px 0 0;
 }
 
-.tomhint {
+.emptyHint {
   font-size: 0.9375rem;
   color: var(--soft-strong);
   line-height: 1.55;
@@ -132,7 +132,7 @@
   margin-top: 18px;
 }
 
-.filterknapp {
+.filterButton {
   composes: hitArea from global;
   background: none;
   border: 1px solid var(--faint);
@@ -144,7 +144,7 @@
   color: var(--soft-strong);
 }
 
-.filterrad {
+.filterRow {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
@@ -176,13 +176,13 @@
   border-color: var(--soft);
 }
 
-.filterinfo {
+.filterInfo {
   font-size: 0.84375rem;
   color: var(--soft-strong);
   margin: 12px 0 0;
 }
 
-.rensa {
+.clear {
   background: none;
   border: none;
   color: var(--accent);
@@ -193,13 +193,13 @@
   text-underline-offset: 3px;
 }
 
-.rensa:hover {
+.clear:hover {
   text-decoration: underline;
 }
 
 /* Verssöksträff ur källtexterna (verkläsarens FTS blir en del av det samlade
    söket). Referensrad + markerad snippet, samma känsla som verkläsarens sök. */
-.kalltextHit {
+.sourceTextHit {
   display: block;
   padding: 14px 0;
   border-bottom: 1px solid var(--faint);

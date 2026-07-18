@@ -88,10 +88,10 @@ const NoteGroup = ({ kort }: { kort: Kort[] }) =>
  * läsa«-formulering. */
 const RecentlyVisitedGroup = ({ rum, onRensa }: { rum: Room[]; onRensa: () => void }) =>
   rum.length === 0 ? null : (
-    <section className={styles.senast}>
-      <div className={styles.senastHuvud}>
+    <section className={styles.recent}>
+      <div className={styles.recentHead}>
         <h2 className="kicker sectionKicker">Senast besökt</h2>
-        <button type="button" className={styles.rensa} onClick={onRensa}>
+        <button type="button" className={styles.clear} onClick={onRensa}>
           Rensa
         </button>
       </div>

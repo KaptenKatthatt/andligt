@@ -2,7 +2,7 @@
    Vid viloläget möter ögat aldrig nästa sektions text — det sista på skärmen
    är alltid ···, en stilla tillåtelse att läsa vidare, inte en inbjudan. */
 
-.huvud {
+.head {
   margin: 14px 0 26px;
 }
 
@@ -24,7 +24,7 @@
    skärmen slutar exakt vid vecket vid inläsning — nästa sektion börjar under
    det. svh (inte dvh) så att inget hoppar när mobilens adressfält viks in.
    68px = toppradens uppmätta höjd (ikonrad 40px + 14px vaddering över/under). */
-.sektion {
+.section {
   min-height: calc(100svh - 68px);
   display: flex;
   flex-direction: column;
@@ -32,13 +32,13 @@
 
 /* Pausen trycks mot sektionens botten av luften ovanför; lite andrum under
    prickarna så de inte klistrar mot skärmkanten. */
-.paus {
+.pause {
   margin-top: auto;
   padding: 40px 0 32px;
 }
 
 /* Tanken att bära: står ensam, kursiv och centrerad — rummets kärnpunkt. */
-.tanke {
+.thought {
   font-size: calc(var(--rs) + 0.125rem);
   line-height: 1.6;
   font-style: italic;
@@ -48,28 +48,28 @@
 }
 
 /* Frågorna i stillhet: dämpade men läsbara, mitt emellan bläck och meta. */
-.fragor {
+.questions {
   margin: 0 0 96px;
 }
 
-.fraga {
+.question {
   font-size: calc(var(--rs) - 0.09375rem);
   line-height: 1.7;
   color: color-mix(in srgb, var(--ink) 62%, var(--soft));
   margin: 0 0 14px;
 }
 
-.streck {
+.rule {
   border-top: 1px solid var(--faint);
 }
 
 /* Kolofonen: samma typografiska röst som temaetiketten — bokens eftertext,
    inte nästa steg. Pilen pekar nedåt: öppnas på plats, leder aldrig bort. */
-.kolofon {
+.colophon {
   margin: 20px 0 0;
 }
 
-.kolofonrad {
+.colophonRow {
   background: none;
   border: none;
   padding: 12px 0;
@@ -84,11 +84,11 @@
   text-align: left;
 }
 
-.detalj {
+.detail {
   padding: 2px 0 10px;
 }
 
-.detaljrad {
+.detailRow {
   font-size: calc(var(--rs) - 0.1875rem);
   line-height: 1.7;
   color: color-mix(in srgb, var(--ink) 55%, var(--soft));
@@ -99,11 +99,11 @@
    öppnas efter ett medvetet val (source-and-context.md, Source Links). */
 /* Ett block per källpost i källdetaljen — luft mellan verken när ett rum
    bygger på flera källor, osynligt för enkällsrummen. */
-.kallblock + .kallblock {
+.sourceBlock + .sourceBlock {
   margin-top: 16px;
 }
 
-.detaljlank {
+.detailLink {
   display: inline-block;
   font-size: calc(var(--rs) - 0.1875rem);
   color: var(--soft-strong);
@@ -113,14 +113,14 @@
 }
 
 /* Sidans sista rad: de inåtvända handlingarna. */
-.avslut {
+.ending {
   display: flex;
   gap: 28px;
   justify-content: center;
   margin: 48px 0 8px;
 }
 
-.avslutshandling {
+.endingAction {
   background: none;
   border: none;
   padding: 10px 4px;
@@ -134,7 +134,7 @@
 /* Vandringsfoten: två likvärdiga, stilla val — ingen knapp är framhävd, ingen
    pekar ut sig som det rätta (paths.md, Moving Between Stops). Ett tunt streck
    ovanför skiljer den från rummets egna avslutshandlingar. */
-.vandring {
+.path {
   border-top: 1px solid var(--faint);
   display: flex;
   gap: 28px;
@@ -143,7 +143,7 @@
   padding-top: 32px;
 }
 
-.vandringshandling {
+.pathAction {
   background: none;
   border: none;
   padding: 10px 4px;
@@ -157,13 +157,13 @@
 /* Den valfria avslutande reflektionen efter sista rummet: stilla prosa, inget
    avslut som firar. Egen prosaklass — inte kolofonens detaljrad — så rummets
    eftertext och vandringens avslut kan röra sig oberoende. */
-.vandringsslut {
+.pathEnd {
   border-top: 1px solid var(--faint);
   margin: 40px 0 96px;
   padding-top: 32px;
 }
 
-.vandringsslutStycke {
+.pathEndParagraph {
   font-size: calc(var(--rs) - 0.0625rem);
   line-height: 1.7;
   color: color-mix(in srgb, var(--ink) 70%, var(--soft));

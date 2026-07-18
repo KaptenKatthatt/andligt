@@ -41,14 +41,14 @@ const ColophonRow = ({
   <div>
     <button
       type="button"
-      className={styles.kolofonrad}
+      className={styles.colophonRow}
       aria-expanded={öppen}
       aria-controls={detaljId}
       onClick={onVaxla}
     >
       {label} <span aria-hidden>{öppen ? '▴' : '▾'}</span>
     </button>
-    <div id={detaljId} hidden={!öppen} className={styles.detalj}>
+    <div id={detaljId} hidden={!öppen} className={styles.detail}>
       {children}
     </div>
   </div>
@@ -103,13 +103,13 @@ const SourceBlock = ({ source, relationer }: { source: Source; relationer: Sourc
     ...uncertainties(source),
   ].filter((rad): rad is string => Boolean(rad))
   return (
-    <div className={styles.kallblock}>
+    <div className={styles.sourceBlock}>
       {rows.map((rad, i) => (
-        <p key={`${rad}-${i}`} className={styles.detaljrad}>
+        <p key={`${rad}-${i}`} className={styles.detailRow}>
           {rad}
         </p>
       ))}
-      <Link to="/bibliotek/kalla/$slug" params={{ slug: source.slug }} className={styles.detaljlank}>
+      <Link to="/bibliotek/kalla/$slug" params={{ slug: source.slug }} className={styles.detailLink}>
         Om texten
       </Link>
     </div>
@@ -145,8 +145,8 @@ const RoomEnding = ({ rum }: { rum: Room }) => {
     setÖppenRad((current) => (current === rad ? null : rad))
   return (
     <>
-      <div className={styles.streck} />
-      <div className={styles.kolofon}>
+      <div className={styles.rule} />
+      <div className={styles.colophon}>
         {source && (
           <ColophonRow
             label={kolofonetikett(rum, source)}
@@ -165,17 +165,17 @@ const RoomEnding = ({ rum }: { rum: Room }) => {
             detaljId="bakgrundsdetalj"
           >
             {paragraphs(rum.historicalContext).map((paragraph, i) => (
-              <p key={i} className={styles.detaljrad}>
+              <p key={i} className={styles.detailRow}>
                 {paragraph}
               </p>
             ))}
           </ColophonRow>
         )}
       </div>
-      <div className={styles.avslut}>
+      <div className={styles.ending}>
         <button
           type="button"
-          className={styles.avslutshandling}
+          className={styles.endingAction}
           aria-pressed={sparat}
           onClick={() => toggleSavedRoom(rum.id)}
         >
@@ -183,7 +183,7 @@ const RoomEnding = ({ rum }: { rum: Room }) => {
         </button>
         <button
           type="button"
-          className={styles.avslutshandling}
+          className={styles.endingAction}
           onClick={() => setAnteckningÖppen(true)}
         >
           Skriv ner en tanke
@@ -215,9 +215,9 @@ const Vandringsfot = ({ vandring, rum }: { vandring: Path; rum: Room }) => {
   if (!next) {
     if (vandring.closingReflection === undefined) return null
     return (
-      <div className={styles.vandringsslut}>
+      <div className={styles.pathEnd}>
         {paragraphs(vandring.closingReflection).map((paragraph, i) => (
-          <p key={i} className={styles.vandringsslutStycke}>
+          <p key={i} className={styles.pathEndParagraph}>
             {paragraph}
           </p>
         ))}
@@ -229,16 +229,16 @@ const Vandringsfot = ({ vandring, rum }: { vandring: Path; rum: Room }) => {
   const stanna = () =>
     navigate({ to: '/rum/$slug', params: { slug: rum.slug }, search: {}, replace: true })
   return (
-    <div className={styles.vandring}>
+    <div className={styles.path}>
       <Link
         to="/rum/$slug"
         params={{ slug: next.slug }}
         search={{ vandring: vandring.slug }}
-        className={styles.vandringshandling}
+        className={styles.pathAction}
       >
         Fortsätt vandringen
       </Link>
-      <button type="button" className={styles.vandringshandling} onClick={stanna}>
+      <button type="button" className={styles.pathAction} onClick={stanna}>
         Stanna här
       </button>
     </div>
@@ -305,8 +305,8 @@ export const RumPage = ({ slug, vandringSlug }: { slug: string; vandringSlug?: s
   return (
     <div className="screenReader">
       <TopBar right={<ReadingSettingsButton />} />
-      <section className={styles.sektion}>
-        <header className={styles.huvud}>
+      <section className={styles.section}>
+        <header className={styles.head}>
           <div className="kicker">
             {theme?.label ?? ''}
             {room.status !== 'published' && ' · Utkast'}
@@ -318,20 +318,20 @@ export const RumPage = ({ slug, vandringSlug }: { slug: string; vandringSlug?: s
             {paragraph}
           </p>
         ))}
-        <div className={`dots ${styles.paus}`}>···</div>
+        <div className={`dots ${styles.pause}`}>···</div>
       </section>
-      <section className={styles.sektion}>
+      <section className={styles.section}>
         {paragraphs(room.core).map((paragraph, i) => (
           <p key={i} className={styles.stycke}>
             {paragraph}
           </p>
         ))}
-        <div className={`dots ${styles.paus}`}>···</div>
+        <div className={`dots ${styles.pause}`}>···</div>
       </section>
-      <p className={styles.tanke}>{room.thoughtToCarry}</p>
-      <div className={styles.fragor}>
+      <p className={styles.thought}>{room.thoughtToCarry}</p>
+      <div className={styles.questions}>
         {room.reflectionQuestions.map((question) => (
-          <p key={question} className={styles.fraga}>
+          <p key={question} className={styles.question}>
             {question}
           </p>
         ))}

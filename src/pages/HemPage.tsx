@@ -45,22 +45,22 @@ export const HemPage = () => {
     <div className="screenTab">
       <div className="kicker">Visdomsatlasen</div>
       <div className={styles.hero}>
-        <h1 className={styles.fraga}>Vad vill du bära med dig idag?</h1>
-        <p className={styles.stod}>Välj en tanke att stanna hos en stund.</p>
+        <h1 className={styles.question}>Vad vill du bära med dig idag?</h1>
+        <p className={styles.support}>Välj en tanke att stanna hos en stund.</p>
       </div>
       <div className={styles.themes}>
         {thresholdThemes.map((theme) => (
           <button
             key={theme.id}
             type="button"
-            className={styles.tema}
+            className={styles.theme}
             onClick={() => void selectTheme(theme)}
           >
             {theme.label}
           </button>
         ))}
       </div>
-      <p role="status" className={styles.tomt}>
+      <p role="status" className={styles.empty}>
         {tomtVal ? 'Det finns inget färdigt rum här ännu.' : ''}
       </p>
     </div>

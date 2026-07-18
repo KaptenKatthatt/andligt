@@ -39,10 +39,10 @@ const SavePath = ({ vandring }: { vandring: Path }) => {
   const { savedPaths, toggleSavedPath } = useAtlas()
   const saved = !!savedPaths[vandring.id]
   return (
-    <div className={styles.spara}>
+    <div className={styles.save}>
       <button
         type="button"
-        className={styles.sparaknapp}
+        className={styles.saveButton}
         aria-pressed={saved}
         onClick={() => toggleSavedPath(vandring.id)}
       >
@@ -59,7 +59,7 @@ const Fragedel = ({ vandring }: { vandring: Path }) => {
   if (!fråga) return null
   return (
     <Section rubrik="Fråga">
-      <ToLink to={{ kind: 'fraga', slug: fråga.slug }} className={styles.rad}>
+      <ToLink to={{ kind: 'fraga', slug: fråga.slug }} className={styles.row}>
         <Row title={fråga.text} />
       </ToLink>
     </Section>
@@ -81,22 +81,22 @@ const RoomPart = ({ vandring, rummen }: { vandring: Path; rummen: Room[] }) => {
           to="/rum/$slug"
           params={{ slug: place.slug }}
           search={{ vandring: vandring.slug }}
-          className={styles.rad}
+          className={styles.row}
         >
           <Row title="Fortsätt där du stannade" sub={place.title} />
         </Link>
       )}
       {rummen.length === 0 ? (
-        <p className={styles.tomt}>Den här vandringen har inga rum ännu.</p>
+        <p className={styles.empty}>Den här vandringen har inga rum ännu.</p>
       ) : (
-        <ol className={styles.vandringslista}>
+        <ol className={styles.pathList}>
           {rummen.map((room) => (
             <li key={room.id}>
               <Link
                 to="/rum/$slug"
                 params={{ slug: room.slug }}
                 search={{ vandring: vandring.slug }}
-                className={styles.rad}
+                className={styles.row}
               >
                 <Row title={room.title} sub={`${room.readingTimeMinutes} min`} />
               </Link>

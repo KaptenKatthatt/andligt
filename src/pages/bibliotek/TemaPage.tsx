@@ -13,7 +13,7 @@ const QuestionPart = ({ temaId }: { temaId: string }) => {
   return (
     <Section rubrik="Frågor">
       {questions.map((question) => (
-        <ToLink key={question.id} to={{ kind: 'fraga', slug: question.slug }} className={styles.rad}>
+        <ToLink key={question.id} to={{ kind: 'fraga', slug: question.slug }} className={styles.row}>
           <Row title={question.text} />
         </ToLink>
       ))}

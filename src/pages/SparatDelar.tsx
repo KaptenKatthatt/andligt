@@ -59,10 +59,10 @@ export const PathCard = ({
   vandring: Path
   senastRum: string | undefined
 }) => (
-  <ToLink to={{ kind: 'vandring', slug: vandring.slug }} className={styles.kort}>
-    <span className={styles.kortTitel}>{vandring.title}</span>
-    <span className={styles.kortText}>{utdrag(vandring.introduction, 96)}</span>
-    {senastRum !== undefined && <span className={styles.kortMeta}>Senast: {senastRum}</span>}
+  <ToLink to={{ kind: 'vandring', slug: vandring.slug }} className={styles.card}>
+    <span className={styles.cardTitle}>{vandring.title}</span>
+    <span className={styles.cardText}>{utdrag(vandring.introduction, 96)}</span>
+    {senastRum !== undefined && <span className={styles.cardMeta}>Senast: {senastRum}</span>}
   </ToLink>
 )
 
@@ -82,8 +82,8 @@ export const NoteCard = ({
 }) => {
   const innehåll = (
     <>
-      <span className={styles.noteTitel}>{title}</span>
-      <span className={styles.noteUtdrag}>»{utdrag(text)}«</span>
+      <span className={styles.noteTitle}>{title}</span>
+      <span className={styles.noteExcerpt}>»{utdrag(text)}«</span>
       {datum !== undefined && <span className={styles.noteMeta}>{datum}</span>}
     </>
   )
@@ -98,8 +98,8 @@ export const NoteCard = ({
 /** Sparat-ytans tomläge (spec Empty State): lugnt och direkt, ingen uppmaning
  * att bygga en samling. */
 export const EmptyState = () => (
-  <div className={styles.tomlage}>
-    <p className={styles.tomText}>Du har inte sparat något ännu.</p>
-    <p className={styles.tomHint}>När en text berör dig kan du lägga ett bokmärke här.</p>
+  <div className={styles.emptyState}>
+    <p className={styles.emptyText}>Du har inte sparat något ännu.</p>
+    <p className={styles.emptyHint}>När en text berör dig kan du lägga ett bokmärke här.</p>
   </div>
 )
