@@ -33,7 +33,7 @@ const rum = (id: string, status: Status = 'publicerad', över: Partial<Room> = {
   id,
   slug: id,
   title: `Rum ${id}`,
-  summary: 'En summary.',
+  summary: 'En sammanfattning.',
   primaryQuestion: 'fraga-1',
   themes: ['tema-1'],
   thoughtToCarry: 'Bär detta.',
@@ -92,7 +92,7 @@ const vandring = (
   id,
   slug: id,
   title: `Vandring ${id}`,
-  introduction: 'En stilla introduction till vandringen.',
+  introduction: 'En stilla introduktion till vandringen.',
   centralQuestion: 'fraga-1',
   rum: ['rum-1', 'rum-2', 'rum-3'],
   status,
@@ -115,7 +115,7 @@ const hitta = (index: SearchDoc[], id: string): SearchDoc | undefined =>
   index.find((dok) => dok.id === id)
 
 describe('byggSokindex — publiceringsgrind', () => {
-  it('släpper aldrig in utkast, granskning eller arkiverat av någon type', () => {
+  it('släpper aldrig in utkast, granskning eller arkiverat av någon typ', () => {
     const index = byggSokindex({
       ...tomtIndex,
       frågor: [fraga('fraga-pub'), fraga('fraga-utkast', 'utkast')],
@@ -129,7 +129,7 @@ describe('byggSokindex — publiceringsgrind', () => {
     expect(ids).toEqual(['fraga-pub', 'kalla-pub', 'rum-pub', 'tema-pub', 'trad-pub'])
   })
 
-  it('utesluter en opublicerad passage även när dess source är publicerad', () => {
+  it('utesluter en opublicerad passage även när dess källa är publicerad', () => {
     const index = byggSokindex({
       ...tomtIndex,
       sources: [kalla('kalla-1')],
@@ -144,8 +144,8 @@ describe('byggSokindex — publiceringsgrind', () => {
   })
 })
 
-describe('byggSokindex — fält per type', () => {
-  it('lägger källans originalTitle, alias och author i alias-fältet', () => {
+describe('byggSokindex — fält per typ', () => {
+  it('lägger källans originalTitle, alias och författare i alias-fältet', () => {
     const index = byggSokindex({
       ...tomtIndex,
       sources: [
@@ -168,14 +168,14 @@ describe('byggSokindex — fält per type', () => {
     expect(hitta(index, 'rum-1')?.meta).toBe('Vad kan du styra? · ca 8 min')
   })
 
-  it('sätter frågans title till frågetexten och pekar mot frågesidan', () => {
+  it('sätter frågans titel till frågetexten och pekar mot frågesidan', () => {
     const index = byggSokindex({ ...tomtIndex, frågor: [fraga('fraga-1', 'publicerad', { text: 'Hur lever man?' })] })
     const dok = hitta(index, 'fraga-1')
     expect(dok?.title).toBe('Hur lever man?')
     expect(dok?.mal).toEqual({ kind: 'fraga', slug: 'fraga-1' })
   })
 
-  it('lämnar traditions utan sökmål (de har inga egna sidor)', () => {
+  it('lämnar traditioner utan sökmål (de har inga egna sidor)', () => {
     const index = byggSokindex({ ...tomtIndex, traditions: [tradition('trad-1')] })
     expect(hitta(index, 'trad-1')?.mal).toBeUndefined()
   })

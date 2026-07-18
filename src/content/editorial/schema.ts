@@ -21,7 +21,7 @@ const nyckelordSchema = z.array(z.string().min(1)).optional()
 /** Hur ett rum använder en source (source-and-context.md, Types of Source Use). */
 const brukSchema = z.enum([
   'citat',
-  'translation',
+  'översättning',
   'parafras',
   'bearbetning',
   'inspiration',

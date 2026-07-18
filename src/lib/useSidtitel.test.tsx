@@ -16,7 +16,7 @@ describe('useSidtitel', () => {
     expect(document.title).toBe('Biblioteket · Visdomsatlasen')
   })
 
-  it('faller tillbaka till grundtiteln vid tom title', () => {
+  it('faller tillbaka till grundtiteln vid tom titel', () => {
     render(<Sida title="" />)
     expect(document.title).toBe('Visdomsatlasen')
   })

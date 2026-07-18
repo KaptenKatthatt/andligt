@@ -190,7 +190,7 @@ export const Sokfalt = ({
       className={styles.falt}
       value={query}
       onChange={(händelse) => onChange(händelse.target.value)}
-      placeholder="Sök efter en fråga, tanke eller source"
+      placeholder="Sök efter en fråga, tanke eller källa"
       // Hela skärmen är sök — fältet är sidans enda uppgift och nås avsiktligt.
       // eslint-disable-next-line jsx-a11y/no-autofocus
       autoFocus
@@ -206,8 +206,8 @@ const IngaTraffar = () => (
   <div className={styles.tillstand} role="status">
     <p className={styles.tomtext}>Vi hittade inget som stämde med din sökning.</p>
     <p className={styles.tomhint}>
-      Prova ett bredare ord eller sök efter en fråga, ett tema eller en source.
-    </p>
+      Prova ett bredare ord eller sök efter en fråga, ett tema eller en källa.
+                </p>
   </div>
 )
 

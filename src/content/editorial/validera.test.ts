@@ -86,7 +86,7 @@ describe('valideraInnehall', () => {
     expect(fel.some((f) => f.includes('rum-a') && f.includes('saknas'))).toBe(true)
   })
 
-  it('fångar rum med okänt tema och okänd source', () => {
+  it('fångar rum med okänt tema och okänd källa', () => {
     const fel = valideraInnehall(
       grund({
         rum: [
@@ -101,7 +101,7 @@ describe('valideraInnehall', () => {
     expect(fel.some((f) => f.includes('kalla-x'))).toBe(true)
   })
 
-  it('kräver primary source för publicerade rum men inte för utkast', () => {
+  it('kräver primär källa för publicerade rum men inte för utkast', () => {
     const utanPrimär = [{ source: 'kalla-a', use: 'bearbetning' as const, primary: false }]
     const utkast = valideraInnehall(grund({ rum: [rum({ sources: utanPrimär })] }))
     expect(utkast).toEqual([])
@@ -170,7 +170,7 @@ describe('valideraInnehall', () => {
     expect(felTema.some((f) => f.includes('tema-b') && f.includes('tillhör'))).toBe(true)
   })
 
-  it('kräver publicerat standardrum för publicerade themes', () => {
+  it('kräver publicerat standardrum för publicerade teman', () => {
     const fel = valideraInnehall(grund({ themes: [tema({ defaultRoom: 'rum-a' })] }))
     expect(fel.some((f) => f.includes('opublicer'))).toBe(true)
   })
@@ -203,7 +203,7 @@ describe('valideraInnehall', () => {
     expect(fel.some((f) => f.includes('passage-a') && f.includes('kalla-x'))).toBe(true)
   })
 
-  it('hindrar publicerade frågor från att länka opublicerade themes och frågor', () => {
+  it('hindrar publicerade frågor från att länka opublicerade teman och frågor', () => {
     // Frågan är publicerad men temat den pekar på (tema-a) är utkast.
     const opubliceratTema = valideraInnehall(
       grund({
@@ -238,7 +238,7 @@ describe('valideraInnehall', () => {
     expect(utkastfråga).toEqual([])
   })
 
-  it('kräver att källors traditions finns och hindrar publicerad source från att länka opublicerad tradition', () => {
+  it('kräver att källors traditioner finns och hindrar publicerad källa från att länka opublicerad tradition', () => {
     const traditionen = { id: 'tradition-a', slug: 'tradition-a', name: 'Tradition A' }
     const okänd = valideraInnehall(
       grund({ sources: [source({ traditions: ['tradition-x'] })] }),
@@ -296,7 +296,7 @@ describe('valideraInnehall', () => {
     expect(fel.some((f) => f.includes('vandring-a') && f.includes('opublicer'))).toBe(true)
   })
 
-  it('kräver källpassage med edition för citat och translation i publicerade rum', () => {
+  it('kräver källpassage med utgåva för citat och översättning i publicerade rum', () => {
     const utanPassage = [{ source: 'kalla-a', use: 'citat' as const, primary: true }]
     // Utkast får sakna passage — grinden gäller bara publicerat.
     expect(valideraInnehall(grund({ rum: [rum({ sources: utanPassage })] }))).toEqual([])
@@ -325,9 +325,9 @@ describe('valideraInnehall', () => {
     expect(komplett).toEqual([])
   })
 
-  it('kräver angiven translator för egen translation', () => {
+  it('kräver angiven översättare för egen översättning', () => {
     const relation = [
-      { source: 'kalla-a', passage: 'passage-a', use: 'translation' as const, primary: true },
+      { source: 'kalla-a', passage: 'passage-a', use: 'översättning' as const, primary: true },
     ]
     const utanÖversättare = valideraInnehall(
       grund({
@@ -336,7 +336,7 @@ describe('valideraInnehall', () => {
       }),
     )
     expect(
-      utanÖversättare.some((f) => f.includes('translation') && f.includes('translator')),
+      utanÖversättare.some((f) => f.includes('översättning') && f.includes('översättare')),
     ).toBe(true)
     const medÖversättare = valideraInnehall(
       grund({
@@ -347,7 +347,7 @@ describe('valideraInnehall', () => {
     expect(medÖversättare).toEqual([])
   })
 
-  it('kräver upphovs- och dateringsstatus för publicerade sources', () => {
+  it('kräver upphovs- och dateringsstatus för publicerade källor', () => {
     const utan = valideraInnehall(
       grund({ sources: [source({ attribution: undefined, dating: undefined })] }),
     )

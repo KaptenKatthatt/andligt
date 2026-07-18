@@ -69,7 +69,7 @@ describe('tolkaRumsfil', () => {
 })
 
 describe('tolkaPostfil', () => {
-  it('tolkar frontmatter och låter kroppen bli description', () => {
+  it('tolkar frontmatter och låter kroppen bli beskrivning', () => {
     const råtext = `---
 id: tema-lugn
 slug: lugn

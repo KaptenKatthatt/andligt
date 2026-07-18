@@ -47,7 +47,7 @@ const rumsreferenser = (rum: Room, uppslag: Lookup): Reference[] => {
     publicerad: publicerad(uppslag.frågor.get(id)?.status),
   })
   return [
-    fråga('primary fråga', rum.primaryQuestion),
+    fråga('primär fråga', rum.primaryQuestion),
     ...(rum.relatedQuestions ?? []).map((id) => fråga('relaterad fråga', id)),
     ...rum.themes.map((id): Reference => ({
       type: 'tema',
@@ -81,19 +81,19 @@ const relationsfel = (rum: Room, uppslag: Lookup): string[] =>
 // edition (source-and-context.md, Types of Source Use): så hålls källans ord
 // belagda och åtskilda från redaktionell prosa. Bearbetning/parafras/inspiration
 // får nöja sig med fritextreferens och passerar orörda.
-const KRÄVER_PASSAGE: ReadonlySet<Kallrelation['use']> = new Set(['citat', 'translation'])
+const KRÄVER_PASSAGE: ReadonlySet<Kallrelation['use']> = new Set(['citat', 'översättning'])
 
 const bruksgrind = (rum: Room, relation: Kallrelation, uppslag: Lookup): string[] => {
   if (!KRÄVER_PASSAGE.has(relation.use)) return []
   const märke = `rum ${rum.id}: ${relation.use}`
   if (relation.passage === undefined)
-    return [`${märke} kräver en källpassage med exakt reference och edition`]
+    return [`${märke} kräver en källpassage med exakt referens och utgåva`]
   const passage = uppslag.passager.get(relation.passage)
   if (!passage) return [] // saknad passage rapporteras redan som bruten relation
   return [
-    ...(passage.edition ? [] : [`${märke} kräver edition (edition) på passagen "${passage.id}"`]),
-    ...(relation.use === 'translation' && !passage.translator
-      ? [`${märke} kräver angiven translator på passagen "${passage.id}"`]
+    ...(passage.edition ? [] : [`${märke} kräver utgåva (edition) på passagen "${passage.id}"`]),
+    ...(relation.use === 'översättning' && !passage.translator
+      ? [`${märke} kräver angiven översättare på passagen "${passage.id}"`]
       : []),
   ]
 }
@@ -198,9 +198,9 @@ const kallosakerhet = (source: Source): string[] =>
 const kalltraditionsfel = (source: Source, uppslag: Lookup): string[] =>
   (source.traditions ?? []).flatMap((traditionId) => {
     if (!uppslag.traditionsstatus.has(traditionId))
-      return [`source ${source.id}: tradition "${traditionId}" finns inte`]
+      return [`källa ${source.id}: tradition "${traditionId}" finns inte`]
     if (publicerad(source.status) && !publicerad(uppslag.traditionsstatus.get(traditionId)))
-      return [`source ${source.id}: publicerad source länkar opublicerad tradition "${traditionId}"`]
+      return [`källa ${source.id}: publicerad källa länkar opublicerad tradition "${traditionId}"`]
     return []
   })
 
@@ -214,7 +214,7 @@ const passagefel = (mängd: ContentSet, uppslag: Lookup): string[] =>
   mängd.passager.flatMap((passage) =>
     uppslag.källstatus.has(passage.source)
       ? []
-      : [`passage ${passage.id}: source "${passage.source}" finns inte`],
+      : [`passage ${passage.id}: källa "${passage.source}" finns inte`],
   )
 
 /** Validerar relationer och publiceringskrav över hela innehållsmängden.

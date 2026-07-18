@@ -59,7 +59,7 @@ const metaFor = (translated: boolean): WorkMeta => ({
   author: 'Ur Buddhas undervisning',
   lang: 'Pali',
   translation: translated
-    ? 'Svensk translation (Ollama) från Bhikkhu Sujatos engelska'
+    ? 'Svensk översättning (Ollama) från Bhikkhu Sujatos engelska'
     : 'Engelska: Bhikkhu Sujato',
   license: 'CC0 (SuttaCentral)',
   sourceUrl: 'https://suttacentral.net/dhp',

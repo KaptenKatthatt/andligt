@@ -116,8 +116,8 @@ export const osakerheter = (source: Source): string[] => {
     rader.push(`Verket tillskrivs traditionellt ${name}; författarskapet är inte säkert belagt.`)
   if (source.attribution === 'omtvistat') rader.push('Författarskapet är omdiskuterat.')
   if (source.attribution === 'okänt') rader.push('Upphovspersonen är okänd.')
-  if (source.dating === 'ungefärlig') rader.push('Textens exakta dating är osäker.')
-  if (source.dating === 'omtvistad') rader.push('Textens dating är omtvistad.')
+  if (source.dating === 'ungefärlig') rader.push('Textens exakta datering är osäker.')
+  if (source.dating === 'omtvistad') rader.push('Textens datering är omtvistad.')
   if (source.dating === 'okänd') rader.push('När texten tillkom är okänt.')
   return rader
 }
@@ -125,10 +125,10 @@ export const osakerheter = (source: Source): string[] => {
 /** Kort svensk deklaration av hur rummet använder källan (source-and-context.md). */
 export const brukEtikett: Record<Room['sources'][number]['use'], string> = {
   'citat': 'Direkt citat.',
-  'translation': 'Egen svensk translation.',
+  'översättning': 'Egen svensk översättning.',
   'parafras': 'Parafraserad återgivning.',
   'bearbetning': 'Bearbetad för reflektion.',
   'inspiration': 'Redaktionell reflektion inspirerad av källan.',
-  'sammanställning': 'Redaktionell sammanställning av flera sources.',
+  'sammanställning': 'Redaktionell sammanställning av flera källor.',
   'historisk-kontext': 'Historisk bakgrundskälla.',
 }

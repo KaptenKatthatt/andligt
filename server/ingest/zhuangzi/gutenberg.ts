@@ -50,7 +50,7 @@ const metaFor = (translated: boolean): WorkMeta => ({
   author: 'Zhuangzi',
   lang: 'Klassisk kinesiska',
   translation: translated
-    ? 'Svensk translation (Ollama) från Herbert Giles engelska'
+    ? 'Svensk översättning (Ollama) från Herbert Giles engelska'
     : 'Engelska: Herbert Giles',
   license: 'Public Domain (Project Gutenberg)',
   sourceUrl: 'https://www.gutenberg.org/ebooks/59709',

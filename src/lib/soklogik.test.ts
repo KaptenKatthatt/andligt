@@ -52,19 +52,19 @@ describe('sokIBiblioteket — rankning', () => {
     expect(platt(grupper)[0]?.traffatFalt).toBe('title-exakt')
   })
 
-  it('låter exakt title slå en partiell titelträff', () => {
+  it('låter exakt titel slå en partiell titelträff', () => {
     const grupper = sokIBiblioteket('mod', index)
     const ids = idOrdning(grupper)
     expect(ids.indexOf('fq-mod')).toBeLessThan(ids.indexOf('fq-mod-vart'))
   })
 
-  it('hittar en känd author via aliaset, inte via titeln', () => {
+  it('hittar en känd författare via aliaset, inte via titeln', () => {
     const grupper = sokIBiblioteket('marcus aurelius', index)
     expect(idOrdning(grupper)[0]).toBe('k-marcus')
     expect(platt(grupper)[0]?.traffatFalt).toBe('alias-exakt')
   })
 
-  it('låter en relevant fråga stå före sources (frågan slår författaren)', () => {
+  it('låter en relevant fråga stå före källor (frågan slår författaren)', () => {
     const grupper = sokIBiblioteket('oro', index)
     expect(grupper[0]?.type).toBe('fraga')
     const ids = idOrdning(grupper)
@@ -72,7 +72,7 @@ describe('sokIBiblioteket — rankning', () => {
   })
 })
 
-describe('sokIBiblioteket — language och tolerans', () => {
+describe('sokIBiblioteket — språk och tolerans', () => {
   it('viker svenska diakriter (forlatelse hittar förlåtelse)', () => {
     expect(finns(sokIBiblioteket('forlatelse', index), 'fq-forl')).toBe(true)
   })

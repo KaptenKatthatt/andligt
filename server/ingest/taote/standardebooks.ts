@@ -24,7 +24,7 @@ const metaFor = (translated: boolean): WorkMeta => ({
   author: 'Laozi',
   lang: 'Klassisk kinesiska',
   translation: translated
-    ? 'Svensk translation (Ollama) från James Legges engelska'
+    ? 'Svensk översättning (Ollama) från James Legges engelska'
     : 'Engelska: James Legge',
   license: 'Public Domain (Standard Ebooks)',
   sourceUrl: 'https://standardebooks.net/ebooks/laozi/tao-te-ching/james-legge',

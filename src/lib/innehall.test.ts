@@ -21,7 +21,7 @@ describe('innehållsladdaren', () => {
     expect(rum?.core.length).toBeGreaterThan(0)
   })
 
-  it('hittar rummets tema och source via relationerna', () => {
+  it('hittar rummets tema och källa via relationerna', () => {
     const rum = hittaRum('det-du-inte-kan-styra')
     const tema = rum ? hittaTema(rum.themes[0] ?? '') : undefined
     expect(tema?.label).toBe('Lugn')
@@ -29,7 +29,7 @@ describe('innehållsladdaren', () => {
     expect(source && kallnamn(source)).toBe('Epiktetos')
   })
 
-  it('laddar frågor, sources och traditions för biblioteket', () => {
+  it('laddar frågor, källor och traditioner för biblioteket', () => {
     expect(hittaFragaViaSlug('vad-kan-du-styra')?.text).toBe('Vad kan du egentligen styra?')
     expect(hittaKallaViaSlug('enchiridion')?.title).toBe('Enchiridion (Handboken)')
     const traditionId = hittaKallaViaSlug('enchiridion')?.traditions?.[0] ?? ''

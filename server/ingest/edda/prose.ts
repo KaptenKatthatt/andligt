@@ -57,7 +57,7 @@ const metaFor = (translated: boolean): WorkMeta => ({
   author: 'Snorre Sturlasson',
   lang: 'Fornisländska',
   translation: translated
-    ? 'Svensk translation (Ollama) från Rasmus B. Andersons engelska'
+    ? 'Svensk översättning (Ollama) från Rasmus B. Andersons engelska'
     : 'Engelska: Rasmus B. Anderson',
   license: 'Public Domain (Project Gutenberg)',
   sourceUrl: 'https://www.gutenberg.org/ebooks/18947',

@@ -34,7 +34,7 @@ describe('ärTeaseröppning', () => {
     }
   })
 
-  it('behandlar en tom opening som ofarlig', () => {
+  it('behandlar en tom öppning som ofarlig', () => {
     expect(ärTeaseröppning('')).toBe(false)
     expect(ärTeaseröppning('   \n\n  ')).toBe(false)
   })

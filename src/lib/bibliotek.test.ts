@@ -49,7 +49,7 @@ const tema = (
 })
 
 describe('bibliotekTeman', () => {
-  it('släpper bara igenom publicerade themes — utkast hör inte hemma i biblioteket', () => {
+  it('släpper bara igenom publicerade teman — utkast hör inte hemma i biblioteket', () => {
     const themes = [
       tema('lugn'),
       tema('mod', { status: 'utkast' }),
@@ -59,7 +59,7 @@ describe('bibliotekTeman', () => {
     expect(bibliotekTeman(themes).map((t) => t.label)).toEqual(['lugn'])
   })
 
-  it('följer redaktionell order och därefter svensk etikettordning', () => {
+  it('följer redaktionell ordning och därefter svensk etikettordning', () => {
     const themes = [
       tema('österlandet'),
       tema('ande'),
@@ -99,7 +99,7 @@ const fråga = (text: string, över: Partial<Question> = {}): Question => ({
 })
 
 describe('rumForFraga', () => {
-  it('sätter rum med frågan som primary först, sedan relaterade — bara publicerade', () => {
+  it('sätter rum med frågan som primär först, sedan relaterade — bara publicerade', () => {
     const alla = [
       rum('önskan', 'publicerad', { primaryQuestion: 'fraga-b', relatedQuestions: ['fraga-a'] }),
       rum('besked', 'publicerad', { primaryQuestion: 'fraga-a' }),
@@ -114,7 +114,7 @@ describe('rumForFraga', () => {
     ])
   })
 
-  it('räknar inte samma rum två gånger när frågan är både primary och relaterad', () => {
+  it('räknar inte samma rum två gånger när frågan är både primär och relaterad', () => {
     const alla = [
       rum('dubblerat', 'publicerad', { primaryQuestion: 'fraga-a', relatedQuestions: ['fraga-a'] }),
     ]
@@ -123,7 +123,7 @@ describe('rumForFraga', () => {
 })
 
 describe('fragorForTema', () => {
-  it('släpper bara igenom publicerade frågor taggade med temat, i svensk order', () => {
+  it('släpper bara igenom publicerade frågor taggade med temat, i svensk ordning', () => {
     const alla = [
       fråga('Vad är sant?', { themes: ['tema-a'] }),
       fråga('Är detta viktigt?', { themes: ['tema-a'] }),
@@ -148,7 +148,7 @@ describe('kallorForFraga', () => {
     status,
   })
 
-  it('härleder unika publicerade sources ur frågans rum', () => {
+  it('härleder unika publicerade källor ur frågans rum', () => {
     const alla = [
       rum('första', 'publicerad', {
         primaryQuestion: 'fraga-a',
@@ -192,7 +192,7 @@ describe('rumForKalla', () => {
     primary,
   })
 
-  it('hittar publicerade rum med källan, primary relation först', () => {
+  it('hittar publicerade rum med källan, primär relation först', () => {
     const alla = [
       rum('annan source', 'publicerad', { sources: [relation('kalla-b', true)] }),
       rum('bygger på källan', 'publicerad', { sources: [relation('kalla-a', false)] }),
@@ -216,7 +216,7 @@ describe('bibliotekTraditioner', () => {
     status,
   })
 
-  it('släpper bara igenom publicerade traditions, i svensk namnordning', () => {
+  it('släpper bara igenom publicerade traditioner, i svensk namnordning', () => {
     const alla = [tradition('stoicism'), tradition('buddhism'), tradition('taoism', 'utkast')]
     expect(bibliotekTraditioner(alla).map((t) => t.name)).toEqual(['buddhism', 'stoicism'])
   })
@@ -302,7 +302,7 @@ describe('traditionerForVandring', () => {
     status,
   })
 
-  it('härleder unika publicerade traditions ur rummens sources, i svensk order', () => {
+  it('härleder unika publicerade traditioner ur rummens källor, i svensk ordning', () => {
     const rummen = [
       rum('ett', 'publicerad', { sources: [{ source: 'kalla-a', use: 'bearbetning', primary: true }] }),
       rum('två', 'publicerad', { sources: [{ source: 'kalla-b', use: 'citat', primary: true }] }),

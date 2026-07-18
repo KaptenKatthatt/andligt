@@ -130,10 +130,10 @@ export const BibliotekHemPage = () => {
       <div className="kicker">Visdomsatlasen</div>
       <h1 className={styles.title}>Biblioteket</h1>
       <p className={styles.lede}>
-        För den som vill leta vidare på egen hand — bland traditions, sources, themes och frågor.
+        För den som vill leta vidare på egen hand — bland traditioner, källor, teman och frågor.
       </p>
       <Link to="/bibliotek/sok" className={styles.sokingang}>
-        Sök efter en fråga, tanke eller source
+        Sök efter en fråga, tanke eller källa
       </Link>
       <Traditionssektion />
       <Kallsektion />

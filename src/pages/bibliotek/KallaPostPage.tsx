@@ -155,7 +155,7 @@ export const KallaPostPage = ({ slug }: { slug: string }) => {
           </Link>
         </Sektion>
       )}
-      <Sektion rubrik="Rum ur denna source">
+      <Sektion rubrik="Rum ur denna källa">
         <Rumslista
           rum={rumForKalla(source.id, allaRum)}
           tomtBesked="Det finns inga färdiga rum ur källan ännu."

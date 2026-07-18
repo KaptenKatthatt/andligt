@@ -58,7 +58,7 @@ const metaFor = (translated: boolean): WorkMeta => ({
   author: 'Marcus Aurelius',
   lang: 'Grekiska',
   translation: translated
-    ? 'Svensk translation (Ollama) från George Longs engelska'
+    ? 'Svensk översättning (Ollama) från George Longs engelska'
     : 'Engelska: George Long',
   license: 'Public Domain (Project Gutenberg)',
   sourceUrl: 'https://www.gutenberg.org/ebooks/2680',
