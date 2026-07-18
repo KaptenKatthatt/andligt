@@ -231,16 +231,16 @@ const noteToMarkdown = (post: PersonalExport['notes'][number]): string =>
 /** Readable Markdown mirror of the export (spec prefers open formats). Not
  * re-importable — JSON is the round-trip format. */
 export const toMarkdown = (exporten: PersonalExport): string => {
-  const delar: string[] = ['# Visdomsatlasen — mina anteckningar och sparat', '']
+  const parts: string[] = ['# Visdomsatlasen — mina anteckningar och sparat', '']
   if (exporten.notes.length > 0) {
-    delar.push('# Anteckningar', '')
-    for (const post of exporten.notes) delar.push(noteToMarkdown(post), '')
+    parts.push('# Anteckningar', '')
+    for (const post of exporten.notes) parts.push(noteToMarkdown(post), '')
   }
   const saved = [...exporten.savedRooms, ...exporten.savedPaths]
   if (saved.length > 0) {
-    delar.push('# Sparat', '')
-    for (const post of saved) delar.push(`- ${post.title ?? post.id}`)
-    delar.push('')
+    parts.push('# Sparat', '')
+    for (const post of saved) parts.push(`- ${post.title ?? post.id}`)
+    parts.push('')
   }
-  return delar.join('\n')
+  return parts.join('\n')
 }

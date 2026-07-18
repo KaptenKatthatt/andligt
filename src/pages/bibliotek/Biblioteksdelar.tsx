@@ -8,10 +8,10 @@ import { paragraphs } from '../../lib/content'
 import { useSidtitel } from '../../lib/useSidtitel'
 import styles from './Bibliotek.module.css'
 
-export const roomCount = (antal: number): string => (antal === 1 ? 'Ett rum' : `${antal} rum`)
+export const roomCount = (count: number): string => (count === 1 ? 'Ett rum' : `${count} rum`)
 
-export const questionCount = (antal: number): string =>
-  antal === 1 ? 'En fråga' : `${antal} frågor`
+export const questionCount = (count: number): string =>
+  count === 1 ? 'En fråga' : `${count} frågor`
 
 /** The subpages' header. Entries that aren't published are marked »Utkast« —
  * they're reached only via a direct link and are the editorial review view.

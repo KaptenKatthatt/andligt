@@ -14,7 +14,7 @@ import { NotFoundNote } from '../NotFoundNote'
 import styles from './Bibliotek.module.css'
 import { Beskrivning, Row, RoomList, Section, Sidhuvud } from './Biblioteksdelar'
 
-const Temadel = ({ fråga }: { fråga: Question }) => {
+const ThemePart = ({ fråga }: { fråga: Question }) => {
   const themes = publishedThrough(fråga.themes, findTheme)
   if (themes.length === 0) return null
   return (
@@ -77,7 +77,7 @@ export const FragaPage = ({ slug }: { slug: string }) => {
           tomtBesked="Det finns inga färdiga rum kring frågan ännu."
         />
       </Section>
-      <Temadel fråga={question} />
+      <ThemePart fråga={question} />
       <SourcePart fråga={question} />
       <Narliggande fråga={question} />
     </div>

@@ -123,7 +123,7 @@ describe('uppdateradAnteckning', () => {
 
 describe('sorteradeAnteckningar', () => {
   it('sorterar senast ändrad först och utelämnar tomma', () => {
-    const anteckning = (id: string, updated: string, text = 'x'): Note => ({
+    const note = (id: string, updated: string, text = 'x'): Note => ({
       originType: 'room',
       originId: id,
       text,
@@ -131,9 +131,9 @@ describe('sorteradeAnteckningar', () => {
       updated,
     })
     const ut = sortedNotes({
-      a: anteckning('a', '2026-07-01T00:00:00.000Z'),
-      b: anteckning('b', '2026-07-10T00:00:00.000Z'),
-      c: anteckning('c', '2026-07-05T00:00:00.000Z', '  '),
+      a: note('a', '2026-07-01T00:00:00.000Z'),
+      b: note('b', '2026-07-10T00:00:00.000Z'),
+      c: note('c', '2026-07-05T00:00:00.000Z', '  '),
     })
     expect(ut.map((post) => post.originId)).toEqual(['b', 'a'])
   })

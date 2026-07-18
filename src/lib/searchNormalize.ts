@@ -5,7 +5,7 @@
 /** Folds text for matching: trim, lowercase and diacritic folding (å/ä→a, ö→o, é→e).
  * So `forlatelse` finds content about `förlåtelse` — a convenience, not a
  * replacement for correct language. */
-export const normalisera = (text: string): string =>
+export const normalize = (text: string): string =>
   text
     .trim()
     .toLowerCase()
@@ -13,14 +13,14 @@ export const normalisera = (text: string): string =>
     .replace(/[\u0300-\u036f]/g, '')
 
 /** Normalised words from a text; splits on everything that isn't a letter/digit. */
-export const ordlista = (text: string): string[] =>
-  normalisera(text)
+export const wordList = (text: string): string[] =>
+  normalize(text)
     .split(/[^\p{L}\p{N}]+/u)
-    .filter((ord) => ord.length > 0)
+    .filter((word) => word.length > 0)
 
 // Common Swedish function words (normalised form) that carry little search intent.
 // A query made up only of stopwords returns no hits (search.md, Query Behaviour).
-const STOPORD = new Set([
+const STOPWORDS = new Set([
   'och', 'att', 'som', 'det', 'en', 'ett', 'den', 'de', 'är', 'ar', 'var', 'med',
   'om', 'av', 'på', 'pa', 'för', 'for', 'till', 'i', 'du', 'jag', 'man', 'hur',
   'vad', 'när', 'nar', 'vem', 'varför', 'varfor', 'något', 'nagot', 'kan', 'ska',
@@ -28,73 +28,73 @@ const STOPORD = new Set([
 
 /** The query's meaningful tokens: normalised words minus stopwords. */
 export const searchTokens = (question: string): string[] =>
-  ordlista(question).filter((ord) => !STOPORD.has(ord))
+  wordList(question).filter((word) => !STOPWORDS.has(word))
 
 // Common Swedish inflection suffixes, longest first so -orna is trimmed before -or before -a.
 const SUFFIX = ['orna', 'arna', 'erna', 'or', 'ar', 'er', 'en', 'et', 'na', 'a', 's']
 
 /** Conservative Swedish stem: trims a common inflection suffix when at least three
  * characters remain, so `fråga`/`frågor` match without short words collapsing. */
-export const stam = (ord: string): string => {
+export const stem = (word: string): string => {
   for (const suffix of SUFFIX) {
-    if (ord.length - suffix.length >= 3 && ord.endsWith(suffix)) {
-      return ord.slice(0, ord.length - suffix.length)
+    if (word.length - suffix.length >= 3 && word.endsWith(suffix)) {
+      return word.slice(0, word.length - suffix.length)
     }
   }
-  return ord
+  return word
 }
 
 // Exactly one character substitution at the same position (two equal-length words).
-const skiljerPaTecken = (a: string, b: string): boolean => {
-  let skillnader = 0
+const differsByOneChar = (a: string, b: string): boolean => {
+  let differences = 0
   for (let i = 0; i < a.length; i += 1) {
-    if (a[i] !== b[i]) skillnader += 1
-    if (skillnader > 1) return false
+    if (a[i] !== b[i]) differences += 1
+    if (differences > 1) return false
   }
-  return skillnader === 1
+  return differences === 1
 }
 
 // Exactly one transposition of two adjacent characters (two equal-length words).
 const isTransposition = (a: string, b: string): boolean => {
   let first = -1
-  let andra = -1
-  let antal = 0
+  let second = -1
+  let count = 0
   for (let i = 0; i < a.length; i += 1) {
     if (a[i] === b[i]) continue
-    antal += 1
-    if (antal === 1) first = i
-    else if (antal === 2) andra = i
+    count += 1
+    if (count === 1) first = i
+    else if (count === 2) second = i
     else return false
   }
   return (
-    antal === 2 &&
-    andra === first + 1 &&
-    a[first] === b[andra] &&
-    a[andra] === b[first]
+    count === 2 &&
+    second === first + 1 &&
+    a[first] === b[second] &&
+    a[second] === b[first]
   )
 }
 
 // `lang` becomes `kort` by removing exactly one character (length difference 1).
-const isDeposit = (kort: string, lang: string): boolean => {
+const isOneInsertion = (short: string, long: string): boolean => {
   let i = 0
-  let hopp = 0
-  for (let j = 0; j < lang.length; j += 1) {
-    if (i < kort.length && kort[i] === lang[j]) i += 1
-    else hopp += 1
-    if (hopp > 1) return false
+  let skips = 0
+  for (let j = 0; j < long.length; j += 1) {
+    if (i < short.length && short[i] === long[j]) i += 1
+    else skips += 1
+    if (skips > 1) return false
   }
-  return i === kort.length
+  return i === short.length
 }
 
 /** Conservative typo tolerance (search.md, Typo Tolerance): true when the words
  * differ by at most one typo (substitution, transposition, insertion/deletion) and both are
  * at least five characters — otherwise a single error could change the word's meaning. Equal words are
  * not a typo hit (they're caught as an exact match earlier in the chain). */
-export const inomSkrivfel = (a: string, b: string): boolean => {
+export const withinTypo = (a: string, b: string): boolean => {
   if (a.length < 5 || b.length < 5) return false
   const diff = a.length - b.length
-  if (diff === 0) return skiljerPaTecken(a, b) || isTransposition(a, b)
-  if (diff === 1) return isDeposit(b, a)
-  if (diff === -1) return isDeposit(a, b)
+  if (diff === 0) return differsByOneChar(a, b) || isTransposition(a, b)
+  if (diff === 1) return isOneInsertion(b, a)
+  if (diff === -1) return isOneInsertion(a, b)
   return false
 }

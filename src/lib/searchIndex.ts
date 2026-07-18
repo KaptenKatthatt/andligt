@@ -140,8 +140,8 @@ const docFromRoom = (
 }
 
 const pathMeta = (rooms: Room[]): string => {
-  const antal = rooms.length === 1 ? 'Ett rum' : `${rooms.length} rum`
-  return `${antal} · ca ${pathReadingTime(rooms)} min`
+  const count = rooms.length === 1 ? 'Ett rum' : `${rooms.length} rum`
+  return `${count} · ca ${pathReadingTime(rooms)} min`
 }
 
 const docFromPath = (
@@ -240,23 +240,23 @@ type IndexContent = Pick<
 /** Builds the public index. The lookup maps are built from the PUBLISHED
  * selections, so no draft text can slip into a searchable field even via a
  * reference. */
-export const buildSearchIndex = (innehall: IndexContent): SearchDoc[] => {
-  const questions = mapById(libraryQuestions(innehall.questions))
-  const themes = mapById(libraryThemes(innehall.themes))
-  const sources = mapById(librarySources(innehall.sources))
-  const traditions = mapById(libraryTraditions(innehall.traditions))
+export const buildSearchIndex = (content: IndexContent): SearchDoc[] => {
+  const questions = mapById(libraryQuestions(content.questions))
+  const themes = mapById(libraryThemes(content.themes))
+  const sources = mapById(librarySources(content.sources))
+  const traditions = mapById(libraryTraditions(content.traditions))
   return [
-    ...libraryQuestions(innehall.questions).map(docFromQuestion),
-    ...libraryThemes(innehall.themes).map(docFromTheme),
-    ...libraryRooms(innehall.rooms).map((room) => docFromRoom(room, questions, themes, sources)),
-    ...libraryPaths(innehall.paths).map((path) =>
-      docFromPath(path, questions, roomsForPath(path, innehall.rooms)),
+    ...libraryQuestions(content.questions).map(docFromQuestion),
+    ...libraryThemes(content.themes).map(docFromTheme),
+    ...libraryRooms(content.rooms).map((room) => docFromRoom(room, questions, themes, sources)),
+    ...libraryPaths(content.paths).map((path) =>
+      docFromPath(path, questions, roomsForPath(path, content.rooms)),
     ),
-    ...librarySources(innehall.sources).map((source) =>
-      docFromSource(source, traditions, passagesForSource(source.id, innehall.passages)),
+    ...librarySources(content.sources).map((source) =>
+      docFromSource(source, traditions, passagesForSource(source.id, content.passages)),
     ),
-    ...libraryTraditions(innehall.traditions).map(docFromTradition),
-    ...libraryPeople(innehall.people).map(docFromPerson),
+    ...libraryTraditions(content.traditions).map(docFromTradition),
+    ...libraryPeople(content.people).map(docFromPerson),
   ]
 }
 

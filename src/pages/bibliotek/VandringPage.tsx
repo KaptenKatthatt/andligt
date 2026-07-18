@@ -25,11 +25,11 @@ import { Beskrivning, Row, Section, Sidhuvud } from './Biblioteksdelar'
  * is approximate and never a goal). */
 const Metarad = ({ rummen }: { rummen: Room[] }) => {
   const traditions = traditionsForPath(rummen, allSources, allTraditions)
-  const delar = [
+  const parts = [
     ...traditions.map((tradition) => tradition.name),
     `ca ${pathReadingTime(rummen)} min sammanlagt`,
   ]
-  return <p className={styles.antal}>{delar.join(' · ')}</p>
+  return <p className={styles.antal}>{parts.join(' · ')}</p>
 }
 
 /** A quiet save control (notes-and-saved.md, Saving): »Spara«/»Sparad«,

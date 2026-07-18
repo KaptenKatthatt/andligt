@@ -36,7 +36,7 @@ const Fragesektion = () => (
   </Section>
 )
 
-const Temasektion = () => {
+const ThemeSection = () => {
   const themes = libraryThemes(allThemes)
   return (
     <Section rubrik="Teman">
@@ -160,7 +160,7 @@ export const BibliotekHemPage = () => {
                     </Link>
       <Traditionssektion />
       <SourceSection />
-      <Temasektion />
+      <ThemeSection />
       <Vandringssektion />
       <RoomSection />
       <Fragesektion />

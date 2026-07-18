@@ -67,12 +67,12 @@ const NoteGroupSearch = ({ anteckningar }: { anteckningar: Note[] }) => {
   return (
     <section className={styles.grupp}>
       <h2 className="kicker sectionKicker">Anteckningar</h2>
-      {synliga.map((anteckning) => {
-        const kort = noteToCard(anteckning)
+      {synliga.map((note) => {
+        const short = noteToCard(note)
         return (
-          <div key={kort.key} className={styles.privatKort}>
+          <div key={short.key} className={styles.privatKort}>
             <span className={styles.privatMarkor}>Privat anteckning</span>
-            <NoteCard title={kort.title} text={kort.text} datum={kort.datum} to={kort.to} />
+            <NoteCard title={short.title} text={short.text} datum={short.datum} to={short.to} />
           </div>
         )
       })}
@@ -220,7 +220,7 @@ const ErrorState = () => (
 
 export type SearchMode = 'tom' | 'fel' | 'klar'
 
-const hitCount = (antal: number): string => (antal === 1 ? '1 träff' : `${antal} träffar`)
+const hitCount = (count: number): string => (count === 1 ? '1 träff' : `${count} träffar`)
 
 /** The result view: empty state before searching, error state, no-results or the grouped,
  * finite hits — editorial groups, then »Ur källtexterna«, last the

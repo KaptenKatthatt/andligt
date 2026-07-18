@@ -3,15 +3,15 @@
 // index — it never imports sokindex/soklogik, so no note text
 // can affect or leak into public results (Phase 9 Privacy/AI Access).
 import type { Note } from './personal'
-import { ordlista, searchTokens } from './searchNormalize'
+import { wordList, searchTokens } from './searchNormalize'
 
 // All meaningful words must occur in the note (AND), as an exact word,
 // prefix or — for longer words — substring. The same Swedish normalisation as
 // the public search, but without synonyms/ranking: private text should be found, not weighted.
 const matchar = (tokens: string[], text: string): boolean => {
-  const ord = ordlista(text)
+  const word = wordList(text)
   return tokens.every((token) =>
-    ord.some(
+    word.some(
       (o) => o === token || o.startsWith(token) || (token.length >= 4 && o.includes(token)),
     ),
   )
@@ -21,13 +21,13 @@ const matchar = (tokens: string[], text: string): boolean => {
  * queries shorter than two meaningful characters return nothing. */
 export const searchNotes = (
   question: string,
-  anteckningar: Record<string, Note>,
+  notes: Record<string, Note>,
 ): Note[] => {
-  if (ordlista(question).join(' ').length < 2) return []
+  if (wordList(question).join(' ').length < 2) return []
   const tokens = searchTokens(question)
   if (tokens.length === 0) return []
-  return Object.values(anteckningar)
-    .filter((anteckning) => anteckning.text.trim().length > 0)
-    .filter((anteckning) => matchar(tokens, anteckning.text))
+  return Object.values(notes)
+    .filter((note) => note.text.trim().length > 0)
+    .filter((note) => matchar(tokens, note.text))
     .sort((a, b) => b.updated.localeCompare(a.updated))
 }

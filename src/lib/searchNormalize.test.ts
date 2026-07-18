@@ -1,21 +1,21 @@
 import { describe, expect, it } from 'vitest'
-import { inomSkrivfel, normalisera, ordlista, searchTokens, stam } from './searchNormalize'
+import { withinTypo, normalize, wordList, searchTokens, stem } from './searchNormalize'
 
 describe('normalisera', () => {
   it('trimmar, gör gemener och viker svenska diakriter', () => {
-    expect(normalisera('  Förlåtelse ')).toBe('forlatelse')
-    expect(normalisera('DÖDEN')).toBe('doden')
-    expect(normalisera('Ängslan')).toBe('angslan')
+    expect(normalize('  Förlåtelse ')).toBe('forlatelse')
+    expect(normalize('DÖDEN')).toBe('doden')
+    expect(normalize('Ängslan')).toBe('angslan')
   })
 
   it('lämnar redan normaliserad text oförändrad', () => {
-    expect(normalisera('lugn')).toBe('lugn')
+    expect(normalize('lugn')).toBe('lugn')
   })
 })
 
 describe('ordlista', () => {
   it('delar på skiljetecken och släpper tomma', () => {
-    expect(ordlista('Vad gör oron med dagen?')).toEqual(['vad', 'gor', 'oron', 'med', 'dagen'])
+    expect(wordList('Vad gör oron med dagen?')).toEqual(['vad', 'gor', 'oron', 'med', 'dagen'])
   })
 })
 
@@ -31,39 +31,39 @@ describe('soktokens', () => {
 
 describe('stam', () => {
   it('förenar singular och plural', () => {
-    expect(stam('frågor')).toBe(stam('fråga'))
-    expect(stam('gåvor')).toBe(stam('gåva'))
+    expect(stem('frågor')).toBe(stem('fråga'))
+    expect(stem('gåvor')).toBe(stem('gåva'))
   })
 
   it('rör inte korta ord', () => {
-    expect(stam('ro')).toBe('ro')
-    expect(stam('liv')).toBe('liv')
+    expect(stem('ro')).toBe('ro')
+    expect(stem('liv')).toBe('liv')
   })
 })
 
 describe('inomEttSkrivfel', () => {
   it('tolererar ett utskott', () => {
-    expect(inomSkrivfel('förlåtele', 'förlåtelse')).toBe(true)
-    expect(inomSkrivfel(normalisera('förlåtele'), normalisera('förlåtelse'))).toBe(true)
+    expect(withinTypo('förlåtele', 'förlåtelse')).toBe(true)
+    expect(withinTypo(normalize('förlåtele'), normalize('förlåtelse'))).toBe(true)
   })
 
   it('tolererar ett teckenbyte och en omkastning', () => {
-    expect(inomSkrivfel('stoicsm', 'stoicism')).toBe(true)
-    expect(inomSkrivfel('meninng', 'menning')).toBe(true)
-    expect(inomSkrivfel('samtla', 'samtal')).toBe(true)
+    expect(withinTypo('stoicsm', 'stoicism')).toBe(true)
+    expect(withinTypo('meninng', 'menning')).toBe(true)
+    expect(withinTypo('samtla', 'samtal')).toBe(true)
   })
 
   it('avvisar korta ord där ett fel byter mening', () => {
-    expect(inomSkrivfel('lugn', 'lung')).toBe(false)
-    expect(inomSkrivfel('ro', 'ru')).toBe(false)
+    expect(withinTypo('lugn', 'lung')).toBe(false)
+    expect(withinTypo('ro', 'ru')).toBe(false)
   })
 
   it('avvisar två eller fler fel', () => {
-    expect(inomSkrivfel('stoism', 'stoicism')).toBe(false)
-    expect(inomSkrivfel('förltse', 'förlåtelse')).toBe(false)
+    expect(withinTypo('stoism', 'stoicism')).toBe(false)
+    expect(withinTypo('förltse', 'förlåtelse')).toBe(false)
   })
 
   it('räknar inte lika ord som en felträff', () => {
-    expect(inomSkrivfel('förlåtelse', 'förlåtelse')).toBe(false)
+    expect(withinTypo('förlåtelse', 'förlåtelse')).toBe(false)
   })
 })

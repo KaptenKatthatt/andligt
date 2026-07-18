@@ -167,9 +167,9 @@ export const savedIdsByTime = (items: Record<string, SavedItem>): string[] => {
 
 /** The notes overview's order: most recently changed first, empty ones omitted
  * (spec Notes Overview: calmly chronological). ISO 8601 is compared lexically. */
-export const sortedNotes = (anteckningar: Record<string, Note>): Note[] =>
-  Object.values(anteckningar)
-    .filter((anteckning) => anteckning.text.trim().length > 0)
+export const sortedNotes = (notes: Record<string, Note>): Note[] =>
+  Object.values(notes)
+    .filter((note) => note.text.trim().length > 0)
     .sort((a, b) => b.updated.localeCompare(a.updated))
 
 /** Short excerpt for preview cards; trims generously and invisibly (spec Note Length). */

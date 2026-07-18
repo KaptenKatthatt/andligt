@@ -8,7 +8,7 @@ import type { Note } from '../../lib/personal'
 import { searchNotes } from '../../lib/searchNotes'
 import { searchIndexData, type SearchType, type SearchParams } from '../../lib/searchIndex'
 import { searchInLibrary, visibleHits, type SearchGroup, type VisibleGroup } from '../../lib/searchLogic'
-import { normalisera } from '../../lib/searchNormalize'
+import { normalize } from '../../lib/searchNormalize'
 import { anonymizeQuestion, report } from '../../lib/telemetry'
 import { useAsync } from '../../lib/useAsync'
 import { useAtlas } from '../../lib/store'
@@ -40,18 +40,18 @@ const deriveResult = (
   term: string,
   type: SearchType | undefined,
   expanderade: ReadonlySet<SearchType>,
-  anteckningar: Record<string, Note>,
+  noteMap: Record<string, Note>,
 ): Derived => {
-  let grupper: SearchGroup[] = []
+  let groups: SearchGroup[] = []
   let fel = false
   try {
-    grupper = searchInLibrary(term, searchIndexData)
+    groups = searchInLibrary(term, searchIndexData)
   } catch {
     fel = true
   }
-  const filtrerade = type ? grupper.filter((grupp) => grupp.type === type) : grupper
+  const filtrerade = type ? groups.filter((grupp) => grupp.type === type) : groups
   const synliga = visibleHits(filtrerade, expanderade)
-  const notes = type ? [] : searchNotes(term, anteckningar)
+  const notes = type ? [] : searchNotes(term, noteMap)
   const redaktionellaOchNoter =
     filtrerade.reduce((sum, grupp) => sum + grupp.hits.length, 0) + notes.length
   return { synliga, notes, redaktionellaOchNoter, fel }
@@ -60,15 +60,15 @@ const deriveResult = (
 const computeMode = (key: string, fel: boolean): SearchMode =>
   key.length < 2 ? 'tom' : fel ? 'fel' : 'klar'
 
-const TOMT_KALLTEXTSVAR: SourceTextResponse = { books: [], hits: [] }
+const EMPTY_SOURCE_TEXT: SourceTextResponse = { books: [], hits: [] }
 
 const sourceTextCountOf = (svar: SourceTextResponse | null): number =>
   (svar?.books.length ?? 0) + (svar?.hits.length ?? 0)
 
 // No hits at all (and the verse search is no longer in flight): only then is
 // no-results shown, never while source-text hits are still loading.
-const isCompletelyEmpty = (redaktionellaOchNoter: number, kalltextAntal: number, laddar: boolean): boolean =>
-  redaktionellaOchNoter === 0 && kalltextAntal === 0 && !laddar
+const isCompletelyEmpty = (redaktionellaOchNoter: number, kalltextAntal: number, loading: boolean): boolean =>
+  redaktionellaOchNoter === 0 && kalltextAntal === 0 && !loading
 
 // Adds an expanded group and saves it in the session memory.
 const nyExpansion = (
@@ -93,7 +93,7 @@ const useSoktillstand = (
   const [direkt, setDirekt] = useState<string | null>(null)
   const debounced = useDebounced(query.trim(), 250)
   const term = direkt ?? debounced
-  const key = normalisera(term)
+  const key = normalize(term)
   const [expanderade, setExpanderade] = useState<Set<SearchType>>(() => getExpansion(key))
 
   useEffect(() => {
@@ -101,7 +101,7 @@ const useSoktillstand = (
   }, [term, q, type, onNavigera])
 
   useEffect(() => {
-    setExpanderade(getExpansion(normalisera(term)))
+    setExpanderade(getExpansion(normalize(term)))
   }, [term])
 
   return {
@@ -131,13 +131,13 @@ export const SokBibliotekPage = ({ q, type, onNavigera }: Props) => {
     type,
     onNavigera,
   )
-  const anteckningar = useAtlas().notes
+  const noteMap = useAtlas().notes
 
   // The verse search (the reader's FTS) runs only without a type filter and for a query ≥ 2
   // characters; otherwise an empty response with no network call. Its own path, its own loading.
   const searchSourceText = key.length >= 2 && type === undefined
   const kalltext = useAsync<SourceTextResponse>(
-    () => (searchSourceText ? searchLibrary(term) : Promise.resolve(TOMT_KALLTEXTSVAR)),
+    () => (searchSourceText ? searchLibrary(term) : Promise.resolve(EMPTY_SOURCE_TEXT)),
     [term, searchSourceText],
   )
 
@@ -145,10 +145,10 @@ export const SokBibliotekPage = ({ q, type, onNavigera }: Props) => {
     term,
     type,
     expanderade,
-    anteckningar,
+    noteMap,
   )
   const kalltextAntal = sourceTextCountOf(kalltext.data)
-  const antal = redaktionellaOchNoter + kalltextAntal
+  const count = redaktionellaOchNoter + kalltextAntal
   const ingaTraffar = isCompletelyEmpty(redaktionellaOchNoter, kalltextAntal, kalltext.loading)
 
   // Phase 14: report only the technical minimum from the search — an index error or a
@@ -164,7 +164,7 @@ export const SokBibliotekPage = ({ q, type, onNavigera }: Props) => {
     <div className="screenSub">
       <TopBar />
       <SearchField query={query} onChange={ändraFråga} onSubmit={sökDirekt} />
-      <Filter aktiv={type} antal={antal} onVal={(nyTyp) => onNavigera(searchObject(term, nyTyp))} />
+      <Filter aktiv={type} antal={count} onVal={(nyTyp) => onNavigera(searchObject(term, nyTyp))} />
       <ResultView
         läge={computeMode(key, fel)}
         ingaTraffar={ingaTraffar}
@@ -176,7 +176,7 @@ export const SokBibliotekPage = ({ q, type, onNavigera }: Props) => {
         }
         notes={notes}
         nyckel={key}
-        antal={antal}
+        antal={count}
         onVisaFler={visaFler}
       />
     </div>

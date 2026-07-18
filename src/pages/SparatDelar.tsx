@@ -28,15 +28,15 @@ export type Kort = {
 // The note tied to its origin (spec Notes and Sources): rooms link
 // to the reading room, topic notes to the essay. If the origin isn't found the
 // text still renders — without a link, but never hidden. Shared by Saved and search.
-export const noteToCard = (anteckning: Note): Kort => {
-  const datum = dateLabel(anteckning.updated)
-  const bas = { key: anteckning.originId, text: anteckning.text, datum }
-  if (anteckning.originType === 'room') {
-    const room = findRoomById(anteckning.originId)
+export const noteToCard = (note: Note): Kort => {
+  const datum = dateLabel(note.updated)
+  const bas = { key: note.originId, text: note.text, datum }
+  if (note.originType === 'room') {
+    const room = findRoomById(note.originId)
     const to = room ? ({ kind: 'rum', slug: room.slug } as const) : undefined
     return { ...bas, title: room?.title ?? 'Sparad tanke', to }
   }
-  const topic = findTopic(anteckning.originId)
+  const topic = findTopic(note.originId)
   const to = topic ? ({ kind: 'las', id: topic.id, mode: 'essa' } as const) : undefined
   return { ...bas, title: topic?.title ?? 'Sparad tanke', to }
 }

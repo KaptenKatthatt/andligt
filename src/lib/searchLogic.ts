@@ -3,7 +3,7 @@
 // so that questions and themes rank correctly and a famous author never beats a
 // more relevant question. No popularity or behaviour signal exists here.
 import type { SearchDoc, SearchType } from './searchIndex'
-import { inomSkrivfel, normalisera, ordlista, searchTokens, stam } from './searchNormalize'
+import { withinTypo, normalize, wordList, searchTokens, stem } from './searchNormalize'
 
 /** Which field a hit came from — internal, never shown to the user. */
 export type HitLevel = 'title-exact' | 'alias-exact' | 'title' | 'keywords' | 'subtitle' | 'text'
@@ -82,9 +82,9 @@ const link = (map: Map<string, Set<string>>, a: string, b: string): void => {
 const buildSynonymMap = (raw: Record<string, string[]>): Map<string, Set<string>> => {
   const map = new Map<string, Set<string>>()
   for (const [nyckel, värden] of Object.entries(raw)) {
-    const n = normalisera(nyckel)
+    const n = normalize(nyckel)
     for (const value of värden) {
-      const v = normalisera(value)
+      const v = normalize(value)
       link(map, n, v)
       link(map, v, n)
     }
@@ -99,30 +99,30 @@ const synonymsFor = (token: string): string[] => [...(SYNONYM_MAP.get(token) ?? 
 // Match factor between two normalised words: 1 for exact/prefix/stem/substring,
 // downweighted for typos, 0 for no hit. Prefix and substring only for longer
 // tokens, typos only conservatively (see soknormalisering).
-const bestAgainstWord = (token: string, ord: string): number => {
-  if (token === ord) return 1
-  if (token.length >= 3 && ord.startsWith(token)) return 1
-  if (stam(token) === stam(ord)) return 1
-  if (token.length >= 4 && ord.includes(token)) return 1
-  if (inomSkrivfel(token, ord)) return TYPO_FACTOR
+const bestAgainstWord = (token: string, word: string): number => {
+  if (token === word) return 1
+  if (token.length >= 3 && word.startsWith(token)) return 1
+  if (stem(token) === stem(word)) return 1
+  if (token.length >= 4 && word.includes(token)) return 1
+  if (withinTypo(token, word)) return TYPO_FACTOR
   return 0
 }
 
 // Synonyms match conservatively — only whole words or the same stem, never
 // arbitrary prefixes/substrings (so »ro« doesn't get stuck in »romersk«).
-const synonymHit = (synonym: string, ord: string): boolean =>
-  synonym === ord || stam(synonym) === stam(ord)
+const synonymHit = (synonym: string, word: string): boolean =>
+  synonym === word || stem(synonym) === stem(word)
 
 // Best factor for a token against a field's collection of words, synonyms included.
-const factorAgainstBucket = (token: string, ord: string[]): number => {
+const factorAgainstBucket = (token: string, word: string[]): number => {
   let best = 0
-  for (const o of ord) {
+  for (const o of word) {
     const faktor = bestAgainstWord(token, o)
     if (faktor > best) best = faktor
   }
   if (best >= 1) return best
   const synonyms = synonymsFor(token)
-  const hit = synonyms.some((synonym) => ord.some((o) => synonymHit(synonym, o)))
+  const hit = synonyms.some((synonym) => word.some((o) => synonymHit(synonym, o)))
   return hit ? Math.max(best, SYNONYM_FACTOR) : best
 }
 
@@ -134,11 +134,11 @@ const documentBuckets = (dok: SearchDoc): Bucket[] => [
   {
     level: 'title',
     base: LEVEL_SCORES.title,
-    words: [...ordlista(dok.title), ...dok.alias.flatMap(ordlista)],
+    words: [...wordList(dok.title), ...dok.alias.flatMap(wordList)],
   },
-  { level: 'keywords', base: LEVEL_SCORES.keywords, words: dok.keywords.flatMap(ordlista) },
-  { level: 'subtitle', base: LEVEL_SCORES.subtitle, words: dok.subtitle ? ordlista(dok.subtitle) : [] },
-  { level: 'text', base: LEVEL_SCORES.text, words: dok.text.flatMap(ordlista) },
+  { level: 'keywords', base: LEVEL_SCORES.keywords, words: dok.keywords.flatMap(wordList) },
+  { level: 'subtitle', base: LEVEL_SCORES.subtitle, words: dok.subtitle ? wordList(dok.subtitle) : [] },
+  { level: 'text', base: LEVEL_SCORES.text, words: dok.text.flatMap(wordList) },
 ]
 
 // A token's best score and level across the document's fields.
@@ -157,8 +157,8 @@ const tokenBest = (token: string, buckets: Bucket[]): { score: number; level: Hi
 
 // Exact whole-query hit (punctuation and diacritics normalised away).
 const exactLevel = (keyQuery: string, dok: SearchDoc): HitLevel | undefined => {
-  if (ordlista(dok.title).join(' ') === keyQuery) return 'title-exact'
-  if (dok.alias.some((alias) => ordlista(alias).join(' ') === keyQuery)) return 'alias-exact'
+  if (wordList(dok.title).join(' ') === keyQuery) return 'title-exact'
+  if (dok.alias.some((alias) => wordList(alias).join(' ') === keyQuery)) return 'alias-exact'
   return undefined
 }
 
@@ -194,18 +194,18 @@ const groupHits = (hits: SearchResult[]): SearchGroup[] => {
     list.push(hit)
     map.set(hit.document.type, list)
   }
-  const grupper = [...map.entries()].map(([type, lista]): SearchGroup => ({
+  const groups = [...map.entries()].map(([type, lista]): SearchGroup => ({
     type,
     heading: HEADINGS[type],
     hits: lista.sort((a, b) => b.score - a.score || compareTitleSv(a, b)).slice(0, MAX_PER_GROUP),
   }))
-  return grupper.sort((a, b) => bestScore(b) - bestScore(a))
+  return groups.sort((a, b) => bestScore(b) - bestScore(a))
 }
 
 /** The whole search: a query shorter than two characters returns nothing. The groups come in
  * relevance order; each group is finite (never infinite scroll). */
 export const searchInLibrary = (question: string, index: SearchDoc[]): SearchGroup[] => {
-  const keyQuery = ordlista(question).join(' ')
+  const keyQuery = wordList(question).join(' ')
   if (keyQuery.length < 2) return []
   const tokens = searchTokens(question)
   const hits = index.flatMap((dok) => {
@@ -218,11 +218,11 @@ export const searchInLibrary = (question: string, index: SearchDoc[]): SearchGro
 /** The finite initial view: at most five per group and twenty total; an expanded
  * group shows its whole (hard-capped) list. »Visa fler« reveals the rest. */
 export const visibleHits = (
-  grupper: SearchGroup[],
+  groups: SearchGroup[],
   expanderade: ReadonlySet<SearchType>,
 ): VisibleGroup[] => {
   let remaining = MAX_VISIBLE_TOTAL
-  return grupper.map((grupp) => {
+  return groups.map((grupp) => {
     const expanderad = expanderade.has(grupp.type)
     const limit = expanderad ? MAX_PER_GROUP : Math.min(MAX_VISIBLE_PER_GROUP, Math.max(remaining, 0))
     const synliga = grupp.hits.slice(0, limit)

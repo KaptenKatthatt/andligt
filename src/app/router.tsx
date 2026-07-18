@@ -20,8 +20,8 @@ import { RootLayout } from './RootLayout'
 // static access (m.X), so both the bundler and the dead-code analysis (fallow) can
 // see which export is used.
 const lazyPage = <Props extends object>(
-  valj: () => Promise<ComponentType<Props>>,
-): LazyExoticComponent<ComponentType<Props>> => lazy(async () => ({ default: await valj() }))
+  select: () => Promise<ComponentType<Props>>,
+): LazyExoticComponent<ComponentType<Props>> => lazy(async () => ({ default: await select() }))
 
 const AmnePage = lazyPage(() => import('../pages/AmnePage').then((m) => m.AmnePage))
 const AtlasPage = lazyPage(() => import('../pages/AtlasPage').then((m) => m.AtlasPage))

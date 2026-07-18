@@ -75,17 +75,17 @@ type SourceRelation = Room['sources'][number]
 // with several references into the same work (e.g. two Bible passages) gets one block with
 // a single uncertainty declaration and one »Om texten« link — not repeated.
 const groupBySource = (relations: SourceRelation[]): [Source, SourceRelation[]][] => {
-  const grupper: [Source, SourceRelation[]][] = []
+  const groups: [Source, SourceRelation[]][] = []
   for (const relation of relations) {
-    const existing = grupper.find(([source]) => source.id === relation.source)
+    const existing = groups.find(([source]) => source.id === relation.source)
     if (existing) {
       existing[1].push(relation)
       continue
     }
     const source = findSource(relation.source)
-    if (source) grupper.push([source, [relation]])
+    if (source) groups.push([source, [relation]])
   }
-  return grupper
+  return groups
 }
 
 // A source's rows in the detail: bibliography + use + edition per relation,
@@ -206,7 +206,7 @@ const RoomEnding = ({ rum }: { rum: Room }) => {
  * parameter `vandring`). Two equivalent, quiet choices — never autoplay, never a »rätt«
  * choice (paths.md, Moving Between Stops). The last room gets the optional closing
  * reflection instead, without congratulation or progress metric. */
-const Vandringsfot = ({ vandring, rum }: { vandring: Path; rum: Room }) => {
+const PathFooter = ({ vandring, rum }: { vandring: Path; rum: Room }) => {
   const navigate = useNavigate()
   const order = roomsForPath(vandring, allRooms)
   const index = order.findIndex((room) => room.id === rum.id)
@@ -337,7 +337,7 @@ export const RumPage = ({ slug, vandringSlug }: { slug: string; vandringSlug?: s
         ))}
       </div>
       <RoomEnding rum={room} />
-      {path !== undefined && <Vandringsfot vandring={path} rum={room} />}
+      {path !== undefined && <PathFooter vandring={path} rum={room} />}
     </div>
   )
 }

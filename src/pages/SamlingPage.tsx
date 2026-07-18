@@ -22,7 +22,7 @@ import {
   type Kort,
 } from './SparatDelar'
 
-type SparadVandring = { vandring: Path; senastRum: string | undefined }
+type SavedPath = { vandring: Path; senastRum: string | undefined }
 
 const RoomGroup = ({ rum }: { rum: Room[] }) =>
   rum.length === 0 ? null : (
@@ -33,7 +33,7 @@ const RoomGroup = ({ rum }: { rum: Room[] }) =>
     </Group>
   )
 
-const PathGroup = ({ vandringar }: { vandringar: SparadVandring[] }) =>
+const PathGroup = ({ vandringar }: { vandringar: SavedPath[] }) =>
   vandringar.length === 0 ? null : (
     <Group rubrik="Vandringar">
       {vandringar.map(({ vandring, senastRum }) => (
@@ -108,10 +108,10 @@ const RecentlyVisitedGroup = ({ rum, onRensa }: { rum: Room[]; onRensa: () => vo
   )
 
 const savedPathsList = (
-  sparadeVandringar: Record<string, SavedItem>,
+  savedPaths: Record<string, SavedItem>,
   vandringsplatser: Record<string, string>,
-): SparadVandring[] =>
-  savedIdsByTime(sparadeVandringar)
+): SavedPath[] =>
+  savedIdsByTime(savedPaths)
     .map((id) => findPathById(id))
     .filter((path): path is Path => path !== undefined)
     .map((path) => ({
@@ -135,7 +135,7 @@ export const SamlingPage = () => {
     .map(findTopic)
     .filter((topic) => topic !== undefined)
   const kapitel = Object.values(store.chapterBookmarks).sort((a, b) => b.savedAt - a.savedAt)
-  const kort = sortedNotes(store.notes).map(noteToCard)
+  const short = sortedNotes(store.notes).map(noteToCard)
   const recent = store.recentRooms
     .map((id) => findRoomById(id))
     .filter((room): room is Room => room !== undefined)
@@ -145,7 +145,7 @@ export const SamlingPage = () => {
     paths.length === 0 &&
     topics.length === 0 &&
     kapitel.length === 0 &&
-    kort.length === 0
+    short.length === 0
 
   return (
     <div className="screenTab">
@@ -160,7 +160,7 @@ export const SamlingPage = () => {
           <PathGroup vandringar={paths} />
           <BookmarkGroup topics={topics} />
           <SourcesGroup kapitel={kapitel} />
-          <NoteGroup kort={kort} />
+          <NoteGroup kort={short} />
         </>
       )}
       <RecentlyVisitedGroup rum={recent} onRensa={store.clearRecentlyVisited} />

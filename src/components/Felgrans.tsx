@@ -11,7 +11,7 @@ type State = { fel: boolean }
  * instead of a white screen. Only the error message is logged — never the page's
  * content or the user's text. The boundary is keyed per route in RootLayout so
  * it resets on navigation. */
-export class Felgrans extends Component<Props, State> {
+export class ErrorBoundary extends Component<Props, State> {
   override state: State = { fel: false }
 
   static getDerivedStateFromError(): State {

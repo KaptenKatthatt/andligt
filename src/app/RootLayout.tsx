@@ -1,6 +1,6 @@
 import { Outlet, useRouterState } from '@tanstack/react-router'
 import { Suspense, useState } from 'react'
-import { Felgrans } from '../components/Felgrans'
+import { ErrorBoundary } from '../components/Felgrans'
 import { NavTabs } from '../components/NavTabs'
 import { Sidladdning } from '../components/Sidladdning'
 import { ShellContext } from '../lib/shell'
@@ -29,11 +29,11 @@ export const RootLayout = () => {
           <main id="innehall" tabIndex={-1}>
             {/* The per-route key resets the error boundary on navigation, so a
                 single chunk error doesn't stick when the reader moves on (phase 14). */}
-            <Felgrans key={pathname}>
+            <ErrorBoundary key={pathname}>
               <Suspense fallback={<Sidladdning />}>
                 <Outlet />
               </Suspense>
-            </Felgrans>
+            </ErrorBoundary>
           </main>
           {showNav && <NavTabs />}
         </ShellContext.Provider>
