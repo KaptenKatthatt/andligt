@@ -3,7 +3,7 @@ id: tradition-taoism
 slug: taoism
 name: Taoism
 keywords: [daoism]
-status: publicerad
+status: published
 ---
 
 En kinesisk tradition med rötter i tiden omkring 300-talet f.Kr. Taoisterna

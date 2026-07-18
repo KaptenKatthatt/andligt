@@ -17,7 +17,7 @@ import {
 } from './library'
 
 // Fabricerade poster: bara fälten biblioteket läser behöver vara meningsfulla.
-const rum = (title: string, status: Room['status'] = 'publicerad', över: Partial<Room> = {}): Room => ({
+const rum = (title: string, status: Room['status'] = 'published', över: Partial<Room> = {}): Room => ({
   id: `rum-${title}`,
   slug: title,
   title,
@@ -26,7 +26,7 @@ const rum = (title: string, status: Room['status'] = 'publicerad', över: Partia
   themes: ['tema-x'],
   thoughtToCarry: 'x',
   reflectionQuestions: ['x?'],
-  sources: [{ source: 'kalla-x', use: 'bearbetning', primary: true }],
+  sources: [{ source: 'kalla-x', use: 'adaptation', primary: true }],
   readingTimeMinutes: 4,
   language: 'sv',
   status,
@@ -44,7 +44,7 @@ const tema = (
   id: `tema-${label}`,
   slug: label,
   label,
-  status: 'publicerad',
+  status: 'published',
   ...extra,
 })
 
@@ -52,9 +52,9 @@ describe('bibliotekTeman', () => {
   it('släpper bara igenom publicerade teman — utkast hör inte hemma i biblioteket', () => {
     const themes = [
       tema('lugn'),
-      tema('mod', { status: 'utkast' }),
-      tema('sanning', { status: 'granskning' }),
-      tema('mening', { status: 'arkiverad' }),
+      tema('mod', { status: 'draft' }),
+      tema('sanning', { status: 'review' }),
+      tema('mening', { status: 'archived' }),
     ]
     expect(libraryThemes(themes).map((t) => t.label)).toEqual(['lugn'])
   })
@@ -81,9 +81,9 @@ describe('bibliotekRum', () => {
     const all = [
       rum('över tröskeln'),
       rum('att vänta'),
-      rum('utkastet', 'utkast'),
-      rum('granskningen', 'granskning'),
-      rum('arkivet', 'arkiverad'),
+      rum('utkastet', 'draft'),
+      rum('granskningen', 'review'),
+      rum('arkivet', 'archived'),
     ]
     expect(libraryRoom(all).map((r) => r.title)).toEqual(['att vänta', 'över tröskeln'])
   })
@@ -94,18 +94,18 @@ const fråga = (text: string, över: Partial<Question> = {}): Question => ({
   slug: text,
   text,
   themes: ['tema-x'],
-  status: 'publicerad',
+  status: 'published',
   ...över,
 })
 
 describe('rumForFraga', () => {
   it('sätter rum med frågan som primär först, sedan relaterade — bara publicerade', () => {
     const all = [
-      rum('önskan', 'publicerad', { primaryQuestion: 'fraga-b', relatedQuestions: ['fraga-a'] }),
-      rum('besked', 'publicerad', { primaryQuestion: 'fraga-a' }),
-      rum('utkastet', 'utkast', { primaryQuestion: 'fraga-a' }),
-      rum('annat', 'publicerad', { primaryQuestion: 'fraga-b' }),
-      rum('avstånd', 'publicerad', { primaryQuestion: 'fraga-a' }),
+      rum('önskan', 'published', { primaryQuestion: 'fraga-b', relatedQuestions: ['fraga-a'] }),
+      rum('besked', 'published', { primaryQuestion: 'fraga-a' }),
+      rum('utkastet', 'draft', { primaryQuestion: 'fraga-a' }),
+      rum('other', 'published', { primaryQuestion: 'fraga-b' }),
+      rum('avstånd', 'published', { primaryQuestion: 'fraga-a' }),
     ]
     expect(roomForQuestion('fraga-a', all).map((r) => r.title)).toEqual([
       'avstånd',
@@ -116,7 +116,7 @@ describe('rumForFraga', () => {
 
   it('räknar inte samma rum två gånger när frågan är både primär och relaterad', () => {
     const all = [
-      rum('dubblerat', 'publicerad', { primaryQuestion: 'fraga-a', relatedQuestions: ['fraga-a'] }),
+      rum('dubblerat', 'published', { primaryQuestion: 'fraga-a', relatedQuestions: ['fraga-a'] }),
     ]
     expect(roomForQuestion('fraga-a', all).map((r) => r.title)).toEqual(['dubblerat'])
   })
@@ -127,7 +127,7 @@ describe('fragorForTema', () => {
     const all = [
       fråga('Vad är sant?', { themes: ['tema-a'] }),
       fråga('Är detta viktigt?', { themes: ['tema-a'] }),
-      fråga('Utkastfråga?', { themes: ['tema-a'], status: 'utkast' }),
+      fråga('Utkastfråga?', { themes: ['tema-a'], status: 'draft' }),
       fråga('Annat tema?', { themes: ['tema-b'] }),
     ]
     // Svensk order: Ä sorterar efter V, inte som A.
@@ -139,31 +139,31 @@ describe('fragorForTema', () => {
 })
 
 describe('kallorForFraga', () => {
-  const source = (id: string, status: Source['status'] = 'publicerad'): Source => ({
+  const source = (id: string, status: Source['status'] = 'published'): Source => ({
     id,
     slug: id,
     title: id,
-    type: 'bok',
+    type: 'book',
     rights: 'public-domain',
     status,
   })
 
   it('härleder unika publicerade källor ur frågans rum', () => {
     const all = [
-      rum('första', 'publicerad', {
+      rum('första', 'published', {
         primaryQuestion: 'fraga-a',
-        sources: [{ source: 'kalla-a', use: 'bearbetning', primary: true }],
+        sources: [{ source: 'kalla-a', use: 'adaptation', primary: true }],
       }),
-      rum('andra', 'publicerad', {
+      rum('andra', 'published', {
         primaryQuestion: 'fraga-a',
         sources: [
-          { source: 'kalla-a', use: 'citat', primary: true },
-          { source: 'kalla-b', use: 'historisk-kontext', primary: false },
+          { source: 'kalla-a', use: 'quote', primary: true },
+          { source: 'kalla-b', use: 'historical-context', primary: false },
         ],
       }),
-      rum('ovidkommande', 'publicerad', {
+      rum('ovidkommande', 'published', {
         primaryQuestion: 'fraga-b',
-        sources: [{ source: 'kalla-c', use: 'citat', primary: true }],
+        sources: [{ source: 'kalla-c', use: 'quote', primary: true }],
       }),
     ]
     const sources = [source('kalla-a'), source('kalla-b'), source('kalla-c')]
@@ -178,7 +178,7 @@ describe('publiceradeVia', () => {
   it('slår upp id och behåller bara publicerade träffar', () => {
     const poster = new Map([
       ['tema-a', tema('a')],
-      ['tema-b', tema('b', { status: 'utkast' })],
+      ['tema-b', tema('b', { status: 'draft' })],
     ])
     const träffar = publishedThrough(['tema-a', 'tema-b', 'tema-saknas'], (id) => poster.get(id))
     expect(träffar.map((t) => t.label)).toEqual(['a'])
@@ -188,17 +188,17 @@ describe('publiceradeVia', () => {
 describe('rumForKalla', () => {
   const relation = (source: string, primary: boolean) => ({
     source,
-    use: 'bearbetning' as const,
+    use: 'adaptation' as const,
     primary,
   })
 
   it('hittar publicerade rum med källan, primär relation först', () => {
     const all = [
-      rum('annan source', 'publicerad', { sources: [relation('kalla-b', true)] }),
-      rum('bygger på källan', 'publicerad', { sources: [relation('kalla-a', false)] }),
-      rum('utkast med källan', 'utkast', { sources: [relation('kalla-a', true)] }),
-      rum('vilar på källan', 'publicerad', { sources: [relation('kalla-a', true)] }),
-      rum('andrahandsbruk', 'publicerad', { sources: [relation('kalla-a', false)] }),
+      rum('annan source', 'published', { sources: [relation('kalla-b', true)] }),
+      rum('bygger på källan', 'published', { sources: [relation('kalla-a', false)] }),
+      rum('utkast med källan', 'draft', { sources: [relation('kalla-a', true)] }),
+      rum('vilar på källan', 'published', { sources: [relation('kalla-a', true)] }),
+      rum('andrahandsbruk', 'published', { sources: [relation('kalla-a', false)] }),
     ]
     expect(roomForSource('kalla-a', all).map((r) => r.title)).toEqual([
       'vilar på källan',
@@ -209,7 +209,7 @@ describe('rumForKalla', () => {
 })
 
 describe('bibliotekTraditioner', () => {
-  const tradition = (name: string, status: Tradition['status'] = 'publicerad'): Tradition => ({
+  const tradition = (name: string, status: Tradition['status'] = 'published'): Tradition => ({
     id: `tradition-${name}`,
     slug: name,
     name,
@@ -217,7 +217,7 @@ describe('bibliotekTraditioner', () => {
   })
 
   it('släpper bara igenom publicerade traditioner, i svensk namnordning', () => {
-    const all = [tradition('stoicism'), tradition('buddhism'), tradition('taoism', 'utkast')]
+    const all = [tradition('stoicism'), tradition('buddhism'), tradition('taoism', 'draft')]
     expect(libraryTraditions(all).map((t) => t.name)).toEqual(['buddhism', 'stoicism'])
   })
 })
@@ -229,7 +229,7 @@ const vandring = (title: string, över: Partial<Path> = {}): Path => ({
   introduction: 'x',
   centralQuestion: 'fraga-x',
   rum: ['rum-a', 'rum-b', 'rum-c'],
-  status: 'publicerad',
+  status: 'published',
   created: '2026-07-12',
   updated: '2026-07-12',
   ...över,
@@ -240,8 +240,8 @@ describe('bibliotekVandringar', () => {
     const all = [
       vandring('över tröskeln'),
       vandring('att vandra'),
-      vandring('utkastet', { status: 'utkast' }),
-      vandring('arkivet', { status: 'arkiverad' }),
+      vandring('utkastet', { status: 'draft' }),
+      vandring('arkivet', { status: 'archived' }),
     ]
     expect(libraryPaths(all).map((v) => v.title)).toEqual(['att vandra', 'över tröskeln'])
   })
@@ -250,9 +250,9 @@ describe('bibliotekVandringar', () => {
 describe('rumForVandring', () => {
   it('följer den redaktionella ordningen i rum-listan, inte titelordning', () => {
     const all = [
-      rum('sist', 'publicerad', { id: 'rum-c' }),
-      rum('först', 'publicerad', { id: 'rum-a' }),
-      rum('mitten', 'publicerad', { id: 'rum-b' }),
+      rum('sist', 'published', { id: 'rum-c' }),
+      rum('först', 'published', { id: 'rum-a' }),
+      rum('mitten', 'published', { id: 'rum-b' }),
     ]
     const v = vandring('v', { rum: ['rum-a', 'rum-b', 'rum-c'] })
     expect(roomForPath(v, all).map((r) => r.title)).toEqual(['först', 'mitten', 'sist'])
@@ -260,15 +260,15 @@ describe('rumForVandring', () => {
 
   it('behåller opublicerade rum — granskningsvyn ska gå att vandra', () => {
     const all = [
-      rum('publikt', 'publicerad', { id: 'rum-a' }),
-      rum('utkast', 'utkast', { id: 'rum-b' }),
+      rum('publikt', 'published', { id: 'rum-a' }),
+      rum('draft', 'draft', { id: 'rum-b' }),
     ]
     const v = vandring('v', { rum: ['rum-a', 'rum-b'] })
-    expect(roomForPath(v, all).map((r) => r.title)).toEqual(['publikt', 'utkast'])
+    expect(roomForPath(v, all).map((r) => r.title)).toEqual(['publikt', 'draft'])
   })
 
   it('hoppar tyst över id som saknar rum', () => {
-    const all = [rum('finns', 'publicerad', { id: 'rum-a' })]
+    const all = [rum('finns', 'published', { id: 'rum-a' })]
     const v = vandring('v', { rum: ['rum-a', 'rum-saknas'] })
     expect(roomForPath(v, all).map((r) => r.title)).toEqual(['finns'])
   })
@@ -277,9 +277,9 @@ describe('rumForVandring', () => {
 describe('vandringLastid', () => {
   it('summerar rummens lästid', () => {
     const rummen = [
-      rum('a', 'publicerad', { readingTimeMinutes: 4 }),
-      rum('b', 'publicerad', { readingTimeMinutes: 3 }),
-      rum('c', 'publicerad', { readingTimeMinutes: 3 }),
+      rum('a', 'published', { readingTimeMinutes: 4 }),
+      rum('b', 'published', { readingTimeMinutes: 3 }),
+      rum('c', 'published', { readingTimeMinutes: 3 }),
     ]
     expect(pathReadingTime(rummen)).toBe(10)
   })
@@ -290,12 +290,12 @@ describe('traditionerForVandring', () => {
     id,
     slug: id,
     title: id,
-    type: 'bok',
+    type: 'book',
     rights: 'public-domain',
     traditions,
-    status: 'publicerad',
+    status: 'published',
   })
-  const tradition = (name: string, status: Tradition['status'] = 'publicerad'): Tradition => ({
+  const tradition = (name: string, status: Tradition['status'] = 'published'): Tradition => ({
     id: `tradition-${name}`,
     slug: name,
     name,
@@ -304,8 +304,8 @@ describe('traditionerForVandring', () => {
 
   it('härleder unika publicerade traditioner ur rummens källor, i svensk ordning', () => {
     const rummen = [
-      rum('ett', 'publicerad', { sources: [{ source: 'kalla-a', use: 'bearbetning', primary: true }] }),
-      rum('två', 'publicerad', { sources: [{ source: 'kalla-b', use: 'citat', primary: true }] }),
+      rum('ett', 'published', { sources: [{ source: 'kalla-a', use: 'adaptation', primary: true }] }),
+      rum('två', 'published', { sources: [{ source: 'kalla-b', use: 'quote', primary: true }] }),
     ]
     const sources = [
       source('kalla-a', ['tradition-stoicism']),
@@ -314,7 +314,7 @@ describe('traditionerForVandring', () => {
     const traditions = [
       tradition('stoicism'),
       tradition('buddhism'),
-      tradition('taoism', 'utkast'),
+      tradition('taoism', 'draft'),
     ]
     // taoism är utkast och faller bort; stoicism och buddhism i svensk order.
     expect(traditionsForPath(rummen, sources, traditions).map((t) => t.name)).toEqual([
@@ -329,7 +329,7 @@ describe('passagerForKalla', () => {
     id: `passage-${reference}`,
     source: 'kalla-a',
     reference,
-    status: 'publicerad',
+    status: 'published',
     ...över,
   })
 
@@ -351,7 +351,7 @@ describe('passagerForKalla', () => {
   it('utesluter utkastpassager och andra källors passager', () => {
     const passager = [
       passage('avsnitt 1'),
-      passage('avsnitt 2', { status: 'granskning' }),
+      passage('avsnitt 2', { status: 'review' }),
       passage('avsnitt 3', { source: 'kalla-b' }),
     ]
     expect(passagesForSource('kalla-a', passager).map((p) => p.reference)).toEqual(['avsnitt 1'])

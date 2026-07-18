@@ -17,5 +17,5 @@ notes: >-
   Ebooks — samma källa som bibliotekets ingest av Handboken. Alltså en
   försvenskning av Longs engelska, inte direkt ur grekiskan; ingen ändring av
   meningen. AI avgör aldrig ensam vad som publiceras.
-status: publicerad
+status: published
 ---

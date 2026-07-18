@@ -13,11 +13,11 @@ sources:
   - source: kalla-forsvarstalet
     passage: passage-forsvarstalet-doden
     reference: slutdelen — om döden
-    use: bearbetning
+    use: adaptation
     primary: true
     editorialNote: Bearbetning av talets resonemang om döden i återberättad form; inga direkta citat.
 readingTimeMinutes: 4
-status: publicerad
+status: published
 created: 2026-07-15
 updated: 2026-07-16
 editorial:

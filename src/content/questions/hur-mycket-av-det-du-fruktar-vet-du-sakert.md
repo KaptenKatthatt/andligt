@@ -3,7 +3,7 @@ id: fraga-hur-mycket-av-det-du-fruktar-vet-du-sakert
 slug: hur-mycket-av-det-du-fruktar-vet-du-sakert
 text: Hur mycket av det du fruktar vet du säkert, och hur mycket antar du?
 themes: [tema-mod]
-status: publicerad
+status: published
 ---
 
 Rädslan talar ofta med stor säkerhet: det här kommer att gå illa, det här är det

@@ -2,16 +2,16 @@
 id: kalla-bibeln
 slug: bibeln
 title: Bibeln
-type: skrift
+type: writing
 traditions: [tradition-kristendom]
 originalLanguage: Hebreiska, arameiska och grekiska
 approximateDating: ca 900 f.Kr–100 e.Kr
-attribution: okänt
-dating: ungefärlig
+attribution: unknown
+dating: approximate
 rights: public-domain
 libraryWork: bibel-1917
 keywords: [Predikaren, Ecclesiastes]
-status: publicerad
+status: published
 ---
 
 En samling skrifter — berättelser, lagar, poesi, brev — tillkomna under

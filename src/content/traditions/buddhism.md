@@ -2,7 +2,7 @@
 id: tradition-buddhism
 slug: buddhism
 name: Buddhism
-status: publicerad
+status: published
 ---
 
 En tradition som uppstod i norra Indien omkring 400-talet f.Kr., ur Siddharta

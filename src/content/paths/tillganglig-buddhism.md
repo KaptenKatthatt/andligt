@@ -19,7 +19,7 @@ closingReflection: >-
   Kanske är det gemensamma i de här rummen ett grepp som lossnar: om det goda, om
   det svåra, om bilden av vem du måste bli. Ingenting av det behöver göras klart
   idag. Du kan gå tillbaka till vilket rum som helst när du vill.
-status: publicerad
+status: published
 created: 2026-07-16
 updated: 2026-07-17
 editorialNotes: >-

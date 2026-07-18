@@ -3,7 +3,7 @@ id: fraga-ar-jaget-en-sak-eller-en-strom
 slug: ar-jaget-en-sak-eller-en-strom
 text: Är jaget en sak eller en ström?
 themes: [tema-manniskan]
-status: publicerad
+status: published
 ---
 
 Det känns självklart att det finns ett »jag« bakom tankarna — något som äger

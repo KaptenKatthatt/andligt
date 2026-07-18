@@ -13,11 +13,11 @@ sources:
   - source: kalla-zazen-wasan
     passage: passage-zazen-wasan-oppning
     reference: inledningen
-    use: bearbetning
+    use: adaptation
     primary: true
     editorialNote: Bearbetning av vattnet-och-isen-bilden och liknelserna; inga direkta citat.
 readingTimeMinutes: 3
-status: publicerad
+status: published
 created: 2026-07-15
 updated: 2026-07-15
 editorial:

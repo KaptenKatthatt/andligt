@@ -13,11 +13,11 @@ sources:
   - source: kalla-enchiridion
     passage: passage-enchiridion-5
     reference: avsnitt 5
-    use: bearbetning
+    use: adaptation
     primary: true
     editorialNote: Bearbetning av avsnitt 5:s distinktion mellan tinget och omdömet; inga direkta citat.
 readingTimeMinutes: 3
-status: publicerad
+status: published
 created: 2026-07-12
 updated: 2026-07-13
 editorial:

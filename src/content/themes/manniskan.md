@@ -4,7 +4,7 @@ slug: manniskan
 label: Människan
 defaultRoom: rum-vagnen
 order: 6
-status: publicerad
+status: published
 ---
 
 Vad det är att vara en av oss.

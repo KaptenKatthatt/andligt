@@ -20,5 +20,5 @@ notes: >-
   följer Bellows utgåva (bibliotekets text). Alltså en försvenskning av
   Bellows engelska, inte direkt ur fornisländskan; ingen ändring av
   meningen. AI avgör aldrig ensam vad som publiceras.
-status: publicerad
+status: published
 ---

@@ -13,11 +13,11 @@ sources:
   - source: kalla-zhuangzi
     passage: passage-zhuangzi-1-tradet
     reference: kapitel 1 — det stora trädet
-    use: bearbetning
+    use: adaptation
     primary: true
     editorialNote: Bearbetning av trädliknelsen i återberättad form; inga direkta citat.
 readingTimeMinutes: 3
-status: publicerad
+status: published
 created: 2026-07-15
 updated: 2026-07-15
 editorial:

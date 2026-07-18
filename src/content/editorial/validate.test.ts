@@ -11,10 +11,10 @@ const rum = (över: Partial<Room> = {}): Room => ({
   themes: ['tema-a'],
   thoughtToCarry: 'En tanke.',
   reflectionQuestions: ['En fråga?'],
-  sources: [{ source: 'kalla-a', use: 'bearbetning', primary: true }],
+  sources: [{ source: 'kalla-a', use: 'adaptation', primary: true }],
   readingTimeMinutes: 4,
   language: 'sv',
-  status: 'utkast',
+  status: 'draft',
   created: '2026-07-09',
   updated: '2026-07-09',
   opening: 'Öppning.',
@@ -26,7 +26,7 @@ const tema = (över: Partial<Theme> = {}): Theme => ({
   id: 'tema-a',
   slug: 'tema-a',
   label: 'Tema A',
-  status: 'publicerad',
+  status: 'published',
   ...över,
 })
 
@@ -35,7 +35,7 @@ const fråga = (över: Partial<Question> = {}): Question => ({
   slug: 'fraga-a',
   text: 'Vad är A?',
   themes: ['tema-a'],
-  status: 'publicerad',
+  status: 'published',
   ...över,
 })
 
@@ -43,11 +43,11 @@ const source = (över: Partial<Source> = {}): Source => ({
   id: 'kalla-a',
   slug: 'kalla-a',
   title: 'Källa A',
-  type: 'bok',
-  attribution: 'känt',
-  dating: 'känd',
+  type: 'book',
+  attribution: 'known',
+  dating: 'known',
   rights: 'public-domain',
-  status: 'publicerad',
+  status: 'published',
   ...över,
 })
 
@@ -55,7 +55,7 @@ const passage = (över: Partial<SourcePassage> = {}): SourcePassage => ({
   id: 'passage-a',
   source: 'kalla-a',
   reference: 'avsnitt 1',
-  status: 'publicerad',
+  status: 'published',
   ...över,
 })
 
@@ -92,7 +92,7 @@ describe('valideraInnehall', () => {
         rum: [
           rum({
             themes: ['tema-x'],
-            sources: [{ source: 'kalla-x', use: 'bearbetning', primary: true }],
+            sources: [{ source: 'kalla-x', use: 'adaptation', primary: true }],
           }),
         ],
       }),
@@ -102,11 +102,11 @@ describe('valideraInnehall', () => {
   })
 
   it('kräver primär källa för publicerade rum men inte för utkast', () => {
-    const withoutPrimary = [{ source: 'kalla-a', use: 'bearbetning' as const, primary: false }]
+    const withoutPrimary = [{ source: 'kalla-a', use: 'adaptation' as const, primary: false }]
     const draft = validateContent(grund({ rum: [rum({ sources: withoutPrimary })] }))
     expect(draft).toEqual([])
     const published = validateContent(
-      grund({ rum: [rum({ status: 'publicerad', sources: withoutPrimary })] }),
+      grund({ rum: [rum({ status: 'published', sources: withoutPrimary })] }),
     )
     expect(published.some((f) => f.includes('primary source'))).toBe(true)
   })
@@ -114,9 +114,9 @@ describe('valideraInnehall', () => {
   it('hindrar publicerade rum från att länka opublicerat innehåll', () => {
     const fel = validateContent(
       grund({
-        rum: [rum({ status: 'publicerad' })],
-        frågor: [fråga({ status: 'utkast' })],
-        sources: [source({ status: 'granskning' })],
+        rum: [rum({ status: 'published' })],
+        frågor: [fråga({ status: 'draft' })],
+        sources: [source({ status: 'review' })],
       }),
     )
     expect(fel.some((f) => f.includes('fraga-a') && f.includes('opublicerad'))).toBe(true)
@@ -125,7 +125,7 @@ describe('valideraInnehall', () => {
 
   it('hindrar publicerade rum från att länka opublicerade källpassager', () => {
     const medPassage = [
-      { source: 'kalla-a', passage: 'passage-a', use: 'citat' as const, primary: true },
+      { source: 'kalla-a', passage: 'passage-a', use: 'quote' as const, primary: true },
     ]
     const passagen = {
       id: 'passage-a',
@@ -135,8 +135,8 @@ describe('valideraInnehall', () => {
     }
     const draftPassage = validateContent(
       grund({
-        rum: [rum({ status: 'publicerad', sources: medPassage })],
-        passager: [{ ...passagen, status: 'utkast' }],
+        rum: [rum({ status: 'published', sources: medPassage })],
+        passager: [{ ...passagen, status: 'draft' }],
       }),
     )
     expect(
@@ -144,8 +144,8 @@ describe('valideraInnehall', () => {
     ).toBe(true)
     const publishedPassage = validateContent(
       grund({
-        rum: [rum({ status: 'publicerad', sources: medPassage })],
-        passager: [{ ...passagen, status: 'publicerad' }],
+        rum: [rum({ status: 'published', sources: medPassage })],
+        passager: [{ ...passagen, status: 'published' }],
       }),
     )
     expect(publishedPassage).toEqual([])
@@ -153,7 +153,7 @@ describe('valideraInnehall', () => {
 
   it('begränsar lästiden för publicerade rum till 1–10 minuter', () => {
     const fel = validateContent(
-      grund({ rum: [rum({ status: 'publicerad', readingTimeMinutes: 12 })] }),
+      grund({ rum: [rum({ status: 'published', readingTimeMinutes: 12 })] }),
     )
     expect(fel.some((f) => f.includes('lästid'))).toBe(true)
     expect(validateContent(grund({ rum: [rum({ readingTimeMinutes: 12 })] }))).toEqual([])
@@ -187,13 +187,13 @@ describe('valideraInnehall', () => {
             introduction: 'Intro.',
             centralQuestion: 'fraga-x',
             rum: ['rum-a', 'rum-x', 'rum-y'],
-            status: 'utkast',
+            status: 'draft',
             created: '2026-07-09',
             updated: '2026-07-09',
           },
         ],
         passager: [
-          { id: 'passage-a', source: 'kalla-x', reference: 'avsnitt 1', status: 'utkast' },
+          { id: 'passage-a', source: 'kalla-x', reference: 'avsnitt 1', status: 'draft' },
         ],
       }),
     )
@@ -208,7 +208,7 @@ describe('valideraInnehall', () => {
     const unpublishedTheme = validateContent(
       grund({
         rum: [rum({ themes: ['tema-b'] })],
-        themes: [tema({ status: 'utkast' }), tema({ id: 'tema-b', slug: 'tema-b' })],
+        themes: [tema({ status: 'draft' }), tema({ id: 'tema-b', slug: 'tema-b' })],
       }),
     )
     expect(
@@ -218,7 +218,7 @@ describe('valideraInnehall', () => {
       grund({
         frågor: [
           fråga({ relatedQuestions: ['fraga-b'] }),
-          fråga({ id: 'fraga-b', slug: 'fraga-b', status: 'utkast' }),
+          fråga({ id: 'fraga-b', slug: 'fraga-b', status: 'draft' }),
         ],
       }),
     )
@@ -231,8 +231,8 @@ describe('valideraInnehall', () => {
     const draftQuestion = validateContent(
       grund({
         rum: [rum({ themes: ['tema-a'], primaryQuestion: 'fraga-a' })],
-        themes: [tema(), tema({ id: 'tema-b', slug: 'tema-b', status: 'utkast' })],
-        frågor: [fråga({ status: 'utkast', themes: ['tema-b'] })],
+        themes: [tema(), tema({ id: 'tema-b', slug: 'tema-b', status: 'draft' })],
+        frågor: [fråga({ status: 'draft', themes: ['tema-b'] })],
       }),
     )
     expect(draftQuestion).toEqual([])
@@ -247,7 +247,7 @@ describe('valideraInnehall', () => {
     const unpublished = validateContent(
       grund({
         sources: [source({ traditions: ['tradition-a'] })],
-        traditions: [{ ...traditionen, status: 'utkast' }],
+        traditions: [{ ...traditionen, status: 'draft' }],
       }),
     )
     expect(
@@ -256,19 +256,19 @@ describe('valideraInnehall', () => {
     const publicerad = validateContent(
       grund({
         sources: [source({ traditions: ['tradition-a'] })],
-        traditions: [{ ...traditionen, status: 'publicerad' }],
+        traditions: [{ ...traditionen, status: 'published' }],
       }),
     )
     expect(publicerad).toEqual([])
     // Utkastkällor är fria — grinden gäller bara publicerat.
     const draftSource = validateContent(
       grund({
-        rum: [rum({ sources: [{ source: 'kalla-b', use: 'bearbetning', primary: true }] })],
+        rum: [rum({ sources: [{ source: 'kalla-b', use: 'adaptation', primary: true }] })],
         sources: [
           source({ id: 'kalla-b', slug: 'kalla-b' }),
-          source({ status: 'utkast', traditions: ['tradition-a'] }),
+          source({ status: 'draft', traditions: ['tradition-a'] }),
         ],
-        traditions: [{ ...traditionen, status: 'utkast' }],
+        traditions: [{ ...traditionen, status: 'draft' }],
       }),
     )
     expect(draftSource).toEqual([])
@@ -286,7 +286,7 @@ describe('valideraInnehall', () => {
             introduction: 'Intro.',
             centralQuestion: 'fraga-a',
             rum: ['rum-a', 'rum-b', 'rum-c'],
-            status: 'publicerad',
+            status: 'published',
             created: '2026-07-09',
             updated: '2026-07-09',
           },
@@ -297,28 +297,28 @@ describe('valideraInnehall', () => {
   })
 
   it('kräver källpassage med utgåva för citat och översättning i publicerade rum', () => {
-    const withoutPassage = [{ source: 'kalla-a', use: 'citat' as const, primary: true }]
+    const withoutPassage = [{ source: 'kalla-a', use: 'quote' as const, primary: true }]
     // Utkast får sakna passage — grinden gäller bara publicerat.
     expect(validateContent(grund({ rum: [rum({ sources: withoutPassage })] }))).toEqual([])
     const publishedWithout = validateContent(
-      grund({ rum: [rum({ status: 'publicerad', sources: withoutPassage })] }),
+      grund({ rum: [rum({ status: 'published', sources: withoutPassage })] }),
     )
-    expect(publishedWithout.some((f) => f.includes('citat') && f.includes('källpassage'))).toBe(true)
+    expect(publishedWithout.some((f) => f.includes('quote') && f.includes('källpassage'))).toBe(true)
     // Passage utan edition räcker inte.
     const medPassage = [
-      { source: 'kalla-a', passage: 'passage-a', use: 'citat' as const, primary: true },
+      { source: 'kalla-a', passage: 'passage-a', use: 'quote' as const, primary: true },
     ]
     const withoutUtgava = validateContent(
       grund({
-        rum: [rum({ status: 'publicerad', sources: medPassage })],
+        rum: [rum({ status: 'published', sources: medPassage })],
         passager: [passage()],
       }),
     )
-    expect(withoutUtgava.some((f) => f.includes('citat') && f.includes('edition'))).toBe(true)
+    expect(withoutUtgava.some((f) => f.includes('quote') && f.includes('edition'))).toBe(true)
     // Med reference + edition passerar citatet.
     const komplett = validateContent(
       grund({
-        rum: [rum({ status: 'publicerad', sources: medPassage })],
+        rum: [rum({ status: 'published', sources: medPassage })],
         passager: [passage({ edition: 'George Long, 1877' })],
       }),
     )
@@ -327,20 +327,20 @@ describe('valideraInnehall', () => {
 
   it('kräver angiven översättare för egen översättning', () => {
     const relation = [
-      { source: 'kalla-a', passage: 'passage-a', use: 'översättning' as const, primary: true },
+      { source: 'kalla-a', passage: 'passage-a', use: 'translation' as const, primary: true },
     ]
     const withoutTranslator = validateContent(
       grund({
-        rum: [rum({ status: 'publicerad', sources: relation })],
+        rum: [rum({ status: 'published', sources: relation })],
         passager: [passage({ edition: 'Grekiska (public domain)' })],
       }),
     )
     expect(
-      withoutTranslator.some((f) => f.includes('översättning') && f.includes('översättare')),
+      withoutTranslator.some((f) => f.includes('translation') && f.includes('översättare')),
     ).toBe(true)
     const withTranslator = validateContent(
       grund({
-        rum: [rum({ status: 'publicerad', sources: relation })],
+        rum: [rum({ status: 'published', sources: relation })],
         passager: [passage({ edition: 'Grekiska (public domain)', translator: 'Redaktionen' })],
       }),
     )
@@ -356,10 +356,10 @@ describe('valideraInnehall', () => {
     // Utkastkällor slipper grinden.
     const draft = validateContent(
       grund({
-        rum: [rum({ sources: [{ source: 'kalla-b', use: 'bearbetning', primary: true }] })],
+        rum: [rum({ sources: [{ source: 'kalla-b', use: 'adaptation', primary: true }] })],
         sources: [
           source({ id: 'kalla-b', slug: 'kalla-b' }),
-          source({ status: 'utkast', attribution: undefined, dating: undefined }),
+          source({ status: 'draft', attribution: undefined, dating: undefined }),
         ],
       }),
     )
@@ -371,11 +371,11 @@ describe('valideraInnehall', () => {
       grund({
         // fraga-b är utkast och central; rummen är publicerade så bara den
         // centrala frågan bryter grinden.
-        frågor: [fråga(), fråga({ id: 'fraga-b', slug: 'fraga-b', status: 'utkast' })],
+        frågor: [fråga(), fråga({ id: 'fraga-b', slug: 'fraga-b', status: 'draft' })],
         rum: [
-          rum({ status: 'publicerad' }),
-          rum({ id: 'rum-b', slug: 'rum-b', status: 'publicerad' }),
-          rum({ id: 'rum-c', slug: 'rum-c', status: 'publicerad' }),
+          rum({ status: 'published' }),
+          rum({ id: 'rum-b', slug: 'rum-b', status: 'published' }),
+          rum({ id: 'rum-c', slug: 'rum-c', status: 'published' }),
         ],
         vandringar: [
           {
@@ -385,7 +385,7 @@ describe('valideraInnehall', () => {
             introduction: 'Intro.',
             centralQuestion: 'fraga-b',
             rum: ['rum-a', 'rum-b', 'rum-c'],
-            status: 'publicerad',
+            status: 'published',
             created: '2026-07-09',
             updated: '2026-07-09',
           },

@@ -13,11 +13,11 @@ sources:
   - source: kalla-dhammapada
     passage: passage-dhammapada-277
     reference: vers 277
-    use: bearbetning
+    use: adaptation
     primary: true
     editorialNote: Bearbetning av versens rad om det förgängliga; inga direkta citat.
 readingTimeMinutes: 3
-status: publicerad
+status: published
 created: 2026-07-15
 updated: 2026-07-15
 editorial:

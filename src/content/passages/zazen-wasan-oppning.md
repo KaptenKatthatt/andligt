@@ -23,5 +23,5 @@ notes: >-
   tog uttryckligen ställning och valde att publicera med förbehållet dokumenterat,
   med teckenverifieringen mot tryckt utgåva som kvarstående uppföljning.
   Publiceringsbeslutet är redaktörens — AI avgör aldrig ensam vad som publiceras.
-status: publicerad
+status: published
 ---

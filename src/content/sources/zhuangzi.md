@@ -2,17 +2,17 @@
 id: kalla-zhuangzi
 slug: zhuangzi
 title: Zhuangzi
-type: bok
+type: book
 attributedAuthor: Zhuang Zhou
 traditions: [tradition-taoism]
 originalLanguage: Klassisk kinesiska
 approximateDating: ca 300-talet f.Kr
 place: Kina
-attribution: omtvistat
-dating: ungefärlig
+attribution: disputed
+dating: approximate
 rights: public-domain
 libraryWork: zhuangzi
-status: publicerad
+status: published
 ---
 
 Berättelser och liknelser — kocken vars kniv aldrig blir slö, mannen som

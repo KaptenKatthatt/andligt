@@ -47,7 +47,7 @@ describe('tröskeln', () => {
       'Lidande',
       'Människan',
     ])
-    expect(thresholdThemes.every((tema) => tema.status !== 'arkiverad')).toBe(true)
+    expect(thresholdThemes.every((tema) => tema.status !== 'archived')).toBe(true)
   })
 })
 

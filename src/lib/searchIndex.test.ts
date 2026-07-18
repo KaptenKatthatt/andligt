@@ -12,7 +12,7 @@ import { byggSokindex, searchIndexData, type SearchDoc } from './searchIndex'
 
 type Status = Room['status']
 
-const fraga = (id: string, status: Status = 'publicerad', över: Partial<Question> = {}): Question => ({
+const fraga = (id: string, status: Status = 'published', över: Partial<Question> = {}): Question => ({
   id,
   slug: id,
   text: `Fråga ${id}`,
@@ -21,7 +21,7 @@ const fraga = (id: string, status: Status = 'publicerad', över: Partial<Questio
   ...över,
 })
 
-const tema = (id: string, status: Status = 'publicerad', över: Partial<Theme> = {}): Theme => ({
+const tema = (id: string, status: Status = 'published', över: Partial<Theme> = {}): Theme => ({
   id,
   slug: id,
   label: `Tema ${id}`,
@@ -29,7 +29,7 @@ const tema = (id: string, status: Status = 'publicerad', över: Partial<Theme> =
   ...över,
 })
 
-const rum = (id: string, status: Status = 'publicerad', över: Partial<Room> = {}): Room => ({
+const rum = (id: string, status: Status = 'published', över: Partial<Room> = {}): Room => ({
   id,
   slug: id,
   title: `Rum ${id}`,
@@ -38,7 +38,7 @@ const rum = (id: string, status: Status = 'publicerad', över: Partial<Room> = {
   themes: ['tema-1'],
   thoughtToCarry: 'Bär detta.',
   reflectionQuestions: ['Vad tänker du?'],
-  sources: [{ source: 'kalla-1', use: 'bearbetning', primary: true }],
+  sources: [{ source: 'kalla-1', use: 'adaptation', primary: true }],
   readingTimeMinutes: 6,
   language: 'sv',
   status,
@@ -49,11 +49,11 @@ const rum = (id: string, status: Status = 'publicerad', över: Partial<Room> = {
   ...över,
 })
 
-const kalla = (id: string, status: Status = 'publicerad', över: Partial<Source> = {}): Source => ({
+const kalla = (id: string, status: Status = 'published', över: Partial<Source> = {}): Source => ({
   id,
   slug: id,
   title: `Källa ${id}`,
-  type: 'bok',
+  type: 'book',
   rights: 'public-domain',
   status,
   ...över,
@@ -62,7 +62,7 @@ const kalla = (id: string, status: Status = 'publicerad', över: Partial<Source>
 const passage = (
   id: string,
   source: string,
-  status: Status = 'publicerad',
+  status: Status = 'published',
   över: Partial<SourcePassage> = {},
 ): SourcePassage => ({
   id,
@@ -74,7 +74,7 @@ const passage = (
 
 const tradition = (
   id: string,
-  status: Status = 'publicerad',
+  status: Status = 'published',
   över: Partial<Tradition> = {},
 ): Tradition => ({
   id,
@@ -86,7 +86,7 @@ const tradition = (
 
 const vandring = (
   id: string,
-  status: Status = 'publicerad',
+  status: Status = 'published',
   över: Partial<Path> = {},
 ): Path => ({
   id,
@@ -118,12 +118,12 @@ describe('byggSokindex — publiceringsgrind', () => {
   it('släpper aldrig in utkast, granskning eller arkiverat av någon typ', () => {
     const index = byggSokindex({
       ...tomtIndex,
-      frågor: [fraga('fraga-pub'), fraga('fraga-utkast', 'utkast')],
-      themes: [tema('tema-pub'), tema('tema-granskning', 'granskning')],
-      rum: [rum('rum-pub'), rum('rum-arkiv', 'arkiverad')],
-      vandringar: [vandring('vandring-utkast', 'utkast')],
-      sources: [kalla('kalla-pub'), kalla('kalla-utkast', 'utkast')],
-      traditions: [tradition('trad-pub'), tradition('trad-granskning', 'granskning')],
+      frågor: [fraga('fraga-pub'), fraga('fraga-utkast', 'draft')],
+      themes: [tema('tema-pub'), tema('tema-granskning', 'review')],
+      rum: [rum('rum-pub'), rum('rum-arkiv', 'archived')],
+      vandringar: [vandring('vandring-utkast', 'draft')],
+      sources: [kalla('kalla-pub'), kalla('kalla-utkast', 'draft')],
+      traditions: [tradition('trad-pub'), tradition('trad-granskning', 'review')],
     })
     const ids = index.map((dok) => dok.id).sort()
     expect(ids).toEqual(['fraga-pub', 'kalla-pub', 'rum-pub', 'tema-pub', 'trad-pub'])
@@ -134,8 +134,8 @@ describe('byggSokindex — publiceringsgrind', () => {
       ...tomtIndex,
       sources: [kalla('kalla-1')],
       passager: [
-        passage('p-pub', 'kalla-1', 'publicerad', { translation: 'synligt citat' }),
-        passage('p-utkast', 'kalla-1', 'utkast', { translation: 'hemligt utkast' }),
+        passage('p-pub', 'kalla-1', 'published', { translation: 'synligt citat' }),
+        passage('p-utkast', 'kalla-1', 'draft', { translation: 'hemligt utkast' }),
       ],
     })
     const dok = hitta(index, 'kalla-1')
@@ -149,7 +149,7 @@ describe('byggSokindex — fält per typ', () => {
     const index = byggSokindex({
       ...tomtIndex,
       sources: [
-        kalla('kalla-1', 'publicerad', {
+        kalla('kalla-1', 'published', {
           originalTitle: 'Enchiridion',
           alias: ['Handboken'],
           attributedAuthor: 'Epiktetos',
@@ -162,14 +162,14 @@ describe('byggSokindex — fält per typ', () => {
   it('ger rummet en meta med primärfrågans text och lästid', () => {
     const index = byggSokindex({
       ...tomtIndex,
-      frågor: [fraga('fraga-1', 'publicerad', { text: 'Vad kan du styra?' })],
-      rum: [rum('rum-1', 'publicerad', { primaryQuestion: 'fraga-1', readingTimeMinutes: 8 })],
+      frågor: [fraga('fraga-1', 'published', { text: 'Vad kan du styra?' })],
+      rum: [rum('rum-1', 'published', { primaryQuestion: 'fraga-1', readingTimeMinutes: 8 })],
     })
     expect(hitta(index, 'rum-1')?.meta).toBe('Vad kan du styra? · ca 8 min')
   })
 
   it('sätter frågans titel till frågetexten och pekar mot frågesidan', () => {
-    const index = byggSokindex({ ...tomtIndex, frågor: [fraga('fraga-1', 'publicerad', { text: 'Hur lever man?' })] })
+    const index = byggSokindex({ ...tomtIndex, frågor: [fraga('fraga-1', 'published', { text: 'Hur lever man?' })] })
     const dok = hitta(index, 'fraga-1')
     expect(dok?.title).toBe('Hur lever man?')
     expect(dok?.mal).toEqual({ kind: 'fraga', slug: 'fraga-1' })

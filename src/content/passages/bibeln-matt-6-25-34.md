@@ -34,5 +34,5 @@ notes: >-
   utelämnat här eftersom passagen börjar vid 6:25. Förgranskad mot
   verify-sources.md. Publiceringsbeslutet är redaktören Jonas Olsons läsning
   och merge av PR #32 — AI avgör aldrig ensam vad som publiceras.
-status: publicerad
+status: published
 ---

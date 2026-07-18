@@ -18,5 +18,5 @@ notes: >-
   biblioteket använder Sujato (CC0); versnumreringen är densamma.
   Publiceringsbeslutet är redaktören Jonas Olsons läsning och merge av
   PR #32 — AI avgör aldrig ensam vad som publiceras.
-status: publicerad
+status: published
 ---

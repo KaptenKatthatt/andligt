@@ -3,7 +3,7 @@ id: fraga-maste-du-bli-nagot-for-att-vara-hel
 slug: maste-du-bli-nagot-for-att-vara-hel
 text: Måste du bli något annat för att vara hel?
 themes: [tema-lugn]
-status: publicerad
+status: published
 ---
 
 Mycket i livet är inriktat på att bli — bättre, klokare, lugnare, färdig. Men

@@ -11,7 +11,7 @@ export const HISTORIKLANGD = 3
 /** Urvalsmängden: publicerade rum som bär temat. Att ett rum är publicerat
  * och taggat med temat är godkännandet — utkast kan aldrig väljas. */
 export const valbaraRoom = (temaId: string, rum: Room[]): Room[] =>
-  rum.filter((ettRum) => ettRum.status === 'publicerad' && ettRum.themes.includes(temaId))
+  rum.filter((ettRum) => ettRum.status === 'published' && ettRum.themes.includes(temaId))
 
 // Lägre värde = mer nyligen läst; aldrig lästa rum hamnar längst bort.
 const avstand = (id: string, senastLasta: string[]): number => {

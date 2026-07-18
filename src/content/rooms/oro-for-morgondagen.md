@@ -13,21 +13,21 @@ sources:
   - source: kalla-bibeln
     passage: passage-bibeln-matt-6-25-34
     reference: Matteusevangeliet 6:25–34
-    use: citat
+    use: quote
     primary: true
     editorialNote: Ett markerat citat ur 6:34 i kärnan; övrigt återgivet som bearbetning.
   - source: kalla-bibeln
     passage: passage-bibeln-pred-11-4-6
     reference: Predikaren 11:4–6
-    use: bearbetning
+    use: adaptation
     editorialNote: Bearbetning av vindspejarbilden och såddrådet; inga direkta citat.
   - source: kalla-dhammapada
     passage: passage-dhammapada-216
     reference: vers 216
-    use: bearbetning
+    use: adaptation
     editorialNote: Bearbetning av versens rotdiagnos; inga direkta citat.
 readingTimeMinutes: 4
-status: publicerad
+status: published
 created: 2026-07-14
 updated: 2026-07-14
 editorial:

@@ -19,5 +19,5 @@ notes: >-
   samma översättning som bibliotekets ingest hämtar från getBible. Förgranskad
   mot verify-sources.md. Publiceringsbeslutet är redaktören Jonas Olsons
   läsning och merge av PR #32 — AI avgör aldrig ensam vad som publiceras.
-status: publicerad
+status: published
 ---

@@ -33,7 +33,7 @@ export const Sidhuvud = ({
     <header className={styles.huvud}>
       <div className="kicker">
         {kicker}
-        {status !== undefined && status !== 'publicerad' && ' · Utkast'}
+        {status !== undefined && status !== 'published' && ' · Utkast'}
       </div>
       <h1 className={styles.huvudTitel}>{title}</h1>
       {children}

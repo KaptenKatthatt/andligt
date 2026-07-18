@@ -13,11 +13,11 @@ sources:
   - source: kalla-sjalvbetraktelser
     passage: passage-sjalvbetraktelser-2-1
     reference: bok 2, avsnitt 1
-    use: bearbetning
+    use: adaptation
     primary: true
     editorialNote: Bearbetning av avsnittets bild; inga direkta citat i rummet.
 readingTimeMinutes: 3
-status: publicerad
+status: published
 created: 2026-07-15
 updated: 2026-07-17
 editorial:

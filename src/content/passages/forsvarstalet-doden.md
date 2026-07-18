@@ -27,5 +27,5 @@ notes: >-
   another«. De två styckena (Jowetts stycken 56 och 72) är här sammanförda till
   ett kort utdrag; ordningen är talets egen. Rummets prosa bearbetar tanken friare.
   Publiceringsbeslutet är redaktörens — AI avgör aldrig ensam vad som publiceras.
-status: publicerad
+status: published
 ---

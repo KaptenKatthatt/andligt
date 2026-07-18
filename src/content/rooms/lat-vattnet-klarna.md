@@ -13,11 +13,11 @@ sources:
   - source: kalla-tao-te-ching
     passage: passage-tao-te-ching-15
     reference: kapitel 15
-    use: bearbetning
+    use: adaptation
     primary: true
     editorialNote: Bearbetning av kapitlets bild av det grumliga vattnet; inga direkta citat.
 readingTimeMinutes: 3
-status: publicerad
+status: published
 created: 2026-07-15
 updated: 2026-07-15
 editorial:

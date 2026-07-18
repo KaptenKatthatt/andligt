@@ -19,5 +19,5 @@ notes: >-
   Bellows engelska, inte direkt ur fornisländskan; ingen ändring av
   meningen. Strofnumreringen följer bibliotekets text (Bellows) — den
   skiljer sig i andra utgåvor. AI avgör aldrig ensam vad som publiceras.
-status: publicerad
+status: published
 ---

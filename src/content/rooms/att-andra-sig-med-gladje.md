@@ -13,11 +13,11 @@ sources:
   - source: kalla-sjalvbetraktelser
     passage: passage-sjalvbetraktelser-6-20
     reference: bok 6, avsnitt 20
-    use: bearbetning
+    use: adaptation
     primary: true
     editorialNote: Bearbetning av avsnittets tankegång; inga direkta citat i rummet.
 readingTimeMinutes: 3
-status: publicerad
+status: published
 created: 2026-07-15
 updated: 2026-07-15
 editorial:

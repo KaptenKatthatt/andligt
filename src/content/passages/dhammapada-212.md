@@ -19,5 +19,5 @@ notes: >-
   begär används redan av rummet Oro för morgondagen). Alltså en försvenskning
   av Sujatos engelska, inte direkt ur palin; ingen ändring av meningen. AI
   avgör aldrig ensam vad som publiceras.
-status: publicerad
+status: published
 ---

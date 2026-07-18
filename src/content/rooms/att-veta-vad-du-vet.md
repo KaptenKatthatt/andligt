@@ -13,11 +13,11 @@ sources:
   - source: kalla-analekterna
     passage: passage-analekterna-2-17
     reference: bok 2, kapitel 17
-    use: bearbetning
+    use: adaptation
     primary: true
     editorialNote: Bearbetning av kapitlets lärosats; kärnan återger den nära men utan citatmarkering.
 readingTimeMinutes: 3
-status: publicerad
+status: published
 created: 2026-07-15
 updated: 2026-07-15
 editorial:

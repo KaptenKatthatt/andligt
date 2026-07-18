@@ -3,7 +3,7 @@ id: fraga-maste-livet-vara-pa-vag-nagonstans
 slug: maste-livet-vara-pa-vag-nagonstans
 text: Måste livet vara på väg någonstans?
 themes: [tema-mening]
-status: publicerad
+status: published
 ---
 
 Mycket i tillvaron mäts efter vart det leder — nytta, mål, framsteg. En

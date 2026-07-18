@@ -2,7 +2,7 @@
 id: tradition-kristendom
 slug: kristendom
 name: Kristendom
-status: publicerad
+status: published
 ---
 
 En tradition med rötter i judendomen, framvuxen ur Jesu liv och undervisning

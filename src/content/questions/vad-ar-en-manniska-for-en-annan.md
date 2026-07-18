@@ -3,7 +3,7 @@ id: fraga-vad-ar-en-manniska-for-en-annan
 slug: vad-ar-en-manniska-for-en-annan
 text: Vad är en människa för en annan människa?
 themes: [tema-manniskan]
-status: publicerad
+status: published
 ---
 
 Vi lever hela livet bland andra, och ändå är frågan om vad de betyder för

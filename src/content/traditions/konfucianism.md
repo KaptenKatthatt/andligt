@@ -2,7 +2,7 @@
 id: tradition-konfucianism
 slug: konfucianism
 name: Konfucianism
-status: publicerad
+status: published
 ---
 
 En kinesisk tradition ur Konfucius undervisning på 500-talet f.Kr. Den frågar

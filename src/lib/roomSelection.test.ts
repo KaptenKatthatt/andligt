@@ -3,7 +3,7 @@ import type { Room, Theme } from '../content/editorial/schema'
 import { valbaraRoom, selectRoom } from './roomSelection'
 
 // Fabricerade poster: bara fälten urvalet läser behöver vara meningsfulla.
-const rum = (id: string, themes: string[], status: Room['status'] = 'publicerad'): Room => ({
+const rum = (id: string, themes: string[], status: Room['status'] = 'published'): Room => ({
   id,
   slug: id,
   title: id,
@@ -12,7 +12,7 @@ const rum = (id: string, themes: string[], status: Room['status'] = 'publicerad'
   themes,
   thoughtToCarry: 'x',
   reflectionQuestions: ['x?'],
-  sources: [{ source: 'kalla-x', use: 'bearbetning', primary: true }],
+  sources: [{ source: 'kalla-x', use: 'adaptation', primary: true }],
   readingTimeMinutes: 4,
   language: 'sv',
   status,
@@ -27,16 +27,16 @@ const tema = (id: string, defaultRoom?: string): Theme => ({
   slug: id,
   label: id,
   defaultRoom,
-  status: 'publicerad',
+  status: 'published',
 })
 
 describe('valbaraRum', () => {
   it('släpper bara igenom publicerade rum med temat', () => {
     const all = [
       rum('a', ['lugn']),
-      rum('b', ['lugn'], 'utkast'),
-      rum('c', ['lugn'], 'granskning'),
-      rum('d', ['lugn'], 'arkiverad'),
+      rum('b', ['lugn'], 'draft'),
+      rum('c', ['lugn'], 'review'),
+      rum('d', ['lugn'], 'archived'),
       rum('e', ['mod']),
     ]
     expect(valbaraRoom('lugn', all).map((r) => r.id)).toEqual(['a'])
@@ -45,7 +45,7 @@ describe('valbaraRum', () => {
 
 describe('valjRum', () => {
   it('ger null när temat saknar publicerade rum', () => {
-    expect(selectRoom(tema('lugn'), [rum('a', ['lugn'], 'utkast')], [])).toBeNull()
+    expect(selectRoom(tema('lugn'), [rum('a', ['lugn'], 'draft')], [])).toBeNull()
   })
 
   it('väljer standardrummet vid första besöket', () => {

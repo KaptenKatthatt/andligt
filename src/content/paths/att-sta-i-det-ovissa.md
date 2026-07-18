@@ -20,7 +20,7 @@ closingReflection: >-
   och lär sig så småningom att ovissheten inte främst är ett hinder att övervinna
   utan villkoret man rör sig i. Du kan gå tillbaka till vilket rum som helst när
   du vill.
-status: publicerad
+status: published
 created: 2026-07-17
 updated: 2026-07-17
 editorialNotes: >-

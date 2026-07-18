@@ -14,7 +14,7 @@ import type {
 } from '../content/editorial/schema'
 
 const onlyPublished = <T extends { status: Room['status'] }>(poster: T[]): T[] =>
-  poster.filter((post) => post.status === 'publicerad')
+  poster.filter((post) => post.status === 'published')
 
 const svOrdning =
   <T,>(text: (post: T) => string) =>
@@ -30,7 +30,7 @@ export const publishedThrough = <T extends { status: Room['status'] }>(
 ): T[] =>
   ids.flatMap((id) => {
     const post = hitta(id)
-    return post !== undefined && post.status === 'publicerad' ? [post] : []
+    return post !== undefined && post.status === 'published' ? [post] : []
   })
 
 /** Bibliotekets themes: publicerade, i samma redaktionella order som tröskeln. */

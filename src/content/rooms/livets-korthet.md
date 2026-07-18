@@ -13,11 +13,11 @@ sources:
   - source: kalla-seneca-dialoger
     passage: passage-seneca-livets-korthet-1
     reference: Om livets korthet, kap 1–2
-    use: bearbetning
+    use: adaptation
     primary: true
     editorialNote: Bearbetning av verkets inledande vändning; inga direkta citat i rummet.
 readingTimeMinutes: 4
-status: publicerad
+status: published
 created: 2026-07-15
 updated: 2026-07-17
 editorial:

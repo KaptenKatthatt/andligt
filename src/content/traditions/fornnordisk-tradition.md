@@ -2,7 +2,7 @@
 id: tradition-fornnordisk
 slug: fornnordisk-tradition
 name: Fornnordisk tradition
-status: publicerad
+status: published
 ---
 
 Nordens förkristna föreställningsvärld, bevarad framför allt i de isländska

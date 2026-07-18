@@ -3,16 +3,16 @@ id: kalla-zazen-wasan
 slug: zazen-wasan
 title: Zazen wasan
 originalTitle: 坐禅和讃
-type: dikt
+type: poem
 author: Hakuin Ekaku
 traditions: [tradition-buddhism]
 originalLanguage: Japanska
 approximateDating: ca 1750-tal
 place: Japan
-attribution: känt
-dating: ungefärlig
+attribution: known
+dating: approximate
 rights: public-domain
-status: publicerad
+status: published
 ---
 
 Hakuins hymn till zazen, sittandet i stillhet — en kort sång på japanska,

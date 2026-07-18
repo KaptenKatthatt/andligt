@@ -3,17 +3,17 @@ id: kalla-tao-te-ching
 slug: tao-te-ching
 title: Tao Te Ching
 originalTitle: Daodejing
-type: bok
+type: book
 attributedAuthor: Laozi
 traditions: [tradition-taoism]
 originalLanguage: Klassisk kinesiska
 approximateDating: ca 400–300 f.Kr
 place: Kina
-attribution: omtvistat
-dating: omtvistad
+attribution: disputed
+dating: disputed
 rights: public-domain
 libraryWork: tao-te-ching
-status: publicerad
+status: published
 ---
 
 Åttioen korta kapitel om vägen och dess kraft. Texten tillskrivs Laozi, men

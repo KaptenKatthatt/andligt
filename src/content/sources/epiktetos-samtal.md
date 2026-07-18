@@ -3,18 +3,18 @@ id: kalla-epiktetos-samtal
 slug: epiktetos-samtal
 title: Samtal
 originalTitle: Diatribai
-type: bok
+type: book
 author: Arrianos
 attributedAuthor: Epiktetos
 traditions: [tradition-stoicism]
 originalLanguage: Grekiska
 approximateDating: ca 108 e.Kr
 place: Nikopolis
-attribution: tillskrivet
-dating: ungefärlig
+attribution: attributed
+dating: approximate
 rights: public-domain
 libraryWork: epiktetos-samtal
-status: publicerad
+status: published
 ---
 
 Epiktetos undervisning i friare och fylligare form än Enchiridion — samtal

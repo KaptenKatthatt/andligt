@@ -3,16 +3,16 @@ id: kalla-sjalvbetraktelser
 slug: sjalvbetraktelser
 title: Självbetraktelser
 originalTitle: Ta eis heauton
-type: bok
+type: book
 author: Marcus Aurelius
 traditions: [tradition-stoicism]
 originalLanguage: Grekiska
 approximateDating: ca 170–180 e.Kr
-attribution: känt
-dating: ungefärlig
+attribution: known
+dating: approximate
 rights: public-domain
 libraryWork: sjalvbetraktelser
-status: publicerad
+status: published
 ---
 
 Den romerske kejsarens privata anteckningar, skrivna under fälttåg och aldrig

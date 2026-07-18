@@ -3,7 +3,7 @@ id: fraga-vad-tar-du-for-givet-ar-verkligt
 slug: vad-tar-du-for-givet-ar-verkligt
 text: Vad tar du för givet är sant, som du aldrig riktigt prövar?
 themes: [tema-sanning]
-status: publicerad
+status: published
 ---
 
 Mycket av det vi lever efter prövar vi aldrig; det bara ligger där som

@@ -3,19 +3,19 @@ id: kalla-enchiridion
 slug: enchiridion
 title: Enchiridion (Handboken)
 originalTitle: Encheiridion
-type: bok
+type: book
 author: Arrianos
 attributedAuthor: Epiktetos
 traditions: [tradition-stoicism]
 originalLanguage: Grekiska
 approximateDating: ca 125 e.Kr
 place: Nikopolis
-attribution: tillskrivet
-dating: ungefärlig
+attribution: attributed
+dating: approximate
 rights: public-domain
 libraryWork: enchiridion
 alias: [Epictetus, Handboken]
-status: publicerad
+status: published
 ---
 
 En kort handbok i stoisk livshållning, sammanställd av lärjungen Arrianos ur

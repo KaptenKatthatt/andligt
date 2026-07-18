@@ -2,16 +2,16 @@
 id: kalla-dhammapada
 slug: dhammapada
 title: Dhammapada
-type: skrift
+type: writing
 attributedAuthor: Buddha
 traditions: [tradition-buddhism]
 originalLanguage: Pali
 approximateDating: ca 300-talet f.Kr, nedtecknad ca 29 f.Kr
-attribution: tillskrivet
-dating: ungefärlig
+attribution: attributed
+dating: approximate
 rights: public-domain
 libraryWork: dhammapada
-status: publicerad
+status: published
 ---
 
 Fyrahundratjugotre verser ur Buddhas undervisning, ordnade i tjugosex kapitel.

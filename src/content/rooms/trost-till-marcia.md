@@ -13,11 +13,11 @@ sources:
   - source: kalla-seneca-dialoger
     passage: passage-seneca-marcia-10
     reference: Tröst till Marcia, kap 10
-    use: bearbetning
+    use: adaptation
     primary: true
     editorialNote: Bearbetning av kapitlets tröstetanke; inga direkta citat i rummet.
 readingTimeMinutes: 4
-status: publicerad
+status: published
 created: 2026-07-15
 updated: 2026-07-15
 editorial:

@@ -14,7 +14,7 @@ export const allThemes: Theme[] = collect(
 
 /** Tröskelns themes (home-and-entry.md): redaktionell order, aldrig arkiverade. */
 export const thresholdThemes: Theme[] = allThemes
-  .filter((tema) => tema.status !== 'arkiverad')
+  .filter((tema) => tema.status !== 'archived')
   .sort(
     (a, b) =>
       (a.order ?? Number.MAX_SAFE_INTEGER) - (b.order ?? Number.MAX_SAFE_INTEGER) ||

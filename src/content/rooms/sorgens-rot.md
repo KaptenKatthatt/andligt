@@ -13,11 +13,11 @@ sources:
   - source: kalla-dhammapada
     passage: passage-dhammapada-212
     reference: vers 212
-    use: bearbetning
+    use: adaptation
     primary: true
     editorialNote: Bearbetning av versens tankegång; kärnan speglar den men utan citatmarkering.
 readingTimeMinutes: 3
-status: publicerad
+status: published
 created: 2026-07-15
 updated: 2026-07-15
 editorial:

@@ -13,11 +13,11 @@ sources:
   - source: kalla-milindapanha
     passage: passage-milindapanha-vagnen
     reference: bok II, kapitel 1 — vagnsliknelsen
-    use: bearbetning
+    use: adaptation
     primary: true
     editorialNote: Bearbetning av vagnsdialogen i återberättad form; inga direkta citat.
 readingTimeMinutes: 4
-status: publicerad
+status: published
 created: 2026-07-14
 updated: 2026-07-14
 editorial:

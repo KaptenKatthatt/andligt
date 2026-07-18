@@ -19,7 +19,7 @@ closingReflection: >-
   Kanske är lugnet inte något man når och blir klar med, utan något man
   återvänder till. Distinktionen behöver göras om varje dag. Du kan gå tillbaka
   till vilket rum som helst när du vill.
-status: publicerad
+status: published
 created: 2026-07-12
 updated: 2026-07-12
 editorialNotes: >-

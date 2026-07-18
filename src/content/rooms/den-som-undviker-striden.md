@@ -13,11 +13,11 @@ sources:
   - source: kalla-poetiska-eddan
     passage: passage-poetiska-eddan-havamal-16
     reference: Hávamál, strof 16
-    use: bearbetning
+    use: adaptation
     primary: true
     editorialNote: Bearbetning av strofens tankegång; strofen citeras inte i rummet.
 readingTimeMinutes: 3
-status: publicerad
+status: published
 created: 2026-07-15
 updated: 2026-07-15
 editorial:

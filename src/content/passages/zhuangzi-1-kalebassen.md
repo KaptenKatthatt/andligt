@@ -27,5 +27,5 @@ notes: >-
   slut men bär skilda bilder. Alltså en försvenskning av Giles engelska,
   inte direkt ur klassisk kinesiska; ingen ändring av meningen. AI avgör
   aldrig ensam vad som publiceras.
-status: publicerad
+status: published
 ---

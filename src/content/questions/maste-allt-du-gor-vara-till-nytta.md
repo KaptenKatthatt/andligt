@@ -3,7 +3,7 @@ id: fraga-maste-allt-du-gor-vara-till-nytta
 slug: maste-allt-du-gor-vara-till-nytta
 text: Måste allt du gör vara till nytta?
 themes: [tema-mening]
-status: publicerad
+status: published
 ---
 
 Vi mäter gärna det vi gör i vad det är bra för — vad det leder till, vad det

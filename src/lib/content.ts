@@ -112,23 +112,23 @@ export const sourceName = (source: Source): string =>
 export const osakerheter = (source: Source): string[] => {
   const name = source.attributedAuthor ?? source.author ?? 'annan hand'
   const rows: string[] = []
-  if (source.attribution === 'tillskrivet')
+  if (source.attribution === 'attributed')
     rows.push(`Verket tillskrivs traditionellt ${name}; författarskapet är inte säkert belagt.`)
-  if (source.attribution === 'omtvistat') rows.push('Författarskapet är omdiskuterat.')
-  if (source.attribution === 'okänt') rows.push('Upphovspersonen är okänd.')
-  if (source.dating === 'ungefärlig') rows.push('Textens exakta datering är osäker.')
-  if (source.dating === 'omtvistad') rows.push('Textens datering är omtvistad.')
-  if (source.dating === 'okänd') rows.push('När texten tillkom är okänt.')
+  if (source.attribution === 'disputed') rows.push('Författarskapet är omdiskuterat.')
+  if (source.attribution === 'unknown') rows.push('Upphovspersonen är okänd.')
+  if (source.dating === 'approximate') rows.push('Textens exakta datering är osäker.')
+  if (source.dating === 'disputed') rows.push('Textens datering är omtvistad.')
+  if (source.dating === 'unknown') rows.push('När texten tillkom är okänt.')
   return rows
 }
 
 /** Kort svensk deklaration av hur rummet använder källan (source-and-context.md). */
 export const useLabel: Record<Room['sources'][number]['use'], string> = {
-  'citat': 'Direkt citat.',
-  'översättning': 'Egen svensk översättning.',
-  'parafras': 'Parafraserad återgivning.',
-  'bearbetning': 'Bearbetad för reflektion.',
+  'quote': 'Direkt citat.',
+  'translation': 'Egen svensk översättning.',
+  'paraphrase': 'Parafraserad återgivning.',
+  'adaptation': 'Bearbetad för reflektion.',
   'inspiration': 'Redaktionell reflektion inspirerad av källan.',
-  'sammanställning': 'Redaktionell sammanställning av flera källor.',
-  'historisk-kontext': 'Historisk bakgrundskälla.',
+  'compilation': 'Redaktionell sammanställning av flera källor.',
+  'historical-context': 'Historisk bakgrundskälla.',
 }

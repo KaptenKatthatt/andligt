@@ -13,11 +13,11 @@ sources:
   - source: kalla-prosaiska-eddan
     passage: passage-prosaiska-eddan-balder
     reference: Gylfaginning (Balders död)
-    use: bearbetning
+    use: adaptation
     primary: true
     editorialNote: Bearbetning av mytens tanke om den delade och den vägrade sorgen; inga direkta citat.
 readingTimeMinutes: 4
-status: publicerad
+status: published
 created: 2026-07-15
 updated: 2026-07-15
 editorial:

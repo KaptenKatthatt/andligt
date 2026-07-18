@@ -2,7 +2,7 @@
 id: tradition-antik-grekisk-filosofi
 slug: antik-grekisk-filosofi
 name: Antik grekisk filosofi
-status: publicerad
+status: published
 ---
 
 Det grekiska tänkandet från 500-talet f.Kr. och framåt, med Sokrates, Platon

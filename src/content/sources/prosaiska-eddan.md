@@ -2,17 +2,17 @@
 id: kalla-prosaiska-eddan
 slug: prosaiska-eddan
 title: Prosaiska Eddan
-type: bok
+type: book
 author: Snorre Sturlasson
 traditions: [tradition-fornnordisk]
 originalLanguage: Fornisländska
 approximateDating: ca 1220
 place: Island
-attribution: känt
-dating: ungefärlig
+attribution: known
+dating: approximate
 rights: public-domain
 libraryWork: prosaiska-eddan
-status: publicerad
+status: published
 ---
 
 Snorre Sturlassons lärobok i skaldekonst, skriven när den gamla

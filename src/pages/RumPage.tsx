@@ -252,9 +252,9 @@ const Vandringsfot = ({ vandring, rum }: { vandring: Path; rum: Room }) => {
  * skriva vandringsminne (paths.md: minnet är orientering, aldrig förlopp). */
 const useRumsminne = (rum: Room | undefined, vandring: Path | undefined): void => {
   const { registreraLastRum, registreraVandringsplats } = useAtlas()
-  const publishedRoomId = rum?.status === 'publicerad' ? rum.id : undefined
+  const publishedRoomId = rum?.status === 'published' ? rum.id : undefined
   const pathPositionId =
-    vandring?.status === 'publicerad' &&
+    vandring?.status === 'published' &&
     publishedRoomId !== undefined &&
     vandring.rum.includes(publishedRoomId)
       ? vandring.id
@@ -309,7 +309,7 @@ export const RumPage = ({ slug, vandringSlug }: { slug: string; vandringSlug?: s
         <header className={styles.huvud}>
           <div className="kicker">
             {tema?.label ?? ''}
-            {rum.status !== 'publicerad' && ' · Utkast'}
+            {rum.status !== 'published' && ' · Utkast'}
           </div>
           <h1 className={styles.title}>{rum.title}</h1>
         </header>

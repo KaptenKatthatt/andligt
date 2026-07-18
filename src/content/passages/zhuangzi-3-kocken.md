@@ -32,5 +32,5 @@ notes: >-
   som »kniv«. Rummets prosa bearbetar bilden friare och delar inga meningar med
   översättningen. Publiceringsbeslutet är redaktörens — AI avgör aldrig ensam
   vad som publiceras.
-status: publicerad
+status: published
 ---

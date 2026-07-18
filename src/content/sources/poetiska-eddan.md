@@ -2,16 +2,16 @@
 id: kalla-poetiska-eddan
 slug: poetiska-eddan
 title: Poetiska Eddan
-type: dikt
+type: poem
 traditions: [tradition-fornnordisk]
 originalLanguage: Fornisländska
 approximateDating: 800–1200-tal, nedtecknad på 1200-talet
 place: Island
-attribution: okänt
-dating: ungefärlig
+attribution: unknown
+dating: approximate
 rights: public-domain
 libraryWork: poetiska-eddan
-status: publicerad
+status: published
 ---
 
 Gudakväden av okända skalder, burna i muntlig tradition i århundraden innan

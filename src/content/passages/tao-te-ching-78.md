@@ -25,5 +25,5 @@ notes: >-
   Books of the East, vol. 39. Publiceringsbeslutet är redaktören Jonas
   Olsons läsning och merge av PR #31 — AI avgör aldrig ensam vad som
   publiceras.
-status: publicerad
+status: published
 ---

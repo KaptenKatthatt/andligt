@@ -24,5 +24,5 @@ notes: >-
   människa« för läsbarhet. Alltså en försvenskning av Sujatos engelska, inte
   direkt ur palin. Publiceringsbeslutet är redaktörens — AI avgör aldrig ensam
   vad som publiceras.
-status: publicerad
+status: published
 ---

@@ -19,5 +19,5 @@ notes: >-
   about the things …«) via Standard Ebooks — samma källa som bibliotekets ingest.
   En försvenskning av Longs engelska, inte direkt ur grekiskan; ingen ändring av
   meningen. AI avgör aldrig ensam vad som publiceras.
-status: publicerad
+status: published
 ---

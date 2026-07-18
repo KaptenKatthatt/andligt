@@ -3,7 +3,7 @@ id: fraga-vad-sager-man-till-den-som-forlorat
 slug: vad-sager-man-till-den-som-forlorat
 text: Vad säger man till den som förlorat?
 themes: [tema-lidande]
-status: publicerad
+status: published
 ---
 
 Inför någon annans sorg står orden ofta stilla. En romersk filosof skrev

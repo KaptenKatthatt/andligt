@@ -3,7 +3,7 @@ id: fraga-vad-vet-du-egentligen
 slug: vad-vet-du-egentligen
 text: Vad vet du egentligen?
 themes: [tema-sanning]
-status: publicerad
+status: published
 ---
 
 Vi bär på mängder av övertygelser vi sällan prövar. Att skilja det vi

@@ -20,7 +20,7 @@ closingReflection: >-
   Kanske hör sorgen ihop med att ha hållit något kärt, mer än med att ha gjort
   något fel. Den går inte att resonera bort, och behöver kanske inte det. Du kan
   gå tillbaka till vilket rum som helst när du vill.
-status: publicerad
+status: published
 created: 2026-07-17
 updated: 2026-07-17
 editorialNotes: >-

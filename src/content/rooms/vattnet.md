@@ -13,11 +13,11 @@ sources:
   - source: kalla-tao-te-ching
     passage: passage-tao-te-ching-78
     reference: kapitel 78
-    use: bearbetning
+    use: adaptation
     primary: true
     editorialNote: Bearbetning av kapitlets vattenbild; inga direkta citat.
 readingTimeMinutes: 3
-status: publicerad
+status: published
 created: 2026-07-14
 updated: 2026-07-14
 editorial:

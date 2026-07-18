@@ -13,11 +13,11 @@ sources:
   - source: kalla-zhuangzi
     passage: passage-zhuangzi-2-fjarilen
     reference: kapitel 2 — fjärilsdrömmen
-    use: bearbetning
+    use: adaptation
     primary: true
     editorialNote: Bearbetning av fjärilsdrömmen i återberättad form; inga direkta citat.
 readingTimeMinutes: 3
-status: publicerad
+status: published
 created: 2026-07-15
 updated: 2026-07-16
 editorial:

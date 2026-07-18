@@ -34,7 +34,7 @@ const dublettfel = (type: string, poster: { id: string; slug?: string }[]): stri
   return fel
 }
 
-const publicerad = (status: string | undefined): boolean => status === 'publicerad'
+const publicerad = (status: string | undefined): boolean => status === 'published'
 
 // En refererad post: finns den, och (för publicerade rum) är den publicerad?
 type Reference = { type: string; id: string; finns: boolean; publicerad: boolean }
@@ -81,7 +81,7 @@ const relationsfel = (rum: Room, uppslag: Lookup): string[] =>
 // edition (source-and-context.md, Types of Source Use): så hålls källans ord
 // belagda och åtskilda från redaktionell prosa. Bearbetning/parafras/inspiration
 // får nöja sig med fritextreferens och passerar orörda.
-const REQUIRES_PASSAGE: ReadonlySet<Kallrelation['use']> = new Set(['citat', 'översättning'])
+const REQUIRES_PASSAGE: ReadonlySet<Kallrelation['use']> = new Set(['quote', 'translation'])
 
 const bruksgrind = (rum: Room, relation: Kallrelation, uppslag: Lookup): string[] => {
   if (!REQUIRES_PASSAGE.has(relation.use)) return []
@@ -92,7 +92,7 @@ const bruksgrind = (rum: Room, relation: Kallrelation, uppslag: Lookup): string[
   if (!passage) return [] // saknad passage rapporteras redan som bruten relation
   return [
     ...(passage.edition ? [] : [`${mark} kräver utgåva (edition) på passagen "${passage.id}"`]),
-    ...(relation.use === 'översättning' && !passage.translator
+    ...(relation.use === 'translation' && !passage.translator
       ? [`${mark} kräver angiven översättare på passagen "${passage.id}"`]
       : []),
   ]

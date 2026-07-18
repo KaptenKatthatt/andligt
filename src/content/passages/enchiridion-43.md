@@ -23,5 +23,5 @@ notes: >-
   pronomenet blir »hen« så hela passagen är könsneutral. Passagen bär redaktionens
   namn, inte anspråket att vara Epiktetos exakta ord. AI avgör aldrig ensam vad
   som publiceras — publicering = redaktörens granskning och merge.
-status: publicerad
+status: published
 ---

@@ -13,11 +13,11 @@ sources:
   - source: kalla-enchiridion
     passage: passage-enchiridion-1
     reference: avsnitt 1
-    use: bearbetning
+    use: adaptation
     primary: true
     editorialNote: Bearbetning av öppningsavsnittets distinktion; inga direkta citat.
 readingTimeMinutes: 4
-status: publicerad
+status: published
 created: 2026-07-09
 updated: 2026-07-13
 editorial:

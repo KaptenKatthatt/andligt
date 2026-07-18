@@ -15,5 +15,5 @@ notes: >-
   via Standard Ebooks — samma källa som bibliotekets ingest. En försvenskning av
   Longs engelska, inte direkt ur grekiskan. Det grekiska »euroia« (lugnt flöde)
   återges »ett lugnt flöde genom livet«. AI avgör aldrig ensam vad som publiceras.
-status: publicerad
+status: published
 ---

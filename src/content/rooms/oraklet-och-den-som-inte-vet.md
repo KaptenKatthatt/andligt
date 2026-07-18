@@ -13,11 +13,11 @@ sources:
   - source: kalla-forsvarstalet
     passage: passage-forsvarstalet-21b-d
     reference: 21b–d
-    use: bearbetning
+    use: adaptation
     primary: true
     editorialNote: Bearbetning av oraklets ställe; inga direkta citat i rummet.
 readingTimeMinutes: 4
-status: publicerad
+status: published
 created: 2026-07-15
 updated: 2026-07-15
 editorial:

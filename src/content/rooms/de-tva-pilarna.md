@@ -13,11 +13,11 @@ sources:
   - source: kalla-samyutta-nikaya
     passage: passage-sn36-6-pilarna
     reference: SN 36.6 (Sallatha Sutta) — de två pilarna
-    use: bearbetning
+    use: adaptation
     primary: true
     editorialNote: Bearbetning av liknelsen om de två pilarna i återberättad form; inga direkta citat.
 readingTimeMinutes: 3
-status: publicerad
+status: published
 created: 2026-07-16
 updated: 2026-07-16
 editorial:

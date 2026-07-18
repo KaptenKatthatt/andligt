@@ -43,5 +43,5 @@ notes: >-
   engelska, inte direkt ur palin. Publiceringsbeslutet är redaktören Jonas
   Olsons läsning och merge av PR #34 — AI avgör aldrig ensam vad som
   publiceras.
-status: publicerad
+status: published
 ---

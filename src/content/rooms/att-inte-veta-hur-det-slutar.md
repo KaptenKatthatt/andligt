@@ -13,11 +13,11 @@ sources:
   - source: kalla-forsvarstalet
     passage: passage-forsvarstalet-28d-29b
     reference: 28d–29b
-    use: bearbetning
+    use: adaptation
     primary: true
     editorialNote: Bearbetning av ställets tankegång; inga direkta citat i rummet.
 readingTimeMinutes: 4
-status: publicerad
+status: published
 created: 2026-07-15
 updated: 2026-07-15
 editorial:

@@ -19,5 +19,5 @@ notes: >-
   with us. Life is long enough, if you know how to use it.« (kap 2). Alltså
   en försvenskning av Stewarts engelska, inte direkt ur latinet; ingen
   ändring av meningen. AI avgör aldrig ensam vad som publiceras.
-status: publicerad
+status: published
 ---

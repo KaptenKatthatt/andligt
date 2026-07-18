@@ -13,11 +13,11 @@ sources:
   - source: kalla-sjalvbetraktelser
     passage: passage-sjalvbetraktelser-5-1
     reference: bok 5, avsnitt 1
-    use: bearbetning
+    use: adaptation
     primary: true
     editorialNote: Bearbetning av avsnittets morgonsamtal; inga direkta citat i rummet.
 readingTimeMinutes: 3
-status: publicerad
+status: published
 created: 2026-07-15
 updated: 2026-07-15
 editorial:

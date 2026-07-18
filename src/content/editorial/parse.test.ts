@@ -15,10 +15,10 @@ reflectionQuestions:
 sources:
   - source: kalla-enchiridion
     reference: avsnitt 1
-    use: bearbetning
+    use: adaptation
     primary: true
 readingTimeMinutes: 4
-status: utkast
+status: draft
 created: 2026-07-09
 updated: 2026-07-09
 ---
@@ -74,7 +74,7 @@ describe('tolkaPostfil', () => {
 id: tema-lugn
 slug: lugn
 label: Lugn
-status: utkast
+status: draft
 ---
 
 Om det som stillnar när ingenting kräver något.
@@ -90,7 +90,7 @@ Om det som stillnar när ingenting kräver något.
 id: tema-lugn
 slug: lugn
 label: Lugn
-status: utkast
+status: draft
 ---
 `
     const tolkning = parsePostFile(themeSchema, { sökväg: 'themes/lugn.md', råtext })

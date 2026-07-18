@@ -27,5 +27,5 @@ notes: >-
   is he who rails at his creditor.« Alltså en försvenskning av Stewarts
   engelska, inte direkt ur latinet; ingen ändring av meningen. AI avgör
   aldrig ensam vad som publiceras.
-status: publicerad
+status: published
 ---

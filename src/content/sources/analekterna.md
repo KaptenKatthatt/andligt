@@ -3,17 +3,17 @@ id: kalla-analekterna
 slug: analekterna
 title: Analekterna
 originalTitle: Lunyu
-type: skrift
+type: writing
 attributedAuthor: Konfucius
 traditions: [tradition-konfucianism]
 originalLanguage: Klassisk kinesiska
 approximateDating: ca 400-talet f.Kr
 place: Kina
-attribution: tillskrivet
-dating: ungefärlig
+attribution: attributed
+dating: approximate
 rights: public-domain
 libraryWork: analekterna
-status: publicerad
+status: published
 ---
 
 Korta samtal och utsagor tillskrivna Konfucius, nedtecknade av lärjungar och

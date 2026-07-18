@@ -2,17 +2,17 @@
 id: kalla-seneca-dialoger
 slug: seneca-dialoger
 title: Dialoger
-type: bok
+type: book
 author: Seneca
 traditions: [tradition-stoicism]
 originalLanguage: Latin
 approximateDating: ca 40–65 e.Kr
 place: Rom
-attribution: känt
-dating: ungefärlig
+attribution: known
+dating: approximate
 rights: public-domain
 libraryWork: seneca-dialoger
-status: publicerad
+status: published
 ---
 
 Moralfilosofiska essäer om vrede, sorg, lugn och tid — bland dem Om livets

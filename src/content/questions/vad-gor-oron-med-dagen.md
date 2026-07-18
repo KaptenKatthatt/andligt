@@ -3,7 +3,7 @@ id: fraga-vad-gor-oron-med-dagen
 slug: vad-gor-oron-med-dagen
 text: Vad gör oron med dagen du är i?
 themes: [tema-lugn]
-status: publicerad
+status: published
 ---
 
 Oron handlar nästan alltid om något som ännu inte hänt. Ändå är det dagen

@@ -13,11 +13,11 @@ sources:
   - source: kalla-zhuangzi
     passage: passage-zhuangzi-1-kalebassen
     reference: kapitel 1
-    use: bearbetning
+    use: adaptation
     primary: true
     editorialNote: Bearbetning av kalebassliknelsen; inga direkta citat i rummet.
 readingTimeMinutes: 4
-status: publicerad
+status: published
 created: 2026-07-15
 updated: 2026-07-17
 editorial:

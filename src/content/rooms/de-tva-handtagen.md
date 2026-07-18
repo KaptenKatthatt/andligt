@@ -13,11 +13,11 @@ sources:
   - source: kalla-enchiridion
     passage: passage-enchiridion-43
     reference: avsnitt 43
-    use: bearbetning
+    use: adaptation
     primary: true
     editorialNote: Bearbetning av avsnitt 43:s bild av de två handtagen; exemplet generaliserat från »broder« till någon som står en nära.
 readingTimeMinutes: 3
-status: publicerad
+status: published
 created: 2026-07-12
 updated: 2026-07-14
 editorial:

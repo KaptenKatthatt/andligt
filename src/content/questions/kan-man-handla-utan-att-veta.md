@@ -3,7 +3,7 @@ id: fraga-kan-man-handla-utan-att-veta
 slug: kan-man-handla-utan-att-veta
 text: Kan man handla utan att veta hur det slutar?
 themes: [tema-mod]
-status: publicerad
+status: published
 ---
 
 Det mesta som betyder något görs utan facit. Ändå väntar vi gärna på visshet

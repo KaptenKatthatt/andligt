@@ -13,11 +13,11 @@ sources:
   - source: kalla-zhuangzi
     passage: passage-zhuangzi-3-kocken
     reference: kapitel 3 — furst Huis kock
-    use: bearbetning
+    use: adaptation
     primary: true
     editorialNote: Bearbetning av kockens svar i återberättad form; inga direkta citat.
 readingTimeMinutes: 3
-status: publicerad
+status: published
 created: 2026-07-15
 updated: 2026-07-16
 editorial:

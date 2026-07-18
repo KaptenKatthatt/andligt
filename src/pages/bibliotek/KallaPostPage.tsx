@@ -15,23 +15,23 @@ import styles from './Bibliotek.module.css'
 import { Beskrivning, Rumslista, Section, Sidhuvud } from './Biblioteksdelar'
 
 const TYPETIKETT: Record<Source['type'], string> = {
-  'bok': 'Bok',
-  'skrift': 'Skrift',
-  'brev': 'Brev',
-  'tal': 'Tal',
-  'dikt': 'Dikt',
-  'inskrift': 'Inskrift',
-  'muntlig-tradition': 'Muntlig tradition',
-  'historiskt-dokument': 'Historiskt dokument',
+  'book': 'Bok',
+  'writing': 'Skrift',
+  'letter': 'Brev',
+  'speech': 'Tal',
+  'poem': 'Dikt',
+  'inscription': 'Inskrift',
+  'oral-tradition': 'Muntlig tradition',
+  'historical-document': 'Historiskt dokument',
   'fragment': 'Fragment',
-  'annat': 'Källa',
+  'other': 'Källa',
 }
 
 const RATTIGHETSETIKETT: Record<Source['rights'], string> = {
   'public-domain': 'Fri att återge (public domain)',
-  'licensierad': 'Licensierad',
-  'skyddad': 'Upphovsrättsskyddad',
-  'okänd': 'Oklar rättighetsstatus',
+  'licensed': 'Licensierad',
+  'protected': 'Upphovsrättsskyddad',
+  'unknown': 'Oklar rättighetsstatus',
 }
 
 // Ärlig osäkerhet i klartext (source-and-context.md, Uncertainty): en
@@ -40,7 +40,7 @@ const upphovsrad = (source: Source): string | undefined => {
   if (source.attributedAuthor === undefined) return source.author
   const nedtecknare = source.author ? `, nedtecknad av ${source.author}` : ''
   const name = `${source.attributedAuthor}${nedtecknare}`
-  return source.attribution === 'tillskrivet' ? `Tillskrivs ${name}` : name
+  return source.attribution === 'attributed' ? `Tillskrivs ${name}` : name
 }
 
 const Metarad = ({ label, värde }: { label: string; värde?: string }) =>

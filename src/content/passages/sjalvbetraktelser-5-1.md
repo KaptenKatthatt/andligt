@@ -26,5 +26,5 @@ notes: >-
   byggmiljön så titelbladet kunde inte kontrolleras härifrån, men
   översättarangivelsen är redaktörens beslut. AI avgör aldrig ensam vad som
   publiceras.
-status: publicerad
+status: published
 ---

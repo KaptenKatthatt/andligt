@@ -5,7 +5,7 @@
 import { z } from 'zod'
 
 /** Publiceringsstatus — endast `publicerad` får synas för läsare. */
-const statusSchema = z.enum(['utkast', 'granskning', 'publicerad', 'arkiverad'])
+const statusSchema = z.enum(['draft', 'review', 'published', 'archived'])
 
 // Sluggar är ascii-kebab (svenska ord skrivs utan åäö: "det-du-inte-kan-styra")
 // eftersom de används i URL:er.
@@ -20,13 +20,13 @@ const nyckelordSchema = z.array(z.string().min(1)).optional()
 
 /** Hur ett rum använder en source (source-and-context.md, Types of Source Use). */
 const useSchema = z.enum([
-  'citat',
-  'översättning',
-  'parafras',
-  'bearbetning',
+  'quote',
+  'translation',
+  'paraphrase',
+  'adaptation',
   'inspiration',
-  'sammanställning',
-  'historisk-kontext',
+  'compilation',
+  'historical-context',
 ])
 
 /** Relation rum → source; deklareras i rummets frontmatter under `sources:`. */
@@ -128,16 +128,16 @@ export const sourceSchema = z.object({
   title: z.string().min(1),
   originalTitle: z.string().optional(),
   type: z.enum([
-    'bok',
-    'skrift',
-    'brev',
-    'tal',
-    'dikt',
-    'inskrift',
-    'muntlig-tradition',
-    'historiskt-dokument',
+    'book',
+    'writing',
+    'letter',
+    'speech',
+    'poem',
+    'inscription',
+    'oral-tradition',
+    'historical-document',
     'fragment',
-    'annat',
+    'other',
   ]),
   author: z.string().optional(),
   attributedAuthor: z.string().optional(),
@@ -145,9 +145,9 @@ export const sourceSchema = z.object({
   originalLanguage: z.string().optional(),
   approximateDating: z.string().optional(),
   place: z.string().optional(),
-  attribution: z.enum(['känt', 'tillskrivet', 'omtvistat', 'okänt']).optional(),
-  dating: z.enum(['känd', 'ungefärlig', 'omtvistad', 'okänd']).optional(),
-  rights: z.enum(['public-domain', 'licensierad', 'skyddad', 'okänd']),
+  attribution: z.enum(['known', 'attributed', 'disputed', 'unknown']).optional(),
+  dating: z.enum(['known', 'approximate', 'disputed', 'unknown']).optional(),
+  rights: z.enum(['public-domain', 'licensed', 'protected', 'unknown']),
   // Verk i biblioteksdatabasen kopplas hit, så rum kan nå exakta verser.
   libraryWork: z.string().optional(),
   status: statusSchema,

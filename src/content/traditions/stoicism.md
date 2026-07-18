@@ -2,7 +2,7 @@
 id: tradition-stoicism
 slug: stoicism
 name: Stoicism
-status: publicerad
+status: published
 ---
 
 En filosofisk skola som uppstod i Aten omkring 300 f.Kr. och levde vidare

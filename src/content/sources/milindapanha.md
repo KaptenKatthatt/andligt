@@ -3,15 +3,15 @@ id: kalla-milindapanha
 slug: milindapanha
 title: Milindas frågor
 originalTitle: Milindapañha
-type: skrift
+type: writing
 traditions: [tradition-buddhism]
 originalLanguage: Pali
 approximateDating: ca 100 f.Kr–200 e.Kr
 place: Nordvästra Indien
-attribution: okänt
-dating: ungefärlig
+attribution: unknown
+dating: approximate
 rights: public-domain
-status: publicerad
+status: published
 ---
 
 En dialog mellan kung Milinda — den grekiske kungen Menander, som härskade i

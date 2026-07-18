@@ -13,11 +13,11 @@ sources:
   - source: kalla-poetiska-eddan
     passage: passage-poetiska-eddan-havamal-47
     reference: Hávamál, strof 47
-    use: bearbetning
+    use: adaptation
     primary: true
     editorialNote: Bearbetning av strofens bild; kärnan speglar sista raden men utan citatmarkering.
 readingTimeMinutes: 3
-status: publicerad
+status: published
 created: 2026-07-15
 updated: 2026-07-17
 editorial:

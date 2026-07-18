@@ -2,15 +2,15 @@
 id: kalla-samyutta-nikaya
 slug: samyutta-nikaya
 title: Samyutta Nikaya
-type: skrift
+type: writing
 attributedAuthor: Buddha
 traditions: [tradition-buddhism]
 originalLanguage: Pali
 approximateDating: ca 400-talet f.Kr, nedtecknad ca 29 f.Kr
-attribution: tillskrivet
-dating: ungefärlig
+attribution: attributed
+dating: approximate
 rights: public-domain
-status: publicerad
+status: published
 ---
 
 En av de äldsta samlingarna av Buddhas lärotal, ordnad efter ämne — därav namnet,

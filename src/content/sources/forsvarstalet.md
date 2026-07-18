@@ -3,17 +3,17 @@ id: kalla-forsvarstalet
 slug: forsvarstalet
 title: Sokrates försvarstal
 originalTitle: Apologia
-type: tal
+type: speech
 author: Platon
 traditions: [tradition-antik-grekisk-filosofi]
 originalLanguage: Grekiska
 approximateDating: ca 399–380 f.Kr
 place: Aten
-attribution: känt
-dating: ungefärlig
+attribution: known
+dating: approximate
 rights: public-domain
 libraryWork: forsvarstalet
-status: publicerad
+status: published
 ---
 
 Platons återgivning av Sokrates tal inför domstolen i Aten år 399 f.Kr, där

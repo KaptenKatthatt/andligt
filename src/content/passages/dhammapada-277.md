@@ -17,5 +17,5 @@ notes: >-
   försvenskning av Sujatos engelska, inte direkt ur palin. »Allt sammansatt«
   återger sabbe saṅkhārā (de betingade/sammansatta tingen). Publiceringsbeslutet
   är redaktörens — AI avgör aldrig ensam vad som publiceras.
-status: publicerad
+status: published
 ---
