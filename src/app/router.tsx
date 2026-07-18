@@ -5,7 +5,7 @@ import {
 } from '@tanstack/react-router'
 import { lazy, type ComponentType, type LazyExoticComponent } from 'react'
 import type { ReadMode } from '../content/model'
-import { SOKTYPER, type Soktyp, type SökParametrar } from '../lib/soktyper'
+import { SEARCH_TYPES, type SearchType, type SearchParams } from '../lib/searchTypes'
 import { HemPage } from '../pages/HemPage'
 import { NotFoundNote } from '../pages/NotFoundNote'
 import { RootLayout } from './RootLayout'
@@ -88,21 +88,21 @@ const amneRoute = createRoute({
   },
 })
 
-const lasRoute = createRoute({
+const readRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/las/$id/$mode',
   component: function LasRoute() {
-    const params = lasRoute.useParams()
+    const params = readRoute.useParams()
     const mode: ReadMode = params.mode === 'kontext' ? 'kontext' : 'essa'
     return <LasPage id={params.id} mode={mode} />
   },
 })
 
-const kallaRoute = createRoute({
+const sourceRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/kalla/$id',
   component: function KallaRoute() {
-    return <KallaPage id={kallaRoute.useParams().id} />
+    return <KallaPage id={sourceRoute.useParams().id} />
   },
 })
 
@@ -112,7 +112,7 @@ const tidslinjeRoute = createRoute({
   component: TidslinjePage,
 })
 
-const personerRoute = createRoute({
+const peopleRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/personer',
   component: PersonerPage,
@@ -144,32 +144,32 @@ const installningarRoute = createRoute({
   component: InstallningarPage,
 })
 
-const sokRoute = createRoute({
+const searchRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/sok',
   component: SokPage,
 })
 
-// Bibliotekets landning (omgörningen, fas 6): frågor, teman, rum, källor.
-const bibliotekRoute = createRoute({
+// Bibliotekets landning (omgörningen, fas 6): frågor, themes, rum, sources.
+const libraryRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/bibliotek',
   component: BibliotekHemPage,
 })
 
-const fragaRoute = createRoute({
+const questionRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/bibliotek/fraga/$slug',
   component: function FragaRoute() {
-    return <FragaPage slug={fragaRoute.useParams().slug} />
+    return <FragaPage slug={questionRoute.useParams().slug} />
   },
 })
 
-const temaRoute = createRoute({
+const themeRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/bibliotek/tema/$slug',
   component: function TemaRoute() {
-    return <TemaPage slug={temaRoute.useParams().slug} />
+    return <TemaPage slug={themeRoute.useParams().slug} />
   },
 })
 
@@ -185,11 +185,11 @@ const fragelistaRoute = createRoute({
   component: FragelistaPage,
 })
 
-const kallaPostRoute = createRoute({
+const sourceItemRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/bibliotek/kalla/$slug',
   component: function KallaPostRoute() {
-    return <KallaPostPage slug={kallaPostRoute.useParams().slug} />
+    return <KallaPostPage slug={sourceItemRoute.useParams().slug} />
   },
 })
 
@@ -202,11 +202,11 @@ const personPostRoute = createRoute({
   },
 })
 
-const vandringRoute = createRoute({
+const pathRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/bibliotek/vandring/$slug',
   component: function VandringRoute() {
-    return <VandringPage slug={vandringRoute.useParams().slug} />
+    return <VandringPage slug={pathRoute.useParams().slug} />
   },
 })
 
@@ -218,31 +218,31 @@ const verklistaRoute = createRoute({
   component: VerklistaPage,
 })
 
-const verkRoute = createRoute({
+const workRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/bibliotek/verk/$workId',
   component: function VerkRoute() {
     // key ⇒ komponenten monteras om per verk, så filterfältet inte hänger kvar
     // när man byter till ett annat verk (TanStack återanvänder annars instansen).
-    const { workId } = verkRoute.useParams()
+    const { workId } = workRoute.useParams()
     return <VerkPage key={workId} workId={workId} />
   },
 })
 
-const bokRoute = createRoute({
+const bookRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/bibliotek/verk/$workId/$bookSlug',
   component: function BokRoute() {
-    const params = bokRoute.useParams()
+    const params = bookRoute.useParams()
     return <BokPage workId={params.workId} bookSlug={params.bookSlug} />
   },
 })
 
-const kapitelRoute = createRoute({
+const chapterRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/kapitel/$workId/$bookSlug/$chapter',
   component: function KapitelRoute() {
-    const params = kapitelRoute.useParams()
+    const params = chapterRoute.useParams()
     return (
       <KapitelPage
         workId={params.workId}
@@ -256,42 +256,42 @@ const kapitelRoute = createRoute({
 // Läsrummet (omgörningen, fas 3): rum ur det redaktionella innehållet.
 // Sökparametern `vandring` bär den enda vandringskontexten — utan den läses
 // rummet fristående, utan vandrings-UI (paths.md, Relationship to the Library).
-const rumRoute = createRoute({
+const roomRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/rum/$slug',
   validateSearch: (search: Record<string, unknown>): { vandring?: string } =>
     typeof search['vandring'] === 'string' ? { vandring: search['vandring'] } : {},
   component: function RumRoute() {
-    return <RumPage slug={rumRoute.useParams().slug} vandringSlug={rumRoute.useSearch().vandring} />
+    return <RumPage slug={roomRoute.useParams().slug} vandringSlug={roomRoute.useSearch().vandring} />
   },
 })
 
-const bibliotekSokRoute = createRoute({
+const librarySearchRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/bibliotek-sok',
   component: BibliotekSokPage,
 })
 
 // Bibliotekssöket (fas 10, search.md): frågan och det valfria typfiltret bärs i
-// URL:en (?q=…&typ=…), så sökstate överlever navigation, refresh och delning.
+// URL:en (?q=…&type=…), så sökstate överlever navigation, refresh och delning.
 // Privata anteckningsträffar hamnar aldrig i URL:en.
-const ärSoktyp = (värde: unknown): värde is Soktyp =>
-  typeof värde === 'string' && (SOKTYPER as readonly string[]).includes(värde)
+const isSearchType = (värde: unknown): värde is SearchType =>
+  typeof värde === 'string' && (SEARCH_TYPES as readonly string[]).includes(värde)
 
-const sokBibliotekRoute = createRoute({
+const searchLibraryRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/bibliotek/sok',
-  validateSearch: (search: Record<string, unknown>): SökParametrar => ({
+  validateSearch: (search: Record<string, unknown>): SearchParams => ({
     ...(typeof search['q'] === 'string' && search['q'] !== '' ? { q: search['q'] } : {}),
-    ...(ärSoktyp(search['typ']) ? { typ: search['typ'] } : {}),
+    ...(isSearchType(search['type']) ? { type: search['type'] } : {}),
   }),
   component: function SokBibliotekRoute() {
-    const search = sokBibliotekRoute.useSearch()
-    const navigate = sokBibliotekRoute.useNavigate()
+    const search = searchLibraryRoute.useSearch()
+    const navigate = searchLibraryRoute.useNavigate()
     return (
       <SokBibliotekPage
         q={search.q ?? ''}
-        typ={search.typ}
+        type={search.type}
         onNavigera={(sök) => navigate({ search: sök, replace: true })}
       />
     )
@@ -302,30 +302,30 @@ const routeTree = rootRoute.addChildren([
   hemRoute,
   utforskaRoute,
   amneRoute,
-  lasRoute,
-  kallaRoute,
+  readRoute,
+  sourceRoute,
   tidslinjeRoute,
-  personerRoute,
+  peopleRoute,
   personRoute,
   atlasRoute,
   samlingRoute,
   installningarRoute,
-  sokRoute,
-  bibliotekRoute,
-  fragaRoute,
-  temaRoute,
+  searchRoute,
+  libraryRoute,
+  questionRoute,
+  themeRoute,
   rumlistaRoute,
   fragelistaRoute,
-  kallaPostRoute,
+  sourceItemRoute,
   personPostRoute,
-  vandringRoute,
+  pathRoute,
   verklistaRoute,
-  verkRoute,
-  bokRoute,
-  kapitelRoute,
-  bibliotekSokRoute,
-  sokBibliotekRoute,
-  rumRoute,
+  workRoute,
+  bookRoute,
+  chapterRoute,
+  librarySearchRoute,
+  searchLibraryRoute,
+  roomRoute,
 ])
 
 export const router = createRouter({

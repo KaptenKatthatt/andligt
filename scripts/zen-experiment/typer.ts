@@ -24,17 +24,17 @@ const passageSchema = z.object({
 
 export type Passage = z.infer<typeof passageSchema>
 
-export type Steg = { namn: string; system: string; prompt: string; svar: string; ms: number }
+export type Steg = { name: string; system: string; prompt: string; svar: string; ms: number }
 
 export type Resultat = {
   passageId: string
   modell: string
   flode: 'A' | 'B' | 'C' | 'D'
   steg: Steg[]
-  skapad: string
+  created: string
 }
 
-export const lasPassager = (katalog: string): Passage[] =>
+export const readPassages = (katalog: string): Passage[] =>
   readdirSync(katalog)
     .filter((fil) => fil.endsWith('.json'))
     .sort()

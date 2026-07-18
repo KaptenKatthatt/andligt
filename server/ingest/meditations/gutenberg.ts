@@ -3,7 +3,7 @@ import { gutenbergBody } from '../lib/gutenberg'
 import { buildTranslatedWork, type RawChapter } from '../lib/chapters'
 import type { NormalizedWork, WorkMeta } from '../model'
 
-// Marcus Aurelius Självbetraktelser, George Longs engelska översättning (public
+// Marcus Aurelius Självbetraktelser, George Longs engelska translation (public
 // domain) via Project Gutenberg. Tolv böcker med romerskt numrerade sektioner;
 // varje bok blir ett kapitel, varje sektion en vers. Översätts till svenska.
 const URL = 'https://raw.githubusercontent.com/GITenberg/Meditations_2680/master/2680.txt'

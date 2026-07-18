@@ -3,36 +3,36 @@ import { useEffect, useState } from 'react'
 import { NotesSheet } from '../components/NotesSheet'
 import { ReadingSettingsButton } from '../components/ReadingSettingsButton'
 import { TopBar } from '../components/TopBar'
-import type { Kalla, Kallpassage, Rum, Vandring } from '../content/redaktion/schema'
-import { rumForVandring } from '../lib/bibliotek'
+import type { Source, SourcePassage, Room, Path } from '../content/editorial/schema'
+import { roomsForPath } from '../lib/library'
 import {
-  allaRum,
-  brukEtikett,
-  hittaKalla,
-  hittaPassage,
-  hittaRum,
-  hittaTema,
-  hittaVandringViaSlug,
-  kallnamn,
-  osakerheter,
-  stycken,
-} from '../lib/innehall'
+  allRooms,
+  useLabel,
+  findSource,
+  findPassage,
+  findRoom,
+  findTheme,
+  findPathBySlug,
+  sourceName,
+  uncertainties,
+  paragraphs,
+} from '../lib/content'
 import { useAtlas } from '../lib/store'
-import { rapportera } from '../lib/telemetri'
+import { report } from '../lib/telemetry'
 import { useSidtitel } from '../lib/useSidtitel'
 import { NotFoundNote } from './NotFoundNote'
 import styles from './RumPage.module.css'
 
-/** En rad i rummets kolofon: spärrade versaler med nedåtpil. Öppnas på plats
+/** En rad i rummets kolofon: spärrade versaler med nedåtpil. Öppnas på place
  * och leder aldrig bort — pilen lovar fördjupning här, inte förflyttning. */
 const Kolofonrad = ({
-  etikett,
+  label,
   öppen,
   onVaxla,
   detaljId,
   children,
 }: {
-  etikett: string
+  label: string
   öppen: boolean
   onVaxla: () => void
   detaljId: string
@@ -46,7 +46,7 @@ const Kolofonrad = ({
       aria-controls={detaljId}
       onClick={onVaxla}
     >
-      {etikett} <span aria-hidden>{öppen ? '▴' : '▾'}</span>
+      {label} <span aria-hidden>{öppen ? '▴' : '▾'}</span>
     </button>
     <div id={detaljId} hidden={!öppen} className={styles.detalj}>
       {children}
@@ -54,117 +54,117 @@ const Kolofonrad = ({
   </div>
 )
 
-// Bibliografiraden: verk, referens och härkomst (språk · datering) i en följd.
-const kallrad = (källa: Kalla, referens: string | undefined): string => {
-  const titel = [källa.titel, referens].filter(Boolean).join(', ')
-  const härkomst = [källa.originalspråk, källa.ungefärligDatering].filter(Boolean).join(' · ')
-  return [titel, härkomst].filter(Boolean).join(' · ')
+// Bibliografiraden: verk, reference och härkomst (language · dating) i en följd.
+const sourceRow = (source: Source, reference: string | undefined): string => {
+  const title = [source.title, reference].filter(Boolean).join(', ')
+  const origin = [source.originalLanguage, source.approximateDating].filter(Boolean).join(' · ')
+  return [title, origin].filter(Boolean).join(' · ')
 }
 
-// Editionsraden syns bara när en passage anger utgåva (source-and-context.md,
-// Translation Policy): edition och, för egen översättning, ansvarig hand.
-const editionsrad = (passage: Kallpassage | undefined): string | undefined => {
-  if (!passage?.utgåva) return undefined
-  const översättning = passage.översättare ? ` · översättning ${passage.översättare}` : ''
-  return `Edition: ${passage.utgåva}${översättning}`
+// Editionsraden syns bara när en passage anger edition (source-and-context.md,
+// Translation Policy): edition och, för egen translation, ansvarig hand.
+const editionsrad = (passage: SourcePassage | undefined): string | undefined => {
+  if (!passage?.edition) return undefined
+  const translation = passage.translator ? ` · translation ${passage.translator}` : ''
+  return `Edition: ${passage.edition}${translation}`
 }
 
-type Kallrelation = Rum['källor'][number]
+type SourceRelation = Room['sources'][number]
 
 // Relationerna grupperade per källpost i frontmatterordning, så att ett rum
 // med flera nedslag i samma verk (t.ex. två bibelställen) får ett block med
 // en osäkerhetsdeklaration och en »Om texten«-länk — inte upprepade.
-const grupperaPerKalla = (relationer: Kallrelation[]): [Kalla, Kallrelation[]][] => {
-  const grupper: [Kalla, Kallrelation[]][] = []
+const groupBySource = (relationer: SourceRelation[]): [Source, SourceRelation[]][] => {
+  const grupper: [Source, SourceRelation[]][] = []
   for (const relation of relationer) {
-    const befintlig = grupper.find(([källa]) => källa.id === relation.källa)
+    const befintlig = grupper.find(([source]) => source.id === relation.source)
     if (befintlig) {
       befintlig[1].push(relation)
       continue
     }
-    const källa = hittaKalla(relation.källa)
-    if (källa) grupper.push([källa, [relation]])
+    const source = findSource(relation.source)
+    if (source) grupper.push([source, [relation]])
   }
   return grupper
 }
 
-// En källas rader i detaljen: bibliografi + bruk + edition per relation,
+// En källas rader i detaljen: bibliografi + use + edition per relation,
 // därefter källans osäkerhet en gång och länken till källsidan.
-const Kallblock = ({ källa, relationer }: { källa: Kalla; relationer: Kallrelation[] }) => {
-  const rader = [
+const Kallblock = ({ source, relationer }: { source: Source; relationer: SourceRelation[] }) => {
+  const rows = [
     ...relationer.flatMap((relation) => {
-      const passage = relation.passage ? hittaPassage(relation.passage) : undefined
+      const passage = relation.passage ? findPassage(relation.passage) : undefined
       return [
-        kallrad(källa, passage?.referens ?? relation.referens),
-        brukEtikett[relation.bruk],
+        sourceRow(source, passage?.reference ?? relation.reference),
+        useLabel[relation.use],
         editionsrad(passage),
       ]
     }),
-    ...osakerheter(källa),
+    ...uncertainties(source),
   ].filter((rad): rad is string => Boolean(rad))
   return (
     <div className={styles.kallblock}>
-      {rader.map((rad, i) => (
+      {rows.map((rad, i) => (
         <p key={`${rad}-${i}`} className={styles.detaljrad}>
           {rad}
         </p>
       ))}
-      <Link to="/bibliotek/kalla/$slug" params={{ slug: källa.slug }} className={styles.detaljlank}>
+      <Link to="/bibliotek/kalla/$slug" params={{ slug: source.slug }} className={styles.detaljlank}>
         Om texten
       </Link>
     </div>
   )
 }
 
-/** Källdetaljen bakom namnet: verk, referens, bruksdeklaration och ärlig
+/** Källdetaljen bakom namnet: verk, reference, bruksdeklaration och ärlig
  * osäkerhet — synligt först på begäran (source-and-context.md, Source
  * Visibility). Håller sig bibliografisk; källans ord och full passagetext
  * bor på källsidan, dit »Om texten« leder efter ett medvetet val. Rum med
- * flera källor visar alla relationer, grupperade per källpost. */
-const Kalldetalj = ({ rum }: { rum: Rum }) => (
+ * flera sources visar alla relationer, grupperade per källpost. */
+const Kalldetalj = ({ rum }: { rum: Room }) => (
   <>
-    {grupperaPerKalla(rum.källor).map(([källa, relationer]) => (
-      <Kallblock key={källa.id} källa={källa} relationer={relationer} />
+    {groupBySource(rum.sources).map(([source, relationer]) => (
+      <Kallblock key={source.id} source={source} relationer={relationer} />
     ))}
   </>
 )
 
-// Kolofonens etikett: källans röst när rummet bygger på ett verk,
+// Kolofonens label: källans röst när rummet bygger på ett verk,
 // »Källor« när det bygger på flera (första flerkällsrummet: Fas 12).
-const kolofonetikett = (rum: Rum, källa: Kalla): string =>
-  new Set(rum.källor.map((relation) => relation.källa)).size > 1 ? 'Källor' : kallnamn(källa)
+const kolofonetikett = (rum: Room, source: Source): string =>
+  new Set(rum.sources.map((relation) => relation.source)).size > 1 ? 'Källor' : sourceName(source)
 
-const Rumsavslut = ({ rum }: { rum: Rum }) => {
+const Rumsavslut = ({ rum }: { rum: Room }) => {
   const { sparadeRum, vaxlaSparatRum, anteckningar, sattAnteckning, taBortAnteckning } = useAtlas()
-  const [öppenRad, setÖppenRad] = useState<'källa' | 'bakgrund' | null>(null)
+  const [öppenRad, setÖppenRad] = useState<'source' | 'bakgrund' | null>(null)
   const [anteckningÖppen, setAnteckningÖppen] = useState(false)
-  const primärKälla = rum.källor.find((k) => k.primär) ?? rum.källor[0]
-  const källa = primärKälla ? hittaKalla(primärKälla.källa) : undefined
+  const primarySource = rum.sources.find((k) => k.primary) ?? rum.sources[0]
+  const source = primarySource ? findSource(primarySource.source) : undefined
   const sparat = !!sparadeRum[rum.id]
-  const vaxla = (rad: 'källa' | 'bakgrund') =>
+  const toggle = (rad: 'source' | 'bakgrund') =>
     setÖppenRad((nuvarande) => (nuvarande === rad ? null : rad))
   return (
     <>
       <div className={styles.streck} />
       <div className={styles.kolofon}>
-        {källa && (
+        {source && (
           <Kolofonrad
-            etikett={kolofonetikett(rum, källa)}
-            öppen={öppenRad === 'källa'}
-            onVaxla={() => vaxla('källa')}
+            label={kolofonetikett(rum, source)}
+            öppen={öppenRad === 'source'}
+            onVaxla={() => toggle('source')}
             detaljId="kalldetalj"
           >
             <Kalldetalj rum={rum} />
           </Kolofonrad>
         )}
-        {rum.historiskKontext && (
+        {rum.historicalContext && (
           <Kolofonrad
-            etikett="Historisk bakgrund"
+            label="Historisk bakgrund"
             öppen={öppenRad === 'bakgrund'}
-            onVaxla={() => vaxla('bakgrund')}
+            onVaxla={() => toggle('bakgrund')}
             detaljId="bakgrundsdetalj"
           >
-            {stycken(rum.historiskKontext).map((stycke, i) => (
+            {paragraphs(rum.historicalContext).map((stycke, i) => (
               <p key={i} className={styles.detaljrad}>
                 {stycke}
               </p>
@@ -191,7 +191,7 @@ const Rumsavslut = ({ rum }: { rum: Rum }) => {
       </div>
       {anteckningÖppen && (
         <NotesSheet
-          title={rum.titel}
+          title={rum.title}
           value={anteckningar[rum.id]?.text ?? ''}
           onChange={(text) => sattAnteckning('rum', rum.id, text)}
           onDelete={() => taBortAnteckning(rum.id)}
@@ -206,17 +206,17 @@ const Rumsavslut = ({ rum }: { rum: Rum }) => {
  * `vandring`). Två likvärdiga, stilla val — aldrig autoplay, aldrig ett »rätt«
  * val (paths.md, Moving Between Stops). Sista rummet får den valfria avslutande
  * reflektionen i stället, utan gratulation eller förloppsmått. */
-const Vandringsfot = ({ vandring, rum }: { vandring: Vandring; rum: Rum }) => {
+const Vandringsfot = ({ vandring, rum }: { vandring: Path; rum: Room }) => {
   const navigate = useNavigate()
-  const ordning = rumForVandring(vandring, allaRum)
-  const index = ordning.findIndex((ettRum) => ettRum.id === rum.id)
+  const order = roomsForPath(vandring, allRooms)
+  const index = order.findIndex((ettRum) => ettRum.id === rum.id)
   if (index === -1) return null
-  const nästa = ordning[index + 1]
-  if (!nästa) {
-    if (vandring.avslutandeReflektion === undefined) return null
+  const next = order[index + 1]
+  if (!next) {
+    if (vandring.closingReflection === undefined) return null
     return (
       <div className={styles.vandringsslut}>
-        {stycken(vandring.avslutandeReflektion).map((stycke, i) => (
+        {paragraphs(vandring.closingReflection).map((stycke, i) => (
           <p key={i} className={styles.vandringsslutStycke}>
             {stycke}
           </p>
@@ -232,7 +232,7 @@ const Vandringsfot = ({ vandring, rum }: { vandring: Vandring; rum: Rum }) => {
     <div className={styles.vandring}>
       <Link
         to="/rum/$slug"
-        params={{ slug: nästa.slug }}
+        params={{ slug: next.slug }}
         search={{ vandring: vandring.slug }}
         className={styles.vandringshandling}
       >
@@ -250,40 +250,40 @@ const Vandringsfot = ({ vandring, rum }: { vandring: Vandring; rum: Rum }) => {
  * återvända). Bara publicerat registreras — utkast som förhandsgranskas via
  * direkt länk ska varken tränga ut publicerade rum ur det lilla fönstret eller
  * skriva vandringsminne (paths.md: minnet är orientering, aldrig förlopp). */
-const useRumsminne = (rum: Rum | undefined, vandring: Vandring | undefined): void => {
+const useRumsminne = (rum: Room | undefined, vandring: Path | undefined): void => {
   const { registreraLastRum, registreraVandringsplats } = useAtlas()
-  const publiceratRumId = rum?.status === 'publicerad' ? rum.id : undefined
-  const vandringsplatsId =
-    vandring?.status === 'publicerad' &&
-    publiceratRumId !== undefined &&
-    vandring.rum.includes(publiceratRumId)
+  const publishedRoomId = rum?.status === 'published' ? rum.id : undefined
+  const pathPositionId =
+    vandring?.status === 'published' &&
+    publishedRoomId !== undefined &&
+    vandring.rum.includes(publishedRoomId)
       ? vandring.id
       : undefined
   useEffect(() => {
-    if (publiceratRumId !== undefined) registreraLastRum(publiceratRumId)
-  }, [publiceratRumId, registreraLastRum])
+    if (publishedRoomId !== undefined) registreraLastRum(publishedRoomId)
+  }, [publishedRoomId, registreraLastRum])
   useEffect(() => {
-    if (vandringsplatsId !== undefined && publiceratRumId !== undefined)
-      registreraVandringsplats(vandringsplatsId, publiceratRumId)
-  }, [vandringsplatsId, publiceratRumId, registreraVandringsplats])
+    if (pathPositionId !== undefined && publishedRoomId !== undefined)
+      registreraVandringsplats(pathPositionId, publishedRoomId)
+  }, [pathPositionId, publishedRoomId, registreraVandringsplats])
 }
 
-/** Fas 14: fångar brutna källrelationer — ett rum som pekar på en källa eller
+/** Fas 14: fångar brutna källrelationer — ett rum som pekar på en source eller
  * passage som inte kan slås upp. Build-grinden (check:content) ska hindra det
  * för publicerat innehåll, så detta är ett skyddsnät mot drift/regressions.
  * Loggar bara id:n, aldrig text. */
-const useRelationskontroll = (rum: Rum | undefined): void => {
+const useRelationskontroll = (rum: Room | undefined): void => {
   useEffect(() => {
     if (!rum) return
-    for (const relation of rum.källor) {
-      if (!hittaKalla(relation.källa))
-        rapportera({ typ: 'bruten-kallalank', från: rum.id, till: relation.källa })
-      else if (relation.passage !== undefined && !hittaPassage(relation.passage))
-        rapportera({
-          typ: 'ogiltig-innehallsrelation',
+    for (const relation of rum.sources) {
+      if (!findSource(relation.source))
+        report({ type: 'bruten-kallalank', från: rum.id, till: relation.source })
+      else if (relation.passage !== undefined && !findPassage(relation.passage))
+        report({
+          type: 'ogiltig-innehallsrelation',
           slag: 'passage',
           från: rum.id,
-          referens: relation.passage,
+          reference: relation.passage,
         })
     }
   }, [rum])
@@ -295,25 +295,25 @@ const useRelationskontroll = (rum: Rum | undefined): void => {
  * fungerar som redaktionens granskningsvy. Sökparametern `vandringSlug` sätts
  * bara när rummet nås inifrån en vandring och styr vandringsfoten. */
 export const RumPage = ({ slug, vandringSlug }: { slug: string; vandringSlug?: string }) => {
-  const rum = hittaRum(slug)
-  const vandring = vandringSlug !== undefined ? hittaVandringViaSlug(vandringSlug) : undefined
+  const rum = findRoom(slug)
+  const vandring = vandringSlug !== undefined ? findPathBySlug(vandringSlug) : undefined
   useRumsminne(rum, vandring)
   useRelationskontroll(rum)
-  useSidtitel(rum?.titel)
+  useSidtitel(rum?.title)
   if (!rum) return <NotFoundNote subject="Rummet" />
-  const tema = hittaTema(rum.teman[0] ?? '')
+  const tema = findTheme(rum.themes[0] ?? '')
   return (
     <div className="screenReader">
       <TopBar right={<ReadingSettingsButton />} />
       <section className={styles.sektion}>
         <header className={styles.huvud}>
           <div className="kicker">
-            {tema?.etikett ?? ''}
-            {rum.status !== 'publicerad' && ' · Utkast'}
+            {tema?.label ?? ''}
+            {rum.status !== 'published' && ' · Utkast'}
           </div>
-          <h1 className={styles.titel}>{rum.titel}</h1>
+          <h1 className={styles.title}>{rum.title}</h1>
         </header>
-        {stycken(rum.öppning).map((stycke, i) => (
+        {paragraphs(rum.opening).map((stycke, i) => (
           <p key={i} className={styles.stycke}>
             {stycke}
           </p>
@@ -321,16 +321,16 @@ export const RumPage = ({ slug, vandringSlug }: { slug: string; vandringSlug?: s
         <div className={`dots ${styles.paus}`}>···</div>
       </section>
       <section className={styles.sektion}>
-        {stycken(rum.kärna).map((stycke, i) => (
+        {paragraphs(rum.core).map((stycke, i) => (
           <p key={i} className={styles.stycke}>
             {stycke}
           </p>
         ))}
         <div className={`dots ${styles.paus}`}>···</div>
       </section>
-      <p className={styles.tanke}>{rum.tankeAttBära}</p>
+      <p className={styles.tanke}>{rum.thoughtToCarry}</p>
       <div className={styles.fragor}>
-        {rum.reflektionsfrågor.map((fråga) => (
+        {rum.reflectionQuestions.map((fråga) => (
           <p key={fråga} className={styles.fraga}>
             {fråga}
           </p>

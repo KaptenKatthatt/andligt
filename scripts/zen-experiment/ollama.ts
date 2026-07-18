@@ -40,7 +40,7 @@ export type ChatSvar = { text: string; ms: number }
 // eftersom de resonerande flaggskeppen (deepseek-v4-pro, qwen3.5:397b, glm-5.2) fortsatte
 // trunkera de analystunga C-flödena — tankeblocken är enorma (särskilt qwen3.5:397b).
 export const chat = async (modell: string, system: string, prompt: string, maxTokens = 49152): Promise<ChatSvar> => {
-  let senasteFel: unknown = null
+  let readError: unknown = null
   for (let forsok = 0; forsok < 3; forsok++) {
     const start = Date.now()
     try {
@@ -48,11 +48,11 @@ export const chat = async (modell: string, system: string, prompt: string, maxTo
       if (text.length === 0) throw new Error('tomt svar efter think-strippning')
       return { text, ms: Date.now() - start }
     } catch (fel) {
-      senasteFel = fel
+      readError = fel
       await new Promise((klar) => setTimeout(klar, 2000 * (forsok + 1)))
     }
   }
-  throw new Error(`chat(${modell}) gav upp: ${senasteFel instanceof Error ? senasteFel.message : String(senasteFel)}`)
+  throw new Error(`chat(${modell}) gav upp: ${readError instanceof Error ? readError.message : String(readError)}`)
 }
 
 type TagsRespons = { models?: { name?: string }[] }
@@ -62,7 +62,7 @@ export const listaModeller = async (): Promise<string[]> => {
   const respons = await fetch(`${bas()}/api/tags`, { signal: AbortSignal.timeout(30000) })
   if (!respons.ok) throw new Error(`Ollama /api/tags ${respons.status}`)
   const data = (await respons.json()) as TagsRespons
-  return (data.models ?? []).map((modell) => modell.name ?? '').filter((namn) => namn.length > 0)
+  return (data.models ?? []).map((modell) => modell.name ?? '').filter((name) => name.length > 0)
 }
 
 // Cloud-modeller måste pullas (registreras hos daemonen) innan API-anrop fungerar —

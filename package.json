@@ -13,7 +13,7 @@
     "test": "vitest run",
     "check:types": "tsc -b",
     "check:lint": "eslint .",
-    "check:content": "tsx scripts/validera-innehall.ts",
+    "check:content": "tsx scripts/validate-content.ts",
     "check:coverage": "type-coverage -p tsconfig.app.json --at-least 100 && type-coverage -p tsconfig.server.json --at-least 100",
     "check:length": "fallow health --complexity",
     "check:dead": "fallow dead-code",

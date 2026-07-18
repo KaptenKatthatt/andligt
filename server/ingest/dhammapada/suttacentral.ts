@@ -35,8 +35,8 @@ const collectVerses = (seg: Segments): Map<number, string> => {
   return out
 }
 
-// Hämtar en vagga och bygger dess råkapitel (engelska som källa, pali som
-// originaltext). Versnumren är Dhammapadas globala nummer, inte 1..N.
+// Hämtar en vagga och bygger dess råkapitel (engelska som source, pali som
+// originalText). Versnumren är Dhammapadas globala nummer, inte 1..N.
 const fetchVagga = async (vagga: Vagga): Promise<RawChapter> => {
   const [enSeg, pliSeg] = await Promise.all([
     fetchJson(enUrl(vagga.range)) as Promise<Segments>,

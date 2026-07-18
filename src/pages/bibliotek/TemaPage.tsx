@@ -1,43 +1,43 @@
 import { ToLink } from '../../components/ToLink'
 import { TopBar } from '../../components/TopBar'
-import { fragorForTema } from '../../lib/bibliotek'
-import { allaFragor, allaRum, hittaTemaViaSlug } from '../../lib/innehall'
-import { valbaraRum } from '../../lib/rumsval'
+import { questionsForTheme } from '../../lib/library'
+import { allQuestions, allRooms, findThemeBySlug } from '../../lib/content'
+import { valbaraRoom } from '../../lib/roomSelection'
 import { NotFoundNote } from '../NotFoundNote'
 import styles from './Bibliotek.module.css'
-import { Beskrivning, Rad, Rumslista, Sektion, Sidhuvud } from './Biblioteksdelar'
+import { Beskrivning, Row, Rumslista, Section, Sidhuvud } from './Biblioteksdelar'
 
 const Fragedel = ({ temaId }: { temaId: string }) => {
-  const frågor = fragorForTema(temaId, allaFragor)
+  const frågor = questionsForTheme(temaId, allQuestions)
   if (frågor.length === 0) return null
   return (
-    <Sektion rubrik="Frågor">
+    <Section rubrik="Frågor">
       {frågor.map((fråga) => (
         <ToLink key={fråga.id} to={{ kind: 'fraga', slug: fråga.slug }} className={styles.rad}>
-          <Rad titel={fråga.text} />
+          <Row title={fråga.text} />
         </ToLink>
       ))}
-    </Sektion>
+    </Section>
   )
 }
 
-/** Temasida (library.md, Themes): beskrivning, temats frågor och publicerade
+/** Temasida (library.md, Themes): description, temats frågor och publicerade
  * rum. TopBar utan onBack ⇒ historiksteg bakåt — biblioteksplatsen bevaras. */
 export const TemaPage = ({ slug }: { slug: string }) => {
-  const tema = hittaTemaViaSlug(slug)
+  const tema = findThemeBySlug(slug)
   if (!tema) return <NotFoundNote subject="Temat" />
   return (
     <div className="screenSub">
       <TopBar />
-      <Sidhuvud kicker="Tema" titel={tema.etikett} status={tema.status} />
-      <Beskrivning text={tema.beskrivning} />
+      <Sidhuvud kicker="Tema" title={tema.label} status={tema.status} />
+      <Beskrivning text={tema.description} />
       <Fragedel temaId={tema.id} />
-      <Sektion rubrik="Rum">
+      <Section rubrik="Rum">
         <Rumslista
-          rum={valbaraRum(tema.id, allaRum)}
+          rum={valbaraRoom(tema.id, allRooms)}
           tomtBesked="Det finns inga färdiga rum här ännu."
         />
-      </Sektion>
+      </Section>
     </div>
   )
 }

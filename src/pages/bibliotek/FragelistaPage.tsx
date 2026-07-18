@@ -1,19 +1,19 @@
 import { ToLink } from '../../components/ToLink'
 import { TopBar } from '../../components/TopBar'
-import { bibliotekFragor } from '../../lib/bibliotek'
-import { allaFragor } from '../../lib/innehall'
+import { libraryQuestions } from '../../lib/library'
+import { allQuestions } from '../../lib/content'
 import styles from './Bibliotek.module.css'
-import { frågeantal, Rad, Sidhuvud } from './Biblioteksdelar'
+import { questionCount, Row, Sidhuvud } from './Biblioteksdelar'
 
 /** Alla publicerade frågor — en ändlig lista (library.md, Browsing): antalet
  * står överst så man ser hur mycket som finns. Ingen oändlig rullning. */
 export const FragelistaPage = () => {
-  const frågor = bibliotekFragor(allaFragor)
+  const frågor = libraryQuestions(allQuestions)
   return (
     <div className="screenSub">
       <TopBar />
-      <Sidhuvud kicker="Frågor" titel="Alla frågor">
-        <p className={styles.antal}>{frågeantal(frågor.length)}</p>
+      <Sidhuvud kicker="Frågor" title="Alla frågor">
+        <p className={styles.antal}>{questionCount(frågor.length)}</p>
       </Sidhuvud>
       <div className={styles.sektion}>
         {frågor.length === 0 ? (
@@ -21,7 +21,7 @@ export const FragelistaPage = () => {
         ) : (
           frågor.map((fråga) => (
             <ToLink key={fråga.id} to={{ kind: 'fraga', slug: fråga.slug }} className={styles.rad}>
-              <Rad titel={fråga.text} />
+              <Row title={fråga.text} />
             </ToLink>
           ))
         )}

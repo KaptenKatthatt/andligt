@@ -123,7 +123,7 @@ export const promptC2 = (passage: Passage, analys: string): string =>
     svenskaSektioner,
   ].join('\n')
 
-// Produktionsgranskning: samma protokoll som flöde D men för en enda översättning
+// Produktionsgranskning: samma protokoll som flöde D men för en enda translation
 // (det analytiska C-flödet). Används av produktionskörningen (scripts/zen-oversatt),
 // där bara C finns. Fynden är uppslag för mänsklig kontroll, aldrig facit.
 export const promptGranska = (passage: Passage, oversattning: string): string =>

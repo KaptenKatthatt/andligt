@@ -5,7 +5,7 @@ import { TopBar } from '../../components/TopBar'
 import { useAsync } from '../../lib/useAsync'
 import { useSidtitel } from '../../lib/useSidtitel'
 import { bookId, fetchChapter } from '../../lib/api'
-import { chapterKey } from '../../lib/personligt'
+import { chapterKey } from '../../lib/personal'
 import { useAtlas } from '../../lib/store'
 import { StateNote } from './StateNote'
 import styles from './KapitelPage.module.css'
@@ -14,7 +14,7 @@ type Props = { workId: string; bookSlug: string; chapter: string }
 
 /** Bokmärke + "Aa" i kapitelläsarens topbar. Kräver boknamnet för att kunna
  * spara ett bokmärke som Samling kan visa, så den lever i den laddade grenen. */
-const KapitelActions = ({
+const ChapterActions = ({
   workId,
   bookSlug,
   chapter,
@@ -83,7 +83,7 @@ export const KapitelPage = ({ workId, bookSlug, chapter }: Props) => {
     <div className="screenReader">
       <TopBar
         right={
-          <KapitelActions
+          <ChapterActions
             workId={workId}
             bookSlug={bookSlug}
             chapter={n}

@@ -5,14 +5,14 @@ import { Link } from '@tanstack/react-router'
 import { useState, type ReactNode } from 'react'
 import { ToLink } from '../../components/ToLink'
 import { slugOfBook, type BookHit, type SearchHit } from '../../lib/api'
-import type { Anteckning } from '../../lib/personligt'
-import { SOKTYPER, type Soktyp } from '../../lib/sokindex'
-import { MAX_SYNLIGA_PER_GRUPP, RUBRIK, type Soktraff, type SynligGrupp } from '../../lib/soklogik'
-import { AnteckningsKort, anteckningTillKort } from '../SparatDelar'
+import type { Note } from '../../lib/personal'
+import { SEARCH_TYPES, type SearchType } from '../../lib/searchIndex'
+import { MAX_SYNLIGA_PER_GRUPP, RUBRIK, type SearchResult, type VisibleGroup } from '../../lib/searchLogic'
+import { NoteCard, noteToCard } from '../SparatDelar'
 import styles from './Sok.module.css'
 
 /** Verssökets svar från servern (verkläsarens FTS över källtexterna). */
-export type Kalltextsvar = { books: BookHit[]; hits: SearchHit[] }
+export type SourceTextResponse = { books: BookHit[]; hits: SearchHit[] }
 
 /** »Visa fler«-kontrollen: röjer de dolda träffarna i en grupp. Renderar inget
  * när inget är dolt — resultatet är alltid ändligt (search.md, Number of Results). */
@@ -23,11 +23,11 @@ const VisaFler = ({ dolda, onClick }: { dolda: number; onClick: () => void }) =>
     </button>
   )
 
-const TraffRad = ({ traff }: { traff: Soktraff }) => {
-  const { titel, underrad, meta, mal } = traff.dokument
+const HitRow = ({ traff }: { traff: SearchResult }) => {
+  const { title, underrad, meta, mal } = traff.dokument
   const innehåll = (
     <span>
-      <span className={styles.radTitel}>{titel}</span>
+      <span className={styles.radTitel}>{title}</span>
       {underrad !== undefined && <span className={styles.radSub}>{underrad}</span>}
       {meta !== undefined && <span className={styles.radMeta}>{meta}</span>}
     </span>
@@ -41,17 +41,17 @@ const TraffRad = ({ traff }: { traff: Soktraff }) => {
   )
 }
 
-const SokGruppSektion = ({
+const SearchGroupSection = ({
   synlig,
   onVisaFler,
 }: {
-  synlig: SynligGrupp
+  synlig: VisibleGroup
   onVisaFler: () => void
 }) => (
   <section className={styles.grupp}>
     <h2 className="kicker sectionKicker">{synlig.grupp.rubrik}</h2>
     {synlig.synliga.map((traff) => (
-      <TraffRad key={traff.dokument.id} traff={traff} />
+      <HitRow key={traff.dokument.id} traff={traff} />
     ))}
     <VisaFler dolda={synlig.dolda} onClick={onVisaFler} />
   </section>
@@ -60,7 +60,7 @@ const SokGruppSektion = ({
 // Privata anteckningsträffar — egen grupp sist, varje kort tydligt märkt privat.
 // Ändlig som övriga grupper: som mest fem, resten bakom »Visa fler«. Nollställs
 // per fråga genom att sidan nyckar komponenten (key={nyckel}).
-const AnteckningsGruppSok = ({ anteckningar }: { anteckningar: Anteckning[] }) => {
+const NoteGroupSearch = ({ anteckningar }: { anteckningar: Note[] }) => {
   const [visaAlla, setVisaAlla] = useState(false)
   if (anteckningar.length === 0) return null
   const synliga = visaAlla ? anteckningar : anteckningar.slice(0, MAX_SYNLIGA_PER_GRUPP)
@@ -68,11 +68,11 @@ const AnteckningsGruppSok = ({ anteckningar }: { anteckningar: Anteckning[] }) =
     <section className={styles.grupp}>
       <h2 className="kicker sectionKicker">Anteckningar</h2>
       {synliga.map((anteckning) => {
-        const kort = anteckningTillKort(anteckning)
+        const kort = noteToCard(anteckning)
         return (
           <div key={kort.key} className={styles.privatKort}>
             <span className={styles.privatMarkor}>Privat anteckning</span>
-            <AnteckningsKort titel={kort.titel} text={kort.text} datum={kort.datum} to={kort.to} />
+            <NoteCard title={kort.title} text={kort.text} datum={kort.datum} to={kort.to} />
           </div>
         )
       })}
@@ -97,7 +97,7 @@ const Snippet = ({ text }: { text: string }) => (
   </span>
 )
 
-const BokRad = ({ hit }: { hit: BookHit }) => (
+const BookRow = ({ hit }: { hit: BookHit }) => (
   <Link
     to="/bibliotek/verk/$workId/$bookSlug"
     params={{ workId: hit.workId, bookSlug: slugOfBook(hit.workId, hit.bookId) }}
@@ -111,7 +111,7 @@ const BokRad = ({ hit }: { hit: BookHit }) => (
   </Link>
 )
 
-const VersRad = ({ hit }: { hit: SearchHit }) => (
+const VerseRow = ({ hit }: { hit: SearchHit }) => (
   <Link
     to="/kapitel/$workId/$bookSlug/$chapter"
     params={{
@@ -131,11 +131,11 @@ const VersRad = ({ hit }: { hit: SearchHit }) => (
 /** Gruppen »Ur källtexterna«: verkläsarens FTS-verssök som en del av det samlade
  * söket (behåller /bibliotek-sok orörd). Tyst laddning — gruppen dyker upp när
  * data finns; vid fel en lugn rad, aldrig orelaterat innehåll. */
-export const KalltextGrupp = ({
+export const SourceTextGroup = ({
   svar,
   fel,
 }: {
-  svar: Kalltextsvar | null
+  svar: SourceTextResponse | null
   fel: string | null
 }) => {
   const [visaAlla, setVisaAlla] = useState(false)
@@ -147,24 +147,24 @@ export const KalltextGrupp = ({
       </section>
     )
   if (svar === null || (svar.books.length === 0 && svar.hits.length === 0)) return null
-  const verser = visaAlla ? svar.hits : svar.hits.slice(0, MAX_SYNLIGA_PER_GRUPP)
-  const dolda = svar.hits.length - verser.length
+  const verses = visaAlla ? svar.hits : svar.hits.slice(0, MAX_SYNLIGA_PER_GRUPP)
+  const dolda = svar.hits.length - verses.length
   return (
     <section className={styles.grupp}>
       <h2 className="kicker sectionKicker">Ur källtexterna</h2>
       {svar.books.map((hit) => (
-        <BokRad key={hit.bookId} hit={hit} />
+        <BookRow key={hit.bookId} hit={hit} />
       ))}
-      {verser.map((hit) => (
-        <VersRad key={`${hit.bookId}-${hit.chapter}-${hit.verse}`} hit={hit} />
+      {verses.map((hit) => (
+        <VerseRow key={`${hit.bookId}-${hit.chapter}-${hit.verse}`} hit={hit} />
       ))}
       <VisaFler dolda={dolda} onClick={() => setVisaAlla(true)} />
     </section>
   )
 }
 
-/** Sökfältet: programmatiskt kopplad etikett, Enter söker direkt, Escape rensar
- * (type=search). Normal tab-ordning. */
+/** Sökfältet: programmatiskt kopplad label, Enter söker direkt, Escape rensar
+ * (type=search). Normal tab-order. */
 export const Sokfalt = ({
   query,
   onChange,
@@ -198,16 +198,16 @@ export const Sokfalt = ({
   </form>
 )
 
-const SokTomlage = () => (
+const SearchEmptyState = () => (
   <p className={styles.tomtext}>Sök bland frågor, rum, källor och traditioner.</p>
 )
 
-const IngaTraffar = () => (
+const NoHits = () => (
   <div className={styles.tillstand} role="status">
     <p className={styles.tomtext}>Vi hittade inget som stämde med din sökning.</p>
     <p className={styles.tomhint}>
       Prova ett bredare ord eller sök efter en fråga, ett tema eller en källa.
-    </p>
+                            </p>
   </div>
 )
 
@@ -218,9 +218,9 @@ const Fellage = () => (
   </div>
 )
 
-export type Sokläge = 'tom' | 'fel' | 'klar'
+export type SearchMode = 'tom' | 'fel' | 'klar'
 
-const traffAntal = (antal: number): string => (antal === 1 ? '1 träff' : `${antal} träffar`)
+const hitCount = (antal: number): string => (antal === 1 ? '1 träff' : `${antal} träffar`)
 
 /** Resultatvyn: tomläge före sökning, felläge, no-results eller de grupperade,
  * ändliga träffarna — redaktionella grupper, sedan »Ur källtexterna«, sist den
@@ -231,48 +231,48 @@ export const Resultatvy = ({
   ingaTraffar,
   synliga,
   kalltext,
-  noteringar,
+  notes,
   nyckel,
   antal,
   onVisaFler,
 }: {
-  läge: Sokläge
+  läge: SearchMode
   ingaTraffar: boolean
-  synliga: SynligGrupp[]
+  synliga: VisibleGroup[]
   kalltext: ReactNode
-  noteringar: Anteckning[]
+  notes: Note[]
   nyckel: string
   antal: number
-  onVisaFler: (typ: Soktyp) => void
+  onVisaFler: (type: SearchType) => void
 }) => {
-  if (läge === 'tom') return <SokTomlage />
+  if (läge === 'tom') return <SearchEmptyState />
   if (läge === 'fel') return <Fellage />
-  if (ingaTraffar) return <IngaTraffar />
+  if (ingaTraffar) return <NoHits />
   return (
     <>
       <p role="status" className={styles.status}>
-        {traffAntal(antal)}
+        {hitCount(antal)}
       </p>
       {synliga.map((synlig) =>
         synlig.synliga.length > 0 || synlig.dolda > 0 ? (
-          <SokGruppSektion
-            key={synlig.grupp.typ}
+          <SearchGroupSection
+            key={synlig.grupp.type}
             synlig={synlig}
-            onVisaFler={() => onVisaFler(synlig.grupp.typ)}
+            onVisaFler={() => onVisaFler(synlig.grupp.type)}
           />
         ) : null,
       )}
       {kalltext}
-      <AnteckningsGruppSok key={nyckel} anteckningar={noteringar} />
+      <NoteGroupSearch key={nyckel} anteckningar={notes} />
     </>
   )
 }
 
 // Filtervalen härleds ur den delade söktyplistan och gruppetiketterna, så en ny
-// typ inte behöver läggas till på fler ställen än sokindex/soklogik.
-const TYPVAL: Array<{ värde: Soktyp | 'alla'; etikett: string }> = [
-  { värde: 'alla', etikett: 'Alla' },
-  ...SOKTYPER.map((typ) => ({ värde: typ, etikett: RUBRIK[typ] })),
+// type inte behöver läggas till på fler ställen än sokindex/soklogik.
+const TYPVAL: Array<{ värde: SearchType | 'alla'; label: string }> = [
+  { värde: 'alla', label: 'Alla' },
+  ...SEARCH_TYPES.map((type) => ({ värde: type, label: RUBRIK[type] })),
 ]
 
 /** Valfria, hopfällda typfilter (search.md, Filters): aldrig krav före sökning,
@@ -282,9 +282,9 @@ export const Filter = ({
   antal,
   onVal,
 }: {
-  aktiv: Soktyp | undefined
+  aktiv: SearchType | undefined
   antal: number
-  onVal: (typ: Soktyp | undefined) => void
+  onVal: (type: SearchType | undefined) => void
 }) => {
   const [öppen, setÖppen] = useState(false)
   return (
@@ -309,7 +309,7 @@ export const Filter = ({
                 aria-pressed={vald}
                 onClick={() => onVal(val.värde === 'alla' ? undefined : val.värde)}
               >
-                {val.etikett}
+                {val.label}
               </button>
             )
           })}
@@ -317,7 +317,7 @@ export const Filter = ({
       )}
       {aktiv !== undefined && (
         <p className={styles.filterinfo}>
-          {traffAntal(antal)} ·{' '}
+          {hitCount(antal)} ·{' '}
           <button type="button" className={styles.rensa} onClick={() => onVal(undefined)}>
             Rensa filter
           </button>

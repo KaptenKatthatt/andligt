@@ -7,7 +7,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { chat, listaModeller, probaModell, visaModell } from './ollama'
 import { promptA, promptB1, promptB2, promptC1, promptC2, promptD, systemEn, systemSv } from './prompter'
-import { lasPassager, type Passage, type Resultat, type Steg } from './typer'
+import { readPassages, type Passage, type Resultat, type Steg } from './typer'
 
 const ROT = 'docs/research/zen-experiment'
 
@@ -31,18 +31,18 @@ const KANDIDATER: Record<string, string[]> = {
   baslinje: ['gemma4:31b-cloud', 'gpt-oss:120b-cloud'],
 }
 
-const resultatFil = (passageId: string, modell: string, flode: Resultat['flode']): string =>
+const resultFile = (passageId: string, modell: string, flode: Resultat['flode']): string =>
   join(ROT, 'results', `${passageId}--${modell.replace(/[:/]/g, '_')}--${flode}.json`)
 
-const sparaResultat = (resultat: Resultat): void => {
-  const fil = resultatFil(resultat.passageId, resultat.modell, resultat.flode)
+const saveResult = (resultat: Resultat): void => {
+  const fil = resultFile(resultat.passageId, resultat.modell, resultat.flode)
   writeFileSync(fil, `${JSON.stringify(resultat, null, 2)}\n`)
   console.log(`  klar: ${fil} (${resultat.steg.reduce((sum, steg) => sum + steg.ms, 0)} ms)`)
 }
 
-const steg = async (namn: string, modell: string, system: string, prompt: string, maxTokens = 4096): Promise<Steg> => {
+const steg = async (name: string, modell: string, system: string, prompt: string, maxTokens = 4096): Promise<Steg> => {
   const svar = await chat(modell, system, prompt, maxTokens)
-  return { namn, system, prompt, svar: svar.text, ms: svar.ms }
+  return { name, system, prompt, svar: svar.text, ms: svar.ms }
 }
 
 const flodeA = async (passage: Passage, modell: string): Promise<Steg[]> => [
@@ -61,19 +61,19 @@ const flodeC = async (passage: Passage, modell: string): Promise<Steg[]> => {
   return [analys, svensk]
 }
 
-const lasSvar = (passage: Passage, modell: string, flode: Resultat['flode']): string | null => {
-  const fil = resultatFil(passage.id, modell, flode)
+const readResponse = (passage: Passage, modell: string, flode: Resultat['flode']): string | null => {
+  const fil = resultFile(passage.id, modell, flode)
   if (!existsSync(fil)) return null
   const resultat = JSON.parse(readFileSync(fil, 'utf8')) as Resultat
   return resultat.steg.at(-1)?.svar ?? null
 }
 
 // Flöde D: granskaren (en annan modell) jämför den granskade modellens A- och C-utdata.
-const flodeD = async (passage: Passage, granskare: string, granskad: string): Promise<Steg[] | null> => {
-  const svarA = lasSvar(passage, granskad, 'A')
-  const svarC = lasSvar(passage, granskad, 'C')
-  if (svarA === null || svarC === null) return null
-  return [await steg(`granskar-${granskad}`, granskare, systemSv, promptD(passage, svarA, svarC))]
+const flodeD = async (passage: Passage, granskare: string, reviewed: string): Promise<Steg[] | null> => {
+  const responseA = readResponse(passage, reviewed, 'A')
+  const responseC = readResponse(passage, reviewed, 'C')
+  if (responseA === null || responseC === null) return null
+  return [await steg(`granskar-${reviewed}`, granskare, systemSv, promptD(passage, responseA, responseC))]
 }
 
 const korFlode = async (
@@ -82,7 +82,7 @@ const korFlode = async (
   flode: Resultat['flode'],
   arbete: () => Promise<Steg[] | null>,
 ): Promise<void> => {
-  if (existsSync(resultatFil(passage.id, modell, flode))) {
+  if (existsSync(resultFile(passage.id, modell, flode))) {
     console.log(`  hoppar över (finns): ${passage.id} ${modell} ${flode}`)
     return
   }
@@ -92,7 +92,7 @@ const korFlode = async (
       console.log(`  hoppar över (saknar underlag): ${passage.id} ${modell} ${flode}`)
       return
     }
-    sparaResultat({ passageId: passage.id, modell, flode, steg: stegLista, skapad: new Date().toISOString() })
+    saveResult({ passageId: passage.id, modell, flode, steg: stegLista, created: new Date().toISOString() })
   } catch (fel) {
     console.error(`  FEL: ${passage.id} ${modell} ${flode}: ${fel instanceof Error ? fel.message : String(fel)}`)
   }
@@ -118,7 +118,7 @@ const skrivModellDokumentation = async (valda: string[], probstatus: Record<stri
 }
 
 // Prova kandidaterna och dokumentera exakt vad som var körbart på abonnemanget.
-const valjModeller = async (): Promise<string[]> => {
+const selectModels = async (): Promise<string[]> => {
   const kanda = await listaModeller().catch(() => [] as string[])
   console.log(`Gatewayens kända modeller: ${kanda.join(', ') || '(inga)'}`)
   const valda: string[] = []
@@ -134,9 +134,9 @@ const valjModeller = async (): Promise<string[]> => {
 
 const main = async (): Promise<void> => {
   mkdirSync(join(ROT, 'results'), { recursive: true })
-  const passager = lasPassager(join(ROT, 'passages'))
+  const passager = readPassages(join(ROT, 'passages'))
   console.log(`${passager.length} passager inlästa`)
-  const modeller = await valjModeller()
+  const modeller = await selectModels()
   if (modeller.length === 0) throw new Error('Ingen körbar modell hittades på gatewayen.')
   console.log(`Valda modeller: ${modeller.join(', ')}`)
 
@@ -149,10 +149,10 @@ const main = async (): Promise<void> => {
     }
     // Korsgranskning i ring: modell i granskas av modell i+1.
     for (let i = 0; i < modeller.length; i++) {
-      const granskad = modeller[i]
+      const reviewed = modeller[i]
       const granskare = modeller[(i + 1) % modeller.length]
-      if (granskad === undefined || granskare === undefined || granskare === granskad) continue
-      await korFlode(passage, granskad, 'D', () => flodeD(passage, granskare, granskad))
+      if (reviewed === undefined || granskare === undefined || granskare === reviewed) continue
+      await korFlode(passage, reviewed, 'D', () => flodeD(passage, granskare, reviewed))
     }
   }
   console.log('Experimentet klart.')

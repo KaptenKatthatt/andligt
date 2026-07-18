@@ -9,19 +9,19 @@ import {
   type SetStateAction,
 } from 'react'
 import type { ReadMode } from '../content/model'
-import { mergaImport, type PersonligaSamlingar, type PersonligExport } from './dataflytt'
-import { laddaFont } from './fonter'
+import { mergeImport, type PersonalCollections, type PersonalExport } from './dataTransfer'
+import { loadFont } from './fonts'
 import {
   chapterKey,
-  migreraAnteckningar,
-  migreraSparade,
-  uppdateradAnteckning,
-  type Anteckning,
+  migrateNotes,
+  migrateSaved,
+  uppdateradNote,
+  type Note,
   type ChapterBookmark,
-  type SparadPost,
-  type Ursprung,
-} from './personligt'
-import { HISTORIKLANGD } from './rumsval'
+  type SavedItem,
+  type Origin,
+} from './personal'
+import { HISTORIKLANGD } from './roomSelection'
 import { readJson, writeJson } from './storage'
 import {
   BG_OPTIONS,
@@ -44,7 +44,7 @@ const nu = (): string => new Date().toISOString()
 // alla rum bär) blir `rum`, allt annat (topic-id ur gamla appen, oidentifierbart)
 // hamnar i `amne` — texten bevaras alltid, oavsett ursprung. Prefixkollen håller
 // storen fri från innehållssamlingen så startbunten slipper hela biblioteket (fas 13).
-const klassificeraUrsprung = (id: string): Ursprung => (id.startsWith('rum-') ? 'rum' : 'amne')
+const klassificeraUrsprung = (id: string): Origin => (id.startsWith('rum-') ? 'rum' : 'amne')
 
 type AtlasState = {
   // null = inget manuellt val: temat följer systemets färgschema, även när
@@ -56,16 +56,16 @@ type AtlasState = {
   bookmarks: Record<string, boolean>
   chapterBookmarks: Record<string, ChapterBookmark>
   // Anteckningar (notes-and-saved.md): privata reflektioner kopplade till sitt
-  // ursprung (rum/topic). Nyckel = ursprungId — en anteckning per plats. Privat:
+  // ursprung (rum/topic). Nyckel = ursprungId — en anteckning per place. Privat:
   // rör aldrig rumsvalet, publik sök, AI eller analytics.
-  anteckningar: Record<string, Anteckning>
+  anteckningar: Record<string, Note>
   lastRead: LastRead | null
   // Sparade reflektionsrum (rum-id → post med sparat-datum). Skilt från
   // bookmarks: rum sparas hela, bokmärken märker kapitelpositioner i biblioteket.
-  sparadeRum: Record<string, SparadPost>
+  sparadeRum: Record<string, SavedItem>
   // Sparade vandringar (vandring-id → post). Aldrig förlopp eller completion —
   // bara att läsaren vill kunna återvända (notes-and-saved.md, Saved Paths).
-  sparadeVandringar: Record<string, SparadPost>
+  sparadeVandringar: Record<string, SavedItem>
   // De senast öppnade rummen (nyast först, max HISTORIKLANGD). Finns bara
   // för att rumsvalet ska undvika omedelbar upprepning — ingen aktivitetslogg.
   senastLastaRum: string[]
@@ -87,10 +87,10 @@ type AtlasActions = {
   registreraVandringsplats: (vandringId: string, rumId: string) => void
   vaxlaSparatRum: (id: string) => void
   vaxlaSparadVandring: (id: string) => void
-  sattAnteckning: (typ: Ursprung, ursprungId: string, text: string) => void
+  sattAnteckning: (type: Origin, ursprungId: string, text: string) => void
   taBortAnteckning: (ursprungId: string) => void
   rensaSenastBesokt: () => void
-  importeraPersonligt: (importen: PersonligExport) => void
+  importeraPersonligt: (importen: PersonalExport) => void
   rensaPersonligt: () => void
 }
 
@@ -130,10 +130,10 @@ const restoredCollections = (
 > => ({
   bookmarks: saved.bookmarks ?? {},
   chapterBookmarks: saved.chapterBookmarks ?? {},
-  anteckningar: migreraAnteckningar(saved.notes, saved.anteckningar, klassificeraUrsprung, nu()),
+  anteckningar: migrateNotes(saved.notes, saved.anteckningar, klassificeraUrsprung, nu()),
   lastRead: saved.lastRead ?? null,
-  sparadeRum: migreraSparade(saved.sparadeRum),
-  sparadeVandringar: migreraSparade(saved.sparadeVandringar),
+  sparadeRum: migrateSaved(saved.sparadeRum),
+  sparadeVandringar: migrateSaved(saved.sparadeVandringar),
   senastLastaRum: saved.senastLastaRum ?? [],
   vandringsplatser: saved.vandringsplatser ?? {},
 })
@@ -261,35 +261,35 @@ const useCollectionActions = (setState: SetAtlasState): CollectionActions => {
 }
 
 // Toggle mot ett sparat-record: sätter post med datum, eller tar bort nyckeln.
-const vaxlaSparad = (
-  poster: Record<string, SparadPost>,
+const toggleSaved = (
+  poster: Record<string, SavedItem>,
   id: string,
-): Record<string, SparadPost> => {
-  const nästa = { ...poster }
-  if (nästa[id]) delete nästa[id]
-  else nästa[id] = { sparadNar: nu() }
-  return nästa
+): Record<string, SavedItem> => {
+  const next = { ...poster }
+  if (next[id]) delete next[id]
+  else next[id] = { sparadNar: nu() }
+  return next
 }
 
 const usePersonligtActions = (setState: SetAtlasState): PersonligtActions => {
   const vaxlaSparatRum = useCallback(
     // Anteckningen är en egen post och överlever av-sparning, så ingen varning
     // behövs (notes-and-saved.md: varning bara när borttag även raderar anteckning).
-    (id: string) => setState((s) => ({ ...s, sparadeRum: vaxlaSparad(s.sparadeRum, id) })),
+    (id: string) => setState((s) => ({ ...s, sparadeRum: toggleSaved(s.sparadeRum, id) })),
     [setState],
   )
   const vaxlaSparadVandring = useCallback(
     (id: string) =>
-      setState((s) => ({ ...s, sparadeVandringar: vaxlaSparad(s.sparadeVandringar, id) })),
+      setState((s) => ({ ...s, sparadeVandringar: toggleSaved(s.sparadeVandringar, id) })),
     [setState],
   )
   const sattAnteckning = useCallback(
-    (typ: Ursprung, ursprungId: string, text: string) =>
+    (type: Origin, ursprungId: string, text: string) =>
       setState((s) => ({
         ...s,
         anteckningar: {
           ...s.anteckningar,
-          [ursprungId]: uppdateradAnteckning(s.anteckningar[ursprungId], typ, ursprungId, text, nu()),
+          [ursprungId]: uppdateradNote(s.anteckningar[ursprungId], type, ursprungId, text, nu()),
         },
       })),
     [setState],
@@ -297,9 +297,9 @@ const usePersonligtActions = (setState: SetAtlasState): PersonligtActions => {
   const taBortAnteckning = useCallback(
     (ursprungId: string) =>
       setState((s) => {
-        const nästa = { ...s.anteckningar }
-        delete nästa[ursprungId]
-        return { ...s, anteckningar: nästa }
+        const next = { ...s.anteckningar }
+        delete next[ursprungId]
+        return { ...s, anteckningar: next }
       }),
     [setState],
   )
@@ -314,7 +314,7 @@ const usePersonligtActions = (setState: SetAtlasState): PersonligtActions => {
 
 /** Plockar ut den personliga delen av storen — delas av importmerge och av
  * exporten i Inställningar (Dina data), så samma femfältiga form byggs på ett ställe. */
-export const personligaSamlingar = (s: PersonligaSamlingar): PersonligaSamlingar => ({
+export const personalCollections = (s: PersonalCollections): PersonalCollections => ({
   anteckningar: s.anteckningar,
   sparadeRum: s.sparadeRum,
   sparadeVandringar: s.sparadeVandringar,
@@ -337,8 +337,8 @@ const tomtPersonligt = {
 
 const useDataActions = (setState: SetAtlasState): DataActions => {
   const importeraPersonligt = useCallback(
-    (importen: PersonligExport) =>
-      setState((s) => ({ ...s, ...mergaImport(personligaSamlingar(s), importen) })),
+    (importen: PersonalExport) =>
+      setState((s) => ({ ...s, ...mergeImport(personalCollections(s), importen) })),
     [setState],
   )
   const rensaPersonligt = useCallback(
@@ -374,7 +374,7 @@ const useThemeMirror = (state: AtlasState, dark: boolean): void => {
   // om ett sparat val inte är standardtypsnittet). Garamond är no-op — redan i
   // startbunten. Håller start-CSS:en liten utan att någon får fel font (fas 13).
   useEffect(() => {
-    laddaFont(state.font)
+    loadFont(state.font)
   }, [state.font])
 }
 

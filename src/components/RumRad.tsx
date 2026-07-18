@@ -1,18 +1,18 @@
-import type { Rum } from '../content/redaktion/schema'
-import { hittaTema } from '../lib/innehall'
+import type { Room } from '../content/editorial/schema'
+import { findTheme } from '../lib/content'
 import { ToLink } from './ToLink'
 import styles from './RumRad.module.css'
 
-/** Rumsförhandsvisning i biblioteket (library.md, Reflection Rooms): titel,
- * kort sammanfattning, tema och ungefärlig lästid. Inget mer — inga mått,
+/** Rumsförhandsvisning i biblioteket (library.md, Reflection Rooms): title,
+ * kort summary, tema och ungefärlig lästid. Inget mer — inga mått,
  * ingen brådska. Länken öppnar rummet i läsrumsläge. */
-export const RumRad = ({ rum }: { rum: Rum }) => {
-  const tema = hittaTema(rum.teman[0] ?? '')
-  const meta = [tema?.etikett, `${rum.lästidMinuter} min`].filter(Boolean).join(' · ')
+export const RoomRow = ({ rum }: { rum: Room }) => {
+  const tema = findTheme(rum.themes[0] ?? '')
+  const meta = [tema?.label, `${rum.readingTimeMinutes} min`].filter(Boolean).join(' · ')
   return (
     <ToLink to={{ kind: 'rum', slug: rum.slug }} className={styles.rad}>
-      <span className={styles.titel}>{rum.titel}</span>
-      <span className={styles.sammanfattning}>{rum.sammanfattning}</span>
+      <span className={styles.title}>{rum.title}</span>
+      <span className={styles.summary}>{rum.summary}</span>
       <span className={styles.meta}>{meta}</span>
     </ToLink>
   )

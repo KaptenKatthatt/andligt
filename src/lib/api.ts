@@ -1,6 +1,6 @@
 // Typad klient mot bibliotekets API (server/api/library.ts). Samma origin;
 // läsning är öppen (servern körs Tailscale-only, se server/index.ts).
-import { rapportera, utanFraga } from './telemetri'
+import { report, withoutQuestion } from './telemetry'
 
 export type Work = {
   id: string
@@ -75,23 +75,23 @@ const OFFLINE_TEXT = 'Du verkar vara offline. Texten går att läsa igen när du
 const NAT_TEXT = 'Texten går inte att hämta just nu. Kontrollera din uppkoppling och försök igen.'
 const SVAR_TEXT = 'Kunde inte hämta texten just nu. Försök igen om en stund.'
 
-const ärOffline = (): boolean => typeof navigator !== 'undefined' && navigator.onLine === false
+const isOffline = (): boolean => typeof navigator !== 'undefined' && navigator.onLine === false
 
 const getJson = async <T>(url: string): Promise<T> => {
   // Resursen loggas utan frågesträng, så en sökfrågas text aldrig läcker in i
   // telemetrin via /api/library/search?q=… (fas 14, sensitive query data).
-  const resurs = utanFraga(url)
+  const resurs = withoutQuestion(url)
   let response: Response
   try {
     response = await fetch(url, { headers: { Accept: 'application/json' } })
   } catch {
     // fetch avvisar med TypeError vid nätverksfel (offline, avbruten uppkoppling).
-    const offline = ärOffline()
-    rapportera({ typ: offline ? 'offline-laddningsfel' : 'sidladdningsfel', resurs })
+    const offline = isOffline()
+    report({ type: offline ? 'offline-laddningsfel' : 'sidladdningsfel', resurs })
     throw new Error(offline ? OFFLINE_TEXT : NAT_TEXT)
   }
   if (!response.ok) {
-    rapportera({ typ: 'sidladdningsfel', resurs, detalj: `status ${response.status}` })
+    report({ type: 'sidladdningsfel', resurs, detalj: `status ${response.status}` })
     throw new Error(SVAR_TEXT)
   }
   return (await response.json()) as T

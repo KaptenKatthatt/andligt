@@ -2,40 +2,40 @@
 // radinnehållet, beskrivningsprosan och rumslistan. Länken runt en rad
 // varierar (statisk route eller ToLink).
 import type { ReactNode } from 'react'
-import { RumRad } from '../../components/RumRad'
-import type { Rum } from '../../content/redaktion/schema'
-import { stycken } from '../../lib/innehall'
+import { RoomRow } from '../../components/RumRad'
+import type { Room } from '../../content/editorial/schema'
+import { paragraphs } from '../../lib/content'
 import { useSidtitel } from '../../lib/useSidtitel'
 import styles from './Bibliotek.module.css'
 
-export const rumsantal = (antal: number): string => (antal === 1 ? 'Ett rum' : `${antal} rum`)
+export const roomCount = (antal: number): string => (antal === 1 ? 'Ett rum' : `${antal} rum`)
 
-export const frågeantal = (antal: number): string =>
+export const questionCount = (antal: number): string =>
   antal === 1 ? 'En fråga' : `${antal} frågor`
 
 /** Undersidornas huvud. Poster som inte är publicerade märks »Utkast« —
  * de nås bara via direkt länk och är redaktionens granskningsvy.
- * Sidhuvudets titel blir också dokumenttitel — sidhuvudet är per definition
+ * Sidhuvudets title blir också dokumenttitel — sidhuvudet är per definition
  * sidans huvudrubrik, så alla undersidor får rätt fliknamn på köpet. */
 export const Sidhuvud = ({
   kicker,
-  titel,
+  title,
   status,
   children,
 }: {
   kicker: string
-  titel: string
-  status?: Rum['status']
+  title: string
+  status?: Room['status']
   children?: ReactNode
 }) => {
-  useSidtitel(titel)
+  useSidtitel(title)
   return (
     <header className={styles.huvud}>
       <div className="kicker">
         {kicker}
-        {status !== undefined && status !== 'publicerad' && ' · Utkast'}
+        {status !== undefined && status !== 'published' && ' · Utkast'}
       </div>
-      <h1 className={styles.huvudTitel}>{titel}</h1>
+      <h1 className={styles.huvudTitel}>{title}</h1>
       {children}
     </header>
   )
@@ -44,35 +44,35 @@ export const Sidhuvud = ({
 export const Beskrivning = ({ text }: { text?: string }) => (
   <>
     {text !== undefined &&
-      stycken(text).map((stycke, i) => (
-        <p key={i} className={styles.beskrivning}>
+      paragraphs(text).map((stycke, i) => (
+        <p key={i} className={styles.description}>
           {stycke}
         </p>
       ))}
   </>
 )
 
-export const Rumslista = ({ rum, tomtBesked }: { rum: Rum[]; tomtBesked: string }) => (
+export const Rumslista = ({ rum, tomtBesked }: { rum: Room[]; tomtBesked: string }) => (
   <>
     {rum.length === 0 ? (
       <p className={styles.tomt}>{tomtBesked}</p>
     ) : (
-      rum.map((ettRum) => <RumRad key={ettRum.id} rum={ettRum} />)
+      rum.map((ettRum) => <RoomRow key={ettRum.id} rum={ettRum} />)
     )}
   </>
 )
 
-export const Rad = ({ titel, sub }: { titel: string; sub?: string }) => (
+export const Row = ({ title, sub }: { title: string; sub?: string }) => (
   <>
     <span>
-      <span className={styles.radTitel}>{titel}</span>
+      <span className={styles.radTitel}>{title}</span>
       {sub !== undefined && <span className={styles.radSub}>{sub}</span>}
     </span>
     <span className={styles.chev}>›</span>
   </>
 )
 
-export const Sektion = ({ rubrik, children }: { rubrik: string; children: ReactNode }) => (
+export const Section = ({ rubrik, children }: { rubrik: string; children: ReactNode }) => (
   <div className={styles.sektion}>
     <h2 className="kicker sectionKicker">{rubrik}</h2>
     {children}

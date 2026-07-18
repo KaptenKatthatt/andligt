@@ -1,102 +1,102 @@
 import { Link } from '@tanstack/react-router'
 import { TopBar } from '../../components/TopBar'
-import type { Kalla, Kallpassage } from '../../content/redaktion/schema'
-import { passagerForKalla, publiceradeVia, rumForKalla } from '../../lib/bibliotek'
+import type { Source, SourcePassage } from '../../content/editorial/schema'
+import { passagesForSource, publishedThrough, roomsForSource } from '../../lib/library'
 import {
-  allaPassager,
-  allaRum,
-  hittaKallaViaSlug,
-  hittaTradition,
-  osakerheter,
-  stycken,
-} from '../../lib/innehall'
+  allPassages,
+  allRooms,
+  findSourceBySlug,
+  findTradition,
+  uncertainties,
+  paragraphs,
+} from '../../lib/content'
 import { NotFoundNote } from '../NotFoundNote'
 import styles from './Bibliotek.module.css'
-import { Beskrivning, Rumslista, Sektion, Sidhuvud } from './Biblioteksdelar'
+import { Beskrivning, Rumslista, Section, Sidhuvud } from './Biblioteksdelar'
 
-const TYPETIKETT: Record<Kalla['typ'], string> = {
-  'bok': 'Bok',
-  'skrift': 'Skrift',
-  'brev': 'Brev',
-  'tal': 'Tal',
-  'dikt': 'Dikt',
-  'inskrift': 'Inskrift',
-  'muntlig-tradition': 'Muntlig tradition',
-  'historiskt-dokument': 'Historiskt dokument',
+const TYPETIKETT: Record<Source['type'], string> = {
+  'book': 'Bok',
+  'writing': 'Skrift',
+  'letter': 'Brev',
+  'speech': 'Tal',
+  'poem': 'Dikt',
+  'inscription': 'Inskrift',
+  'oral-tradition': 'Muntlig tradition',
+  'historical-document': 'Historiskt dokument',
   'fragment': 'Fragment',
-  'annat': 'Källa',
+  'other': 'Källa',
 }
 
-const RATTIGHETSETIKETT: Record<Kalla['rättigheter'], string> = {
+const RATTIGHETSETIKETT: Record<Source['rights'], string> = {
   'public-domain': 'Fri att återge (public domain)',
-  'licensierad': 'Licensierad',
-  'skyddad': 'Upphovsrättsskyddad',
-  'okänd': 'Oklar rättighetsstatus',
+  'licensed': 'Licensierad',
+  'protected': 'Upphovsrättsskyddad',
+  'unknown': 'Oklar rättighetsstatus',
 }
 
 // Ärlig osäkerhet i klartext (source-and-context.md, Uncertainty): en
-// tillskriven röst presenteras som tillskriven, aldrig som säkert upphov.
-const upphovsrad = (källa: Kalla): string | undefined => {
-  if (källa.tillskrivenFörfattare === undefined) return källa.författare
-  const nedtecknare = källa.författare ? `, nedtecknad av ${källa.författare}` : ''
-  const namn = `${källa.tillskrivenFörfattare}${nedtecknare}`
-  return källa.upphov === 'tillskrivet' ? `Tillskrivs ${namn}` : namn
+// tillskriven röst presenteras som tillskriven, aldrig som säkert attribution.
+const upphovsrad = (source: Source): string | undefined => {
+  if (source.attributedAuthor === undefined) return source.author
+  const nedtecknare = source.author ? `, nedtecknad av ${source.author}` : ''
+  const name = `${source.attributedAuthor}${nedtecknare}`
+  return source.attribution === 'attributed' ? `Tillskrivs ${name}` : name
 }
 
-const Metarad = ({ etikett, värde }: { etikett: string; värde?: string }) =>
+const Metarad = ({ label, värde }: { label: string; värde?: string }) =>
   värde === undefined || värde === '' ? null : (
     <p className={styles.metarad}>
-      <span className={styles.metaetikett}>{etikett}</span>
+      <span className={styles.metaetikett}>{label}</span>
       {värde}
     </p>
   )
 
-const Kallmeta = ({ källa }: { källa: Kalla }) => {
-  const traditionsnamn = publiceradeVia(källa.traditioner ?? [], hittaTradition).map(
-    (tradition) => tradition.namn,
+const Kallmeta = ({ source }: { source: Source }) => {
+  const traditionsnamn = publishedThrough(source.traditions ?? [], findTradition).map(
+    (tradition) => tradition.name,
   )
   return (
     <div className={styles.metablock}>
-      <Metarad etikett="Upphov" värde={upphovsrad(källa)} />
-      <Metarad etikett="Tradition" värde={traditionsnamn.join(', ')} />
+      <Metarad label="Upphov" värde={upphovsrad(source)} />
+      <Metarad label="Tradition" värde={traditionsnamn.join(', ')} />
       <Metarad
-        etikett="Tillkomst"
-        värde={[källa.ungefärligDatering, källa.plats].filter(Boolean).join(' · ')}
+        label="Tillkomst"
+        värde={[source.approximateDating, source.place].filter(Boolean).join(' · ')}
       />
-      <Metarad etikett="Originalspråk" värde={källa.originalspråk} />
-      <Metarad etikett="Rättigheter" värde={RATTIGHETSETIKETT[källa.rättigheter]} />
+      <Metarad label="Originalspråk" värde={source.originalLanguage} />
+      <Metarad label="Rättigheter" värde={RATTIGHETSETIKETT[source.rights]} />
     </div>
   )
 }
 
-// Passagens metarad: översättning, edition och år, stilla sammanfogade.
-const passagemeta = (passage: Kallpassage): string =>
+// Passagens metarad: translation, edition och år, stilla sammanfogade.
+const passagemeta = (passage: SourcePassage): string =>
   [
-    passage.översättare && `Översättning: ${passage.översättare}`,
-    passage.utgåva,
-    passage.utgivningsår,
+    passage.translator && `Översättning: ${passage.translator}`,
+    passage.edition,
+    passage.publicationYear,
   ]
     .filter(Boolean)
     .join(' · ')
 
-/** En källpassage: exakt referens, källans ord som semantiskt blockcitat
- * (originaltext och/eller översättning) och bibliografisk härkomst. Källans
+/** En källpassage: exakt reference, källans ord som semantiskt blockcitat
+ * (originalText och/eller translation) och bibliografisk härkomst. Källans
  * ord hålls tydligt åtskilda från redaktionell prosa (source-and-context.md). */
-const Passageblock = ({ passage }: { passage: Kallpassage }) => {
+const Passageblock = ({ passage }: { passage: SourcePassage }) => {
   const meta = passagemeta(passage)
   return (
     <div className={styles.passage}>
-      <p className={styles.passagref}>{passage.referens}</p>
-      {passage.originaltext && (
+      <p className={styles.passagref}>{passage.reference}</p>
+      {passage.originalText && (
         <blockquote className={styles.passagetext}>
-          {stycken(passage.originaltext).map((stycke, i) => (
+          {paragraphs(passage.originalText).map((stycke, i) => (
             <p key={i}>{stycke}</p>
           ))}
         </blockquote>
       )}
-      {passage.översättning && (
+      {passage.translation && (
         <blockquote className={styles.passagetext}>
-          {stycken(passage.översättning).map((stycke, i) => (
+          {paragraphs(passage.translation).map((stycke, i) => (
             <p key={i}>{stycke}</p>
           ))}
         </blockquote>
@@ -115,52 +115,52 @@ const Passageblock = ({ passage }: { passage: Kallpassage }) => {
  * in i biblioteksläsaren när hela texten finns där. Ingen auktoritetsprosa.
  * TopBar utan onBack ⇒ historiksteg bakåt — biblioteksplatsen bevaras. */
 export const KallaPostPage = ({ slug }: { slug: string }) => {
-  const källa = hittaKallaViaSlug(slug)
-  if (!källa) return <NotFoundNote subject="Källan" />
-  const osäkerhet = osakerheter(källa)
-  const passager = passagerForKalla(källa.id, allaPassager)
+  const source = findSourceBySlug(slug)
+  if (!source) return <NotFoundNote subject="Källan" />
+  const uncertainty = uncertainties(source)
+  const passager = passagesForSource(source.id, allPassages)
   return (
     <div className="screenSub">
       <TopBar />
-      <Sidhuvud kicker={TYPETIKETT[källa.typ]} titel={källa.titel} status={källa.status}>
-        {källa.originaltitel && <p className={styles.originaltitel}>{källa.originaltitel}</p>}
+      <Sidhuvud kicker={TYPETIKETT[source.type]} title={source.title} status={source.status}>
+        {source.originalTitle && <p className={styles.originalTitle}>{source.originalTitle}</p>}
       </Sidhuvud>
-      <Kallmeta källa={källa} />
-      <Beskrivning text={källa.beskrivning} />
-      {osäkerhet.length > 0 && (
-        <Sektion rubrik="Osäkerhet">
-          {osäkerhet.map((rad) => (
-            <p key={rad} className={styles.beskrivning}>
+      <Kallmeta source={source} />
+      <Beskrivning text={source.description} />
+      {uncertainty.length > 0 && (
+        <Section rubrik="Osäkerhet">
+          {uncertainty.map((rad) => (
+            <p key={rad} className={styles.description}>
               {rad}
             </p>
           ))}
-        </Sektion>
+        </Section>
       )}
       {passager.length > 0 && (
-        <Sektion rubrik="Passager">
+        <Section rubrik="Passager">
           {passager.map((passage) => (
             <Passageblock key={passage.id} passage={passage} />
           ))}
-        </Sektion>
+        </Section>
       )}
-      {källa.biblioteksverk !== undefined && (
-        <Sektion rubrik="Hela texten">
+      {source.libraryWork !== undefined && (
+        <Section rubrik="Hela texten">
           <Link
             to="/bibliotek/verk/$workId"
-            params={{ workId: källa.biblioteksverk }}
+            params={{ workId: source.libraryWork }}
             className={styles.rad}
           >
             <span className={styles.radTitel}>Läs hela texten</span>
             <span className={styles.chev}>›</span>
           </Link>
-        </Sektion>
+        </Section>
       )}
-      <Sektion rubrik="Rum ur denna källa">
+      <Section rubrik="Rum ur denna source">
         <Rumslista
-          rum={rumForKalla(källa.id, allaRum)}
+          rum={roomsForSource(source.id, allRooms)}
           tomtBesked="Det finns inga färdiga rum ur källan ännu."
         />
-      </Sektion>
+      </Section>
     </div>
   )
 }
