@@ -5,8 +5,8 @@ import type { ReactNode } from 'react'
 import { ToLink } from '../components/ToLink'
 import type { Path } from '../content/editorial/schema'
 import { findTopic } from '../content/topics'
-import { hittaRumViaId } from '../lib/innehall'
-import { datumEtikett, utdrag, type Note } from '../lib/personligt'
+import { hittaRumViaId } from '../lib/content'
+import { datumEtikett, utdrag, type Note } from '../lib/personal'
 import styles from './SparatDelar.module.css'
 
 /** Dit en anteckning länkar tillbaka: läsrummet (rum) eller topic-essän. En

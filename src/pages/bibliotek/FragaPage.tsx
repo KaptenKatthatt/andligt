@@ -1,7 +1,7 @@
 import { ToLink } from '../../components/ToLink'
 import { TopBar } from '../../components/TopBar'
 import type { Question } from '../../content/editorial/schema'
-import { kallorForFraga, publiceradeVia, rumForFraga } from '../../lib/bibliotek'
+import { kallorForFraga, publiceradeVia, rumForFraga } from '../../lib/library'
 import {
   allaKallor,
   allaRum,
@@ -9,7 +9,7 @@ import {
   hittaFragaViaSlug,
   hittaTema,
   kallnamn,
-} from '../../lib/innehall'
+} from '../../lib/content'
 import { NotFoundNote } from '../NotFoundNote'
 import styles from './Bibliotek.module.css'
 import { Beskrivning, Rad, Rumslista, Sektion, Sidhuvud } from './Biblioteksdelar'

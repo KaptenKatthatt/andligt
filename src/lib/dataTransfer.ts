@@ -11,7 +11,7 @@ import {
   type ChapterBookmark,
   type SavedItem,
   type Origin,
-} from './personligt'
+} from './personal'
 
 export const EXPORT_FORMAT = 'visdomsatlasen-personligt'
 

@@ -4,8 +4,8 @@
 // in hela innehållssamlingen i startbunten. Rummen laddas först när ett tema
 // väljs (dynamisk import i HemPage) eller när läsrummet/biblioteket öppnas.
 import { temaSchema, type Theme } from '../content/editorial/schema'
-import { samla, tillFiler } from '../content/editorial/samla'
-import { tolkaPostfil } from '../content/editorial/tolka'
+import { samla, tillFiler } from '../content/editorial/collect'
+import { tolkaPostfil } from '../content/editorial/parse'
 
 export const allaTeman: Theme[] = samla(
   tillFiler(import.meta.glob<string>('../content/themes/*.md', { query: '?raw', import: 'default', eager: true })),

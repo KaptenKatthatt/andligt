@@ -1,5 +1,5 @@
 import { Component, type ReactNode } from 'react'
-import { rapportera } from '../lib/telemetri'
+import { rapportera } from '../lib/telemetry'
 import styles from './Felgrans.module.css'
 
 type Props = { children: ReactNode }

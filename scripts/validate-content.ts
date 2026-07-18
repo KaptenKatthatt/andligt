@@ -4,7 +4,7 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 import type { z } from 'zod'
-import { tolkaPostfil, tolkaRumsfil, type ContentFile, type Parsed } from '../src/content/editorial/tolka'
+import { tolkaPostfil, tolkaRumsfil, type ContentFile, type Parsed } from '../src/content/editorial/parse'
 import {
   fragaSchema,
   kallaSchema,
@@ -15,7 +15,7 @@ import {
   vandringSchema,
   type ContentSet,
 } from '../src/content/editorial/schema'
-import { valideraInnehall } from '../src/content/editorial/validera'
+import { valideraInnehall } from '../src/content/editorial/validate'
 
 const INNEHALLSROT = path.join(process.cwd(), 'src', 'content')
 

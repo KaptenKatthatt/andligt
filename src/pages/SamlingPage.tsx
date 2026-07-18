@@ -2,14 +2,14 @@ import { RowLink } from '../components/RowLink'
 import { RumRad } from '../components/RumRad'
 import type { Room, Path } from '../content/editorial/schema'
 import { findTopic } from '../content/topics'
-import { hittaRumViaId, hittaVandringViaId } from '../lib/innehall'
+import { hittaRumViaId, hittaVandringViaId } from '../lib/content'
 import {
   chapterKey,
   sorteradeAnteckningar,
   sparadeIdITidsordning,
   type ChapterBookmark,
   type SavedItem,
-} from '../lib/personligt'
+} from '../lib/personal'
 import { useAtlas } from '../lib/store'
 import { useSidtitel } from '../lib/useSidtitel'
 import styles from './SamlingPage.module.css'

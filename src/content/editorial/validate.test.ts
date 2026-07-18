@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { Question, ContentSet, Source, SourcePassage, Room, Theme } from './schema'
-import { valideraInnehall } from './validera'
+import { valideraInnehall } from './validate'
 
 const rum = (över: Partial<Room> = {}): Room => ({
   id: 'rum-a',

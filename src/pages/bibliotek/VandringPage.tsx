@@ -7,14 +7,14 @@ import {
   rumForVandring,
   traditionerForVandring,
   vandringLastid,
-} from '../../lib/bibliotek'
+} from '../../lib/library'
 import {
   allaKallor,
   allaRum,
   allaTraditioner,
   hittaFraga,
   hittaVandringViaSlug,
-} from '../../lib/innehall'
+} from '../../lib/content'
 import { useAtlas } from '../../lib/store'
 import { NotFoundNote } from '../NotFoundNote'
 import styles from './Bibliotek.module.css'

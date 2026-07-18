@@ -9,8 +9,8 @@ import {
   type SetStateAction,
 } from 'react'
 import type { ReadMode } from '../content/model'
-import { mergaImport, type PersonalCollections, type PersonalExport } from './dataflytt'
-import { laddaFont } from './fonter'
+import { mergaImport, type PersonalCollections, type PersonalExport } from './dataTransfer'
+import { laddaFont } from './fonts'
 import {
   chapterKey,
   migreraAnteckningar,
@@ -20,8 +20,8 @@ import {
   type ChapterBookmark,
   type SavedItem,
   type Origin,
-} from './personligt'
-import { HISTORIKLANGD } from './rumsval'
+} from './personal'
+import { HISTORIKLANGD } from './roomSelection'
 import { readJson, writeJson } from './storage'
 import {
   BG_OPTIONS,

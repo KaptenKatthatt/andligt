@@ -23,7 +23,7 @@ import {
   passagerForKalla,
   rumForVandring,
   vandringLastid,
-} from './bibliotek'
+} from './library'
 import {
   allaFragor,
   allaKallor,
@@ -33,9 +33,9 @@ import {
   allaTraditioner,
   allaVandringar,
   kallnamn,
-} from './innehall'
-import { utdrag } from './personligt'
-import { SOKTYPER, type SearchType, type SearchParams } from './soktyper'
+} from './content'
+import { utdrag } from './personal'
+import { SOKTYPER, type SearchType, type SearchParams } from './searchTypes'
 
 // Söktyperna bor i soktyper.ts (utan innehållsberoenden) så routern kan
 // validera URL:en utan att dra in indexbygget; här återexporteras de så

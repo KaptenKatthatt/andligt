@@ -2,7 +2,7 @@
 // dubbletter, brutna relationer och publiceringskrav. Fältkraven per post tas
 // av zod-schemana vid tolkningen; här kontrolleras det som kräver helheten.
 // Publicerat innehåll får aldrig peka på opublicerat — utkast är fria.
-import { ärTeaseröppning } from './oppningsvakt'
+import { ärTeaseröppning } from './openingGuard'
 import type { Question, ContentSet, Source, SourcePassage, Room, Theme } from './schema'
 
 type Kallrelation = Room['sources'][number]

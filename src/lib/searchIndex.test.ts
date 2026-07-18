@@ -8,7 +8,7 @@ import type {
   Tradition,
   Path,
 } from '../content/editorial/schema'
-import { byggSokindex, sokindexet, type SearchDoc } from './sokindex'
+import { byggSokindex, sokindexet, type SearchDoc } from './searchIndex'
 
 type Status = Room['status']
 

@@ -17,12 +17,12 @@ import {
   type Tradition,
   type Path,
 } from '../content/editorial/schema'
-import { samla, tillFiler } from '../content/editorial/samla'
-import { tolkaPostfil, tolkaRumsfil } from '../content/editorial/tolka'
+import { samla, tillFiler } from '../content/editorial/collect'
+import { tolkaPostfil, tolkaRumsfil } from '../content/editorial/parse'
 // Temana (och tröskelns urval) bor i det lätta troskeldata.ts så hemskärmen kan
 // nå dem utan att dra in rummens brödtext; här återexporteras de så bibliotekets
 // uppslag (hittaTema m.fl.) och sökindexet fortsatt kan gå via innehall.
-import { allaTeman, troskelTeman } from './troskeldata'
+import { allaTeman, troskelTeman } from './homeData'
 
 export { allaTeman, troskelTeman }
 

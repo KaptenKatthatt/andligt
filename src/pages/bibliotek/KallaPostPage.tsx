@@ -1,7 +1,7 @@
 import { Link } from '@tanstack/react-router'
 import { TopBar } from '../../components/TopBar'
 import type { Source, SourcePassage } from '../../content/editorial/schema'
-import { passagerForKalla, publiceradeVia, rumForKalla } from '../../lib/bibliotek'
+import { passagerForKalla, publiceradeVia, rumForKalla } from '../../lib/library'
 import {
   allaPassager,
   allaRum,
@@ -9,7 +9,7 @@ import {
   hittaTradition,
   osakerheter,
   stycken,
-} from '../../lib/innehall'
+} from '../../lib/content'
 import { NotFoundNote } from '../NotFoundNote'
 import styles from './Bibliotek.module.css'
 import { Beskrivning, Rumslista, Sektion, Sidhuvud } from './Biblioteksdelar'

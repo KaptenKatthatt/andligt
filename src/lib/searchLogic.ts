@@ -2,8 +2,8 @@
 // normalisering, kontrollerade synonymer och konservativ stavfelstolerans, vägt
 // så att frågor och themes rankas rätt och en berömd author aldrig slår en
 // mer relevant fråga. Ingen popularitets- eller beteendesignal existerar här.
-import type { SearchDoc, SearchType } from './sokindex'
-import { inomEttSkrivfel, normalisera, ordlista, soktokens, stam } from './soknormalisering'
+import type { SearchDoc, SearchType } from './searchIndex'
+import { inomEttSkrivfel, normalisera, ordlista, soktokens, stam } from './searchNormalize'
 
 /** Vilket fält en träff kom ur — internt, visas aldrig för användaren. */
 export type HitLevel = 'title-exakt' | 'alias-exakt' | 'title' | 'keywords' | 'underrad' | 'text'

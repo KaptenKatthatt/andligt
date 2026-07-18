@@ -2,8 +2,8 @@
 // den aktuella användarens anteckningar och delar ingenting med det publika
 // indexet — den importerar aldrig sokindex/soklogik, så ingen anteckningstext
 // kan påverka eller läcka in i publika resultat (Fas 9 Privacy/AI Access).
-import type { Note } from './personligt'
-import { ordlista, soktokens } from './soknormalisering'
+import type { Note } from './personal'
+import { ordlista, soktokens } from './searchNormalize'
 
 // Alla meningsbärande ord måste förekomma i anteckningen (AND), som exakt ord,
 // prefix eller — för längre ord — delsträng. Samma svenska normalisering som

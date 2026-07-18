@@ -4,7 +4,7 @@ import { NotesSheet } from '../components/NotesSheet'
 import { ReadingSettingsButton } from '../components/ReadingSettingsButton'
 import { TopBar } from '../components/TopBar'
 import type { Source, SourcePassage, Room, Path } from '../content/editorial/schema'
-import { rumForVandring } from '../lib/bibliotek'
+import { rumForVandring } from '../lib/library'
 import {
   allaRum,
   brukEtikett,
@@ -16,9 +16,9 @@ import {
   kallnamn,
   osakerheter,
   stycken,
-} from '../lib/innehall'
+} from '../lib/content'
 import { useAtlas } from '../lib/store'
-import { rapportera } from '../lib/telemetri'
+import { rapportera } from '../lib/telemetry'
 import { useSidtitel } from '../lib/useSidtitel'
 import { NotFoundNote } from './NotFoundNote'
 import styles from './RumPage.module.css'

@@ -8,7 +8,7 @@ import {
   uppdateradAnteckning,
   utdrag,
   type Note,
-} from './personligt'
+} from './personal'
 
 const NU = '2026-07-14T10:00:00.000Z'
 

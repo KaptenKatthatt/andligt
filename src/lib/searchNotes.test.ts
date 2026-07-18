@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import type { Note } from './personligt'
-import { sokAnteckningar } from './sokanteckningar'
+import type { Note } from './personal'
+import { sokAnteckningar } from './searchNotes'
 
 const anteckning = (id: string, text: string, updated: string): Note => ({
   ursprungTyp: 'rum',

@@ -1,6 +1,6 @@
 import { TopBar } from '../../components/TopBar'
-import { bibliotekRum } from '../../lib/bibliotek'
-import { allaRum } from '../../lib/innehall'
+import { bibliotekRum } from '../../lib/library'
+import { allaRum } from '../../lib/content'
 import styles from './Bibliotek.module.css'
 import { Rumslista, rumsantal, Sidhuvud } from './Biblioteksdelar'
 

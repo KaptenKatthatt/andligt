@@ -14,7 +14,7 @@ import {
   rumForVandring,
   traditionerForVandring,
   vandringLastid,
-} from './bibliotek'
+} from './library'
 
 // Fabricerade poster: bara fälten biblioteket läser behöver vara meningsfulla.
 const rum = (title: string, status: Room['status'] = 'publicerad', över: Partial<Room> = {}): Room => ({

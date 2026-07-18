@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { tolkaPostfil, tolkaRumsfil } from './tolka'
+import { tolkaPostfil, tolkaRumsfil } from './parse'
 import { temaSchema } from './schema'
 
 const rumsMarkdown = `---

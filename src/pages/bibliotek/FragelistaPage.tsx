@@ -1,7 +1,7 @@
 import { ToLink } from '../../components/ToLink'
 import { TopBar } from '../../components/TopBar'
-import { bibliotekFragor } from '../../lib/bibliotek'
-import { allaFragor } from '../../lib/innehall'
+import { bibliotekFragor } from '../../lib/library'
+import { allaFragor } from '../../lib/content'
 import styles from './Bibliotek.module.css'
 import { frågeantal, Rad, Sidhuvud } from './Biblioteksdelar'
 

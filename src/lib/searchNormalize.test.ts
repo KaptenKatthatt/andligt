@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { inomEttSkrivfel, normalisera, ordlista, soktokens, stam } from './soknormalisering'
+import { inomEttSkrivfel, normalisera, ordlista, soktokens, stam } from './searchNormalize'
 
 describe('normalisera', () => {
   it('trimmar, gör gemener och viker svenska diakriter', () => {

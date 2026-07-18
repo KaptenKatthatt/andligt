@@ -1,10 +1,10 @@
 import { useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
 import type { Theme } from '../content/editorial/schema'
-import { valjRum } from '../lib/rumsval'
+import { valjRum } from '../lib/roomSelection'
 import { useAtlas } from '../lib/store'
-import { rapportera } from '../lib/telemetri'
-import { troskelTeman } from '../lib/troskeldata'
+import { rapportera } from '../lib/telemetry'
+import { troskelTeman } from '../lib/homeData'
 import { useSidtitel } from '../lib/useSidtitel'
 import styles from './HemPage.module.css'
 
@@ -27,7 +27,7 @@ export const HemPage = () => {
     setVäljer(true)
     setTomtVal(false)
     try {
-      const { allaRum } = await import('../lib/innehall')
+      const { allaRum } = await import('../lib/content')
       const rum = valjRum(tema, allaRum, senastLastaRum)
       if (rum) {
         void navigate({ to: '/rum/$slug', params: { slug: rum.slug } })

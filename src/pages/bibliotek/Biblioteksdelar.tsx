@@ -4,7 +4,7 @@
 import type { ReactNode } from 'react'
 import { RumRad } from '../../components/RumRad'
 import type { Room } from '../../content/editorial/schema'
-import { stycken } from '../../lib/innehall'
+import { stycken } from '../../lib/content'
 import { useSidtitel } from '../../lib/useSidtitel'
 import styles from './Bibliotek.module.css'
 

@@ -1,5 +1,5 @@
 import type { Room } from '../content/editorial/schema'
-import { hittaTema } from '../lib/innehall'
+import { hittaTema } from '../lib/content'
 import { ToLink } from './ToLink'
 import styles from './RumRad.module.css'
 

@@ -10,7 +10,7 @@ import {
   kallnamn,
   stycken,
   troskelTeman,
-} from './innehall'
+} from './content'
 
 describe('innehållsladdaren', () => {
   it('laddar exempelrummet från markdown', () => {

@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { anonymiseraFraga, rapportera, utanFraga, type TechnicalEvent } from './telemetri'
+import { anonymiseraFraga, rapportera, utanFraga, type TechnicalEvent } from './telemetry'
 
 describe('telemetri', () => {
   afterEach(() => vi.restoreAllMocks())

@@ -6,8 +6,8 @@ import {
   tillExport,
   tillMarkdown,
   type PersonalCollections,
-} from './dataflytt'
-import type { Origin } from './personligt'
+} from './dataTransfer'
+import type { Origin } from './personal'
 
 const titelFor = (type: Origin, id: string): string | undefined => `${type}:${id}`
 

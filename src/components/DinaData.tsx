@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { findTopic } from '../content/topics'
-import { lasImport, tillExport, tillMarkdown, type PersonalExport } from '../lib/dataflytt'
-import { hittaRumViaId, hittaVandringViaId } from '../lib/innehall'
-import type { Origin } from '../lib/personligt'
+import { lasImport, tillExport, tillMarkdown, type PersonalExport } from '../lib/dataTransfer'
+import { hittaRumViaId, hittaVandringViaId } from '../lib/content'
+import type { Origin } from '../lib/personal'
 import { personligaSamlingar, useAtlas } from '../lib/store'
 import styles from './DinaData.module.css'
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import type { SearchDoc, SearchType } from './sokindex'
+import type { SearchDoc, SearchType } from './searchIndex'
 import {
   MAX_SYNLIGA_PER_GRUPP,
   MAX_SYNLIGA_TOTALT,
@@ -7,7 +7,7 @@ import {
   synligaTraffar,
   type SearchGroup,
   type SearchResult,
-} from './soklogik'
+} from './searchLogic'
 
 const dok = (
   type: SearchType,

@@ -1,6 +1,6 @@
 // Typad klient mot bibliotekets API (server/api/library.ts). Samma origin;
 // läsning är öppen (servern körs Tailscale-only, se server/index.ts).
-import { rapportera, utanFraga } from './telemetri'
+import { rapportera, utanFraga } from './telemetry'
 
 export type Work = {
   id: string

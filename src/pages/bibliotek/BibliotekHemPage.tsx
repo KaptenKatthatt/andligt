@@ -9,7 +9,7 @@ import {
   bibliotekVandringar,
   rumForVandring,
   vandringLastid,
-} from '../../lib/bibliotek'
+} from '../../lib/library'
 import { useSidtitel } from '../../lib/useSidtitel'
 import {
   allaFragor,
@@ -19,8 +19,8 @@ import {
   allaTraditioner,
   allaVandringar,
   kallnamn,
-} from '../../lib/innehall'
-import { valbaraRum } from '../../lib/rumsval'
+} from '../../lib/content'
+import { valbaraRum } from '../../lib/roomSelection'
 import styles from './Bibliotek.module.css'
 import { frågeantal, Rad, rumsantal, Sektion } from './Biblioteksdelar'
 

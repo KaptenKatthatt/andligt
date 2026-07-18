@@ -5,7 +5,7 @@ import {
 } from '@tanstack/react-router'
 import { lazy, type ComponentType, type LazyExoticComponent } from 'react'
 import type { ReadMode } from '../content/model'
-import { SOKTYPER, type SearchType, type SearchParams } from '../lib/soktyper'
+import { SOKTYPER, type SearchType, type SearchParams } from '../lib/searchTypes'
 import { HemPage } from '../pages/HemPage'
 import { NotFoundNote } from '../pages/NotFoundNote'
 import { RootLayout } from './RootLayout'

@@ -15,7 +15,7 @@ import '@fontsource/eb-garamond/400-italic.css'
 import '@fontsource/eb-garamond/500-italic.css'
 import { router } from './app/router'
 import { AtlasProvider } from './lib/store'
-import { installeraGlobalaFelfangare } from './lib/telemetri'
+import { installeraGlobalaFelfangare } from './lib/telemetry'
 import './styles/global.css'
 
 registerSW()

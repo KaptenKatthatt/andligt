@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { ärTeaseröppning } from './oppningsvakt'
+import { ärTeaseröppning } from './openingGuard'
 
 // De sex teaser-rader som redaktören lät ta bort 2026-07-16 — regressionsskydd.
 // Var och en avslutade en opening och lockade vidare utan att berätta vad.
