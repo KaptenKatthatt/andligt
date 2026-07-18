@@ -1,6 +1,7 @@
 import { Outlet, useRouterState } from '@tanstack/react-router'
-import { useState } from 'react'
+import { Suspense, useState } from 'react'
 import { NavTabs } from '../components/NavTabs'
+import { Sidladdning } from '../components/Sidladdning'
 import { ShellContext } from '../lib/shell'
 import { useAtlas } from '../lib/store'
 
@@ -25,7 +26,9 @@ export const RootLayout = () => {
             Hoppa till innehåll
           </a>
           <main id="innehall" tabIndex={-1}>
-            <Outlet />
+            <Suspense fallback={<Sidladdning />}>
+              <Outlet />
+            </Suspense>
           </main>
           {showNav && <NavTabs />}
         </ShellContext.Provider>
