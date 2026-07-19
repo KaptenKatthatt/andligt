@@ -1,8 +1,8 @@
 import { TopBar } from '../../components/TopBar'
 import { findPersonBySlug } from '../../lib/content'
 import { NotFoundNote } from '../NotFoundNote'
-import styles from './Bibliotek.module.css'
-import { Beskrivning, Sidhuvud } from './Biblioteksdelar'
+import styles from './Library.module.css'
+import { Beskrivning, Sidhuvud } from './LibraryParts'
 
 /** Person page in the library (library.md, People and Authors): a reference point,
  * not an entry — a portrait in calm prose, without authority claims. Separate from
