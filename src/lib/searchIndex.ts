@@ -1,8 +1,8 @@
-// Det publika sökindexet (search.md, Indexing): ett genererat dokument per
-// publicerad post. Byggs UTESLUTANDE via bibliotek.ts-urvalen och slår bara upp
-// referenser bland publicerade poster, så utkast och intern metadata aldrig kan
-// nå ett sökbart fält. Privata anteckningar hör inte hemma här — de har en helt
-// egen väg (sokanteckningar.ts).
+// The public search index (search.md, Indexing): one generated document per
+// published entry. Built EXCLUSIVELY via the bibliotek.ts selections and only looks up
+// references among published entries, so drafts and internal metadata can never
+// reach a searchable field. Private notes have no place here — they follow an
+// entirely separate path (sokanteckningar.ts).
 import type {
   Question,
   ContentSet,
@@ -40,14 +40,14 @@ import {
 import { utdrag } from './personal'
 import { SEARCH_TYPES, type SearchType, type SearchParams } from './searchTypes'
 
-// Söktyperna bor i soktyper.ts (utan innehållsberoenden) så routern kan
-// validera URL:en utan att dra in indexbygget; här återexporteras de så
-// befintliga importvägar (soklogik, sidor) fortsatt kan gå via sokindex.
+// The search types live in soktyper.ts (without content dependencies) so the router can
+// validate the URL without pulling in the index build; here they are re-exported so
+// existing import paths (soklogik, pages) can still go through sokindex.
 export { SEARCH_TYPES, type SearchType, type SearchParams }
 
-/** Sökmål = de To-varianter söket kan öppna (redaktionella sidor). Egen union,
- * strukturellt kompatibel med To, så sökindexet inte kopplas till legacy-eran i
- * model.ts. Traditioner saknar egen sida → olänkade rader, därav valfritt `mal`. */
+/** Search targets = the To variants search can open (editorial pages). A separate union,
+ * structurally compatible with To, so the search index isn't tied to the legacy era in
+ * model.ts. Traditions have no page of their own → unlinked rows, hence the optional `mal`. */
 export type SearchTarget =
   | { kind: 'fraga'; slug: string }
   | { kind: 'tema'; slug: string }
@@ -56,110 +56,110 @@ export type SearchTarget =
   | { kind: 'personpost'; slug: string }
   | { kind: 'vandring'; slug: string }
 
-/** Ett sökdokument. `title`/`underrad`/`meta` visas oviket (korrekt stavning);
- * `alias`/`keywords`/`text` är sökbara fält med fallande vikt. `poang` finns
- * aldrig här — rankningen lever i soklogik.ts. */
+/** A search document. `title`/`underrad`/`meta` are shown unfolded (correct spelling);
+ * `alias`/`keywords`/`text` are searchable fields with descending weight. `poang` never
+ * appears here — ranking lives in soklogik.ts. */
 export type SearchDoc = {
   type: SearchType
   id: string
   title: string
-  underrad?: string
+  subtitle?: string
   meta?: string
-  mal?: SearchTarget
+  target?: SearchTarget
   alias: string[]
   keywords: string[]
   text: string[]
 }
 
-const kartaById = <T extends { id: string }>(poster: T[]): Map<string, T> =>
-  new Map(poster.map((post) => [post.id, post]))
+const mapById = <T extends { id: string }>(items: T[]): Map<string, T> =>
+  new Map(items.map((post) => [post.id, post]))
 
-const docFromQuestion = (fraga: Question): SearchDoc => ({
+const docFromQuestion = (question: Question): SearchDoc => ({
   type: 'fraga',
-  id: fraga.id,
-  title: fraga.text,
-  underrad: fraga.description ? utdrag(fraga.description, 110) : undefined,
-  mal: { kind: 'fraga', slug: fraga.slug },
+  id: question.id,
+  title: question.text,
+  subtitle: question.description ? utdrag(question.description, 110) : undefined,
+  target: { kind: 'fraga', slug: question.slug },
   alias: [],
-  keywords: fraga.keywords ?? [],
-  text: fraga.description ? [fraga.description] : [],
+  keywords: question.keywords ?? [],
+  text: question.description ? [question.description] : [],
 })
 
-const docFromTheme = (tema: Theme): SearchDoc => ({
+const docFromTheme = (theme: Theme): SearchDoc => ({
   type: 'tema',
-  id: tema.id,
-  title: tema.label,
-  underrad: tema.description,
-  mal: { kind: 'tema', slug: tema.slug },
+  id: theme.id,
+  title: theme.label,
+  subtitle: theme.description,
+  target: { kind: 'tema', slug: theme.slug },
   alias: [],
-  keywords: tema.keywords ?? [],
-  text: tema.description ? [tema.description] : [],
+  keywords: theme.keywords ?? [],
+  text: theme.description ? [theme.description] : [],
 })
 
-const themeLabels = (rum: Room, themes: Map<string, Theme>): string[] =>
-  rum.themes.flatMap((id) => {
-    const tema = themes.get(id)
-    return tema ? [tema.label] : []
+const themeLabels = (room: Room, themes: Map<string, Theme>): string[] =>
+  room.themes.flatMap((id) => {
+    const theme = themes.get(id)
+    return theme ? [theme.label] : []
   })
 
-const sourceNameFor = (rum: Room, sources: Map<string, Source>): string[] =>
-  rum.sources.flatMap((relation) => {
+const sourceNameFor = (room: Room, sources: Map<string, Source>): string[] =>
+  room.sources.flatMap((relation) => {
     const source = sources.get(relation.source)
     return source ? [sourceName(source)] : []
   })
 
-const roomMeta = (rum: Room, fråga: Question | undefined): string => {
-  const readingTime = `ca ${rum.readingTimeMinutes} min`
-  return fråga ? `${fråga.text} · ${readingTime}` : readingTime
+const roomMeta = (room: Room, question: Question | undefined): string => {
+  const readingTime = `ca ${room.readingTimeMinutes} min`
+  return question ? `${question.text} · ${readingTime}` : readingTime
 }
 
 const docFromRoom = (
-  rum: Room,
-  frågor: Map<string, Question>,
+  room: Room,
+  questions: Map<string, Question>,
   themes: Map<string, Theme>,
   sources: Map<string, Source>,
 ): SearchDoc => {
-  const fråga = frågor.get(rum.primaryQuestion)
+  const question = questions.get(room.primaryQuestion)
   return {
     type: 'rum',
-    id: rum.id,
-    title: rum.title,
-    underrad: rum.summary,
-    meta: roomMeta(rum, fråga),
-    mal: { kind: 'rum', slug: rum.slug },
+    id: room.id,
+    title: room.title,
+    subtitle: room.summary,
+    meta: roomMeta(room, question),
+    target: { kind: 'rum', slug: room.slug },
     alias: [],
-    keywords: rum.tags ?? [],
+    keywords: room.tags ?? [],
     text: [
-      rum.thoughtToCarry,
-      ...rum.reflectionQuestions,
-      ...(fråga ? [fråga.text] : []),
-      ...themeLabels(rum, themes),
-      ...sourceNameFor(rum, sources),
+      room.thoughtToCarry,
+      ...room.reflectionQuestions,
+      ...(question ? [question.text] : []),
+      ...themeLabels(room, themes),
+      ...sourceNameFor(room, sources),
     ],
   }
 }
 
-const pathMeta = (rummen: Room[]): string => {
-  const antal = rummen.length === 1 ? 'Ett rum' : `${rummen.length} rum`
-  return `${antal} · ca ${pathReadingTime(rummen)} min`
+const pathMeta = (rooms: Room[]): string => {
+  const count = rooms.length === 1 ? 'Ett rum' : `${rooms.length} rum`
+  return `${count} · ca ${pathReadingTime(rooms)} min`
 }
 
 const docFromPath = (
-  vandring: Path,
-  frågor: Map<string, Question>,
-  rummen: Room[],
+  path: Path,
+  questions: Map<string, Question>,
+  rooms: Room[],
 ): SearchDoc => {
-  const central = frågor.get(vandring.centralQuestion)
+  const central = questions.get(path.centralQuestion)
   return {
     type: 'vandring',
-    id: vandring.id,
-    title: vandring.title,
-    underrad: utdrag(vandring.introduction, 110),
-    meta: pathMeta(rummen),
-    mal: { kind: 'vandring', slug: vandring.slug },
+    id: path.id,
+    title: path.title,
+    subtitle: utdrag(path.introduction, 110),
+    meta: pathMeta(rooms),
+    target: { kind: 'vandring', slug: path.slug },
     alias: [],
-    keywords: vandring.keywords ?? [],
-    text: [vandring.introduction, ...(central ? [central.text] : [])],
+    keywords: path.keywords ?? [],
+    text: [path.introduction, ...(central ? [central.text] : [])],
   }
 }
 
@@ -190,9 +190,9 @@ const docFromSource = (
   type: 'kalla',
   id: source.id,
   title: source.title,
-  underrad: sourceName(source),
+  subtitle: sourceName(source),
   meta: source.approximateDating,
-  mal: { kind: 'kallpost', slug: source.slug },
+  target: { kind: 'kallpost', slug: source.slug },
   alias: sourceAlias(source),
   keywords: source.keywords ?? [],
   text: [
@@ -206,24 +206,24 @@ const docFromTradition = (tradition: Tradition): SearchDoc => ({
   type: 'tradition',
   id: tradition.id,
   title: tradition.name,
-  underrad: tradition.description,
-  mal: undefined,
+  subtitle: tradition.description,
+  target: undefined,
   alias: [],
   keywords: tradition.keywords ?? [],
   text: tradition.description ? [tradition.description] : [],
 })
 
-// Personresultatet visar name, period och kort igenkännande description
-// (search.md, Person Result); personer rankas alltid sist (Result Priority).
-// Underraden tar den redaktionella kortbeskrivningen — porträttkroppens
-// första mening är födelsedata och dubblerar årtalet i meta.
+// The person result shows name, period and a short recognisable description
+// (search.md, Person Result); people always rank last (Result Priority).
+// The subtitle takes the editorial short description — the portrait body's
+// first sentence is birth data and duplicates the year in meta.
 const docFromPerson = (person: Person): SearchDoc => ({
   type: 'person',
   id: person.id,
   title: person.name,
-  underrad: person.shortDescription ?? (person.description ? utdrag(person.description, 110) : undefined),
+  subtitle: person.shortDescription ?? (person.description ? utdrag(person.description, 110) : undefined),
   meta: person.years,
-  mal: { kind: 'personpost', slug: person.slug },
+  target: { kind: 'personpost', slug: person.slug },
   alias: [],
   keywords: [],
   text: [
@@ -232,42 +232,42 @@ const docFromPerson = (person: Person): SearchDoc => ({
   ],
 })
 
-type Innehall = Pick<
+type IndexContent = Pick<
   ContentSet,
-  'rum' | 'themes' | 'frågor' | 'vandringar' | 'sources' | 'passager' | 'traditions' | 'personer'
+  'rooms' | 'themes' | 'questions' | 'paths' | 'sources' | 'passages' | 'traditions' | 'people'
 >
 
-/** Bygger det publika indexet. Uppslagskartorna byggs ur de PUBLICERADE
- * urvalen, så ingen utkasttext kan följa med in i ett sökbart fält ens via en
+/** Builds the public index. The lookup maps are built from the PUBLISHED
+ * selections, so no draft text can slip into a searchable field even via a
  * reference. */
-export const byggSokindex = (innehall: Innehall): SearchDoc[] => {
-  const frågor = kartaById(libraryQuestions(innehall.frågor))
-  const themes = kartaById(libraryThemes(innehall.themes))
-  const sources = kartaById(librarySources(innehall.sources))
-  const traditions = kartaById(libraryTraditions(innehall.traditions))
+export const buildSearchIndex = (content: IndexContent): SearchDoc[] => {
+  const questions = mapById(libraryQuestions(content.questions))
+  const themes = mapById(libraryThemes(content.themes))
+  const sources = mapById(librarySources(content.sources))
+  const traditions = mapById(libraryTraditions(content.traditions))
   return [
-    ...libraryQuestions(innehall.frågor).map(docFromQuestion),
-    ...libraryThemes(innehall.themes).map(docFromTheme),
-    ...libraryRooms(innehall.rum).map((rum) => docFromRoom(rum, frågor, themes, sources)),
-    ...libraryPaths(innehall.vandringar).map((vandring) =>
-      docFromPath(vandring, frågor, roomsForPath(vandring, innehall.rum)),
+    ...libraryQuestions(content.questions).map(docFromQuestion),
+    ...libraryThemes(content.themes).map(docFromTheme),
+    ...libraryRooms(content.rooms).map((room) => docFromRoom(room, questions, themes, sources)),
+    ...libraryPaths(content.paths).map((path) =>
+      docFromPath(path, questions, roomsForPath(path, content.rooms)),
     ),
-    ...librarySources(innehall.sources).map((source) =>
-      docFromSource(source, traditions, passagesForSource(source.id, innehall.passager)),
+    ...librarySources(content.sources).map((source) =>
+      docFromSource(source, traditions, passagesForSource(source.id, content.passages)),
     ),
-    ...libraryTraditions(innehall.traditions).map(docFromTradition),
-    ...libraryPeople(innehall.personer).map(docFromPerson),
+    ...libraryTraditions(content.traditions).map(docFromTradition),
+    ...libraryPeople(content.people).map(docFromPerson),
   ]
 }
 
-/** Appens index, byggt en gång vid moduladdning ur allt laddat innehåll. */
-export const searchIndexData: SearchDoc[] = byggSokindex({
-  rum: allRooms,
+/** The app's index, built once at module load from all loaded content. */
+export const searchIndexData: SearchDoc[] = buildSearchIndex({
+  rooms: allRooms,
   themes: allThemes,
-  frågor: allQuestions,
-  vandringar: allPaths,
+  questions: allQuestions,
+  paths: allPaths,
   sources: allSources,
-  passager: allPassages,
+  passages: allPassages,
   traditions: allTraditions,
-  personer: allPeople,
+  people: allPeople,
 })

@@ -20,31 +20,31 @@ import { NotFoundNote } from '../NotFoundNote'
 import styles from './Bibliotek.module.css'
 import { Beskrivning, Row, Section, Sidhuvud } from './Biblioteksdelar'
 
-/** Stilla orienteringsrad: vandringens traditions följt av ungefärlig
- * sammanlagd lästid (paths.md, Path Overview — sources visas lågmält, tiden
- * är ungefärlig och aldrig ett mål). */
+/** A quiet orientation row: the path's traditions followed by an approximate
+ * total reading time (paths.md, Path Overview — sources are shown discreetly, the time
+ * is approximate and never a goal). */
 const Metarad = ({ rummen }: { rummen: Room[] }) => {
   const traditions = traditionsForPath(rummen, allSources, allTraditions)
-  const delar = [
+  const parts = [
     ...traditions.map((tradition) => tradition.name),
     `ca ${pathReadingTime(rummen)} min sammanlagt`,
   ]
-  return <p className={styles.antal}>{delar.join(' · ')}</p>
+  return <p className={styles.antal}>{parts.join(' · ')}</p>
 }
 
-/** En stilla spara-kontroll (notes-and-saved.md, Saving): »Spara«/»Sparad«,
- * ingen firande återkoppling, ingen räknare. En sparad vandring betyder bara
- * att läsaren vill kunna återvända — aldrig ett åtagande att slutföra. */
+/** A quiet save control (notes-and-saved.md, Saving): »Spara«/»Sparad«,
+ * no celebratory feedback, no counter. A saved path only means
+ * the reader wants to be able to return — never a commitment to finish. */
 const SavePath = ({ vandring }: { vandring: Path }) => {
-  const { sparadeVandringar, vaxlaSparadVandring } = useAtlas()
-  const saved = !!sparadeVandringar[vandring.id]
+  const { savedPaths, toggleSavedPath } = useAtlas()
+  const saved = !!savedPaths[vandring.id]
   return (
-    <div className={styles.spara}>
+    <div className={styles.save}>
       <button
         type="button"
-        className={styles.sparaknapp}
+        className={styles.saveButton}
         aria-pressed={saved}
-        onClick={() => vaxlaSparadVandring(vandring.id)}
+        onClick={() => toggleSavedPath(vandring.id)}
       >
         {saved ? 'Sparad' : 'Spara'}
       </button>
@@ -52,28 +52,28 @@ const SavePath = ({ vandring }: { vandring: Path }) => {
   )
 }
 
-/** Den centrala frågan — vandringens hjärta. Visas bara när den är publicerad;
- * annars nås utkastfrågan via biblioteket, inte härifrån. */
+/** The central question — the heart of the path. Shown only when it's published;
+ * otherwise the draft question is reached via the library, not from here. */
 const Fragedel = ({ vandring }: { vandring: Path }) => {
   const [fråga] = publishedThrough([vandring.centralQuestion], findQuestion)
   if (!fråga) return null
   return (
     <Section rubrik="Fråga">
-      <ToLink to={{ kind: 'fraga', slug: fråga.slug }} className={styles.rad}>
+      <ToLink to={{ kind: 'fraga', slug: fråga.slug }} className={styles.row}>
         <Row title={fråga.text} />
       </ToLink>
     </Section>
   )
 }
 
-/** Rummen som platser längs en stig, inte uppgifter (paths.md, Path Overview).
- * En semantiskt ordnad lista (`<ol>`) bär sekvensen utan visuella pilar
- * (Accessibility). Varje rad öppnar rummet med vandringen som kontext. En
- * neutral »Fortsätt där du stannade« läggs överst om ett rum minns — bara
- * orientering, aldrig förlopp. */
-const Rumdel = ({ vandring, rummen }: { vandring: Path; rummen: Room[] }) => {
-  const { vandringsplatser } = useAtlas()
-  const place = rummen.find((ettRum) => ettRum.id === vandringsplatser[vandring.id])
+/** The rooms as places along a path, not tasks (paths.md, Path Overview).
+ * A semantically ordered list (`<ol>`) carries the sequence without visual arrows
+ * (Accessibility). Each row opens the room with the path as context. A
+ * neutral »Fortsätt där du stannade« is placed at the top if a room is remembered — only
+ * orientation, never progress. */
+const RoomPart = ({ vandring, rummen }: { vandring: Path; rummen: Room[] }) => {
+  const { pathPositions } = useAtlas()
+  const place = rummen.find((room) => room.id === pathPositions[vandring.id])
   return (
     <Section rubrik="Rummen">
       {place && (
@@ -81,24 +81,24 @@ const Rumdel = ({ vandring, rummen }: { vandring: Path; rummen: Room[] }) => {
           to="/rum/$slug"
           params={{ slug: place.slug }}
           search={{ vandring: vandring.slug }}
-          className={styles.rad}
+          className={styles.row}
         >
           <Row title="Fortsätt där du stannade" sub={place.title} />
         </Link>
       )}
       {rummen.length === 0 ? (
-        <p className={styles.tomt}>Den här vandringen har inga rum ännu.</p>
+        <p className={styles.empty}>Den här vandringen har inga rum ännu.</p>
       ) : (
-        <ol className={styles.vandringslista}>
-          {rummen.map((ettRum) => (
-            <li key={ettRum.id}>
+        <ol className={styles.pathList}>
+          {rummen.map((room) => (
+            <li key={room.id}>
               <Link
                 to="/rum/$slug"
-                params={{ slug: ettRum.slug }}
+                params={{ slug: room.slug }}
                 search={{ vandring: vandring.slug }}
-                className={styles.rad}
+                className={styles.row}
               >
-                <Row title={ettRum.title} sub={`${ettRum.readingTimeMinutes} min`} />
+                <Row title={room.title} sub={`${room.readingTimeMinutes} min`} />
               </Link>
             </li>
           ))}
@@ -108,24 +108,24 @@ const Rumdel = ({ vandring, rummen }: { vandring: Path; rummen: Room[] }) => {
   )
 }
 
-/** Vandringens översikt (paths.md, Path Overview): title, stilla metadata,
- * introduction, central fråga och rummen i redaktionell order. Ingen
- * syllabuskänsla, inga förloppsmått. Vandringen läses i läsrummet, ett rum i
- * taget — här väljer man bara var man kliver in. TopBar utan onBack ⇒
- * historiksteg bakåt, så biblioteksplatsen bevaras. */
+/** The path's overview (paths.md, Path Overview): title, quiet metadata,
+ * introduction, central question and the rooms in editorial order. No
+ * syllabus feel, no progress metrics. The path is read in the reading room, one room at
+ * a time — here you only choose where to step in. TopBar without onBack ⇒
+ * history step back, so the library location is preserved. */
 export const VandringPage = ({ slug }: { slug: string }) => {
-  const vandring = findPathBySlug(slug)
-  if (!vandring) return <NotFoundNote subject="Vandringen" />
-  const rummen = roomsForPath(vandring, allRooms)
+  const path = findPathBySlug(slug)
+  if (!path) return <NotFoundNote subject="Vandringen" />
+  const rooms = roomsForPath(path, allRooms)
   return (
     <div className="screenSub">
       <TopBar />
-      <Sidhuvud kicker="Vandring" title={vandring.title} status={vandring.status} />
-      <Metarad rummen={rummen} />
-      <SavePath vandring={vandring} />
-      <Beskrivning text={vandring.introduction} />
-      <Fragedel vandring={vandring} />
-      <Rumdel vandring={vandring} rummen={rummen} />
+      <Sidhuvud kicker="Vandring" title={path.title} status={path.status} />
+      <Metarad rummen={rooms} />
+      <SavePath vandring={path} />
+      <Beskrivning text={path.introduction} />
+      <Fragedel vandring={path} />
+      <RoomPart vandring={path} rummen={rooms} />
     </div>
   )
 }

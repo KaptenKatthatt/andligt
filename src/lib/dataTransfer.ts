@@ -1,11 +1,11 @@
-// Export, import och sammanslagning av personlig data (notes-and-saved.md,
-// Export/Import). Ren logik utan React/localStorage — allt round-trip:bart och
-// enhetstestbart. JSON är kanoniskt (återimporterbart); Markdown är en läsbar
-// spegel. Läsarens reflektioner ska aldrig låsas in i en implementation.
+// Export, import and merging of personal data (notes-and-saved.md,
+// Export/Import). Pure logic without React/localStorage — everything round-trippable
+// and unit-testable. JSON is canonical (re-importable); Markdown is a readable
+// mirror. The reader's reflections should never be locked into an implementation.
 import { z } from 'zod'
 import {
   chapterKey,
-  sorteradeNotes,
+  sortedNotes,
   savedIdsByTime,
   type Note,
   type ChapterBookmark,
@@ -15,29 +15,43 @@ import {
 
 export const EXPORT_FORMAT = 'visdomsatlasen-personligt'
 
-/** Den personliga delen av storen — det som exporteras, importeras och rensas. */
+/** The personal part of the store — what gets exported, imported and cleared. */
 export type PersonalCollections = {
-  anteckningar: Record<string, Note>
-  sparadeRum: Record<string, SavedItem>
-  sparadeVandringar: Record<string, SavedItem>
+  notes: Record<string, Note>
+  savedRooms: Record<string, SavedItem>
+  savedPaths: Record<string, SavedItem>
   bookmarks: Record<string, boolean>
   chapterBookmarks: Record<string, ChapterBookmark>
 }
 
-// Äldre v1-exporter (samma format/version) bär de svenska tidsstämpelnycklarna
-// `skapad`/`uppdaterad`; mappa dem till `created`/`updated` före validering så
-// en tidigare backup fortfarande går att importera utan att tappa anteckningar.
-const withLegacyDates = (v: unknown): unknown => {
-  if (typeof v !== 'object' || v === null || Array.isArray(v)) return v
-  const r = v as Record<string, unknown>
-  return { ...r, created: r.created ?? r.skapad, updated: r.updated ?? r.uppdaterad }
+const isRecord = (v: unknown): v is Record<string, unknown> =>
+  typeof v === 'object' && v !== null && !Array.isArray(v)
+
+// Older v1 exports (same format/version) carry the Swedish keys an earlier
+// version wrote: the note fields' `ursprungTyp`/`ursprungId` (with the values
+// `rum`/`vandring`/`amne`) and the timestamps `skapad`/`uppdaterad`. Map them
+// to the English names/values before validation so an earlier backup
+// can still be imported without losing notes.
+const LEGACY_ORIGIN: Record<string, string> = { rum: 'room', vandring: 'path', amne: 'topic' }
+
+const withLegacyNote = (v: unknown): unknown => {
+  if (!isRecord(v)) return v
+  const originType = v.originType ?? v.ursprungTyp
+  return {
+    ...v,
+    originType:
+      typeof originType === 'string' ? (LEGACY_ORIGIN[originType] ?? originType) : originType,
+    originId: v.originId ?? v.ursprungId,
+    created: v.created ?? v.skapad,
+    updated: v.updated ?? v.uppdaterad,
+  }
 }
 
 const noteSchema = z.preprocess(
-  withLegacyDates,
+  withLegacyNote,
   z.object({
-    ursprungTyp: z.enum(['rum', 'vandring', 'amne']),
-    ursprungId: z.string(),
+    originType: z.enum(['room', 'path', 'topic']),
+    originId: z.string(),
     text: z.string(),
     created: z.string(),
     updated: z.string(),
@@ -45,11 +59,18 @@ const noteSchema = z.preprocess(
   }),
 )
 
-const savedSchema = z.object({
-  id: z.string(),
-  title: z.string().optional(),
-  sparadNar: z.string().nullable(),
-})
+// Older exports carry `sparadNar` instead of `savedWhen`.
+const withLegacySaved = (v: unknown): unknown =>
+  isRecord(v) ? { ...v, savedWhen: 'savedWhen' in v ? v.savedWhen : v.sparadNar } : v
+
+const savedSchema = z.preprocess(
+  withLegacySaved,
+  z.object({
+    id: z.string(),
+    title: z.string().optional(),
+    savedWhen: z.string().nullable(),
+  }),
+)
 
 const chapterSchema = z.object({
   workId: z.string(),
@@ -59,33 +80,58 @@ const chapterSchema = z.object({
   savedAt: z.number(),
 })
 
-// Versionsfältet gör framtida format skiljbara; format-literalen gör att
-// främmande filer avvisas i stället för att tolkas fel.
-const exportSchema = z.object({
-  format: z.literal(EXPORT_FORMAT),
-  version: z.literal(1),
-  exporterad: z.string(),
-  anteckningar: z.array(noteSchema),
-  sparadeRum: z.array(savedSchema),
-  sparadeVandringar: z.array(savedSchema),
-  bokmarken: z.object({ kapitel: z.array(chapterSchema), amnen: z.array(z.string()) }),
-})
+// Older exports carry the Swedish container keys (exporterad/anteckningar/
+// sparadeRum/sparadeVandringar/bokmarken{kapitel,amnen}); map them to the
+// English names before validation so an earlier backup still imports.
+const withLegacyExport = (v: unknown): unknown => {
+  if (!isRecord(v)) return v
+  const bookmarks = v.bookmarks ?? v.bokmarken
+  return {
+    ...v,
+    exported: v.exported ?? v.exporterad,
+    notes: v.notes ?? v.anteckningar,
+    savedRooms: v.savedRooms ?? v.sparadeRum,
+    savedPaths: v.savedPaths ?? v.sparadeVandringar,
+    bookmarks: isRecord(bookmarks)
+      ? {
+          ...bookmarks,
+          chapters: bookmarks.chapters ?? bookmarks.kapitel,
+          topics: bookmarks.topics ?? bookmarks.amnen,
+        }
+      : bookmarks,
+  }
+}
+
+// The version field makes future formats distinguishable; the format literal
+// makes foreign files get rejected instead of misinterpreted.
+const exportSchema = z.preprocess(
+  withLegacyExport,
+  z.object({
+    format: z.literal(EXPORT_FORMAT),
+    version: z.literal(1),
+    exported: z.string(),
+    notes: z.array(noteSchema),
+    savedRooms: z.array(savedSchema),
+    savedPaths: z.array(savedSchema),
+    bookmarks: z.object({ chapters: z.array(chapterSchema), topics: z.array(z.string()) }),
+  }),
+)
 
 export type PersonalExport = z.infer<typeof exportSchema>
 type ExportSparad = z.infer<typeof savedSchema>
 
 const savedItems = (
-  poster: Record<string, SavedItem>,
+  items: Record<string, SavedItem>,
   titelFor: (id: string) => string | undefined,
 ): ExportSparad[] =>
-  savedIdsByTime(poster).map((id) => ({
+  savedIdsByTime(items).map((id) => ({
     id,
     title: titelFor(id),
-    sparadNar: poster[id]?.sparadNar ?? null,
+    savedWhen: items[id]?.savedWhen ?? null,
   }))
 
-/** Bygger en exportpost. `titelFor` slår upp läsbara titlar för anteckningarnas
- * ursprung och de sparade posterna, så exporten går att läsa fristående. */
+/** Builds an export record. `titelFor` looks up readable titles for the notes'
+ * origins and the saved items, so the export can be read standalone. */
 export const toExport = (
   samlingar: PersonalCollections,
   titelFor: (type: Origin, id: string) => string | undefined,
@@ -93,38 +139,38 @@ export const toExport = (
 ): PersonalExport => ({
   format: EXPORT_FORMAT,
   version: 1,
-  exporterad: nu,
-  anteckningar: sorteradeNotes(samlingar.anteckningar).map((post) => ({
+  exported: nu,
+  notes: sortedNotes(samlingar.notes).map((post) => ({
     ...post,
-    title: titelFor(post.ursprungTyp, post.ursprungId),
+    title: titelFor(post.originType, post.originId),
   })),
-  sparadeRum: savedItems(samlingar.sparadeRum, (id) => titelFor('rum', id)),
-  sparadeVandringar: savedItems(samlingar.sparadeVandringar, (id) => titelFor('vandring', id)),
-  bokmarken: {
-    kapitel: Object.values(samlingar.chapterBookmarks),
-    amnen: Object.keys(samlingar.bookmarks).filter((id) => samlingar.bookmarks[id]),
+  savedRooms: savedItems(samlingar.savedRooms, (id) => titelFor('room', id)),
+  savedPaths: savedItems(samlingar.savedPaths, (id) => titelFor('path', id)),
+  bookmarks: {
+    chapters: Object.values(samlingar.chapterBookmarks),
+    topics: Object.keys(samlingar.bookmarks).filter((id) => samlingar.bookmarks[id]),
   },
 })
 
-/** Tolkar en importfil. Fel format, fel version eller korrupt JSON → null, så
- * anroparen kan visa ett stilla felbesked utan att något går sönder. */
+/** Parses an import file. Wrong format, wrong version or corrupt JSON → null, so
+ * the caller can show a quiet error message without anything breaking. */
 export const readImport = (json: unknown): PersonalExport | null => {
-  const resultat = exportSchema.safeParse(json)
-  return resultat.success ? resultat.data : null
+  const result = exportSchema.safeParse(json)
+  return result.success ? result.data : null
 }
 
-// Anteckningskonflikt: den nyast uppdaterade vinner (spec: konflikter löses säkert).
+// Note conflict: the most recently updated wins (spec: conflicts are resolved safely).
 const mergeNotes = (
-  nuvarande: Record<string, Note>,
-  importerade: PersonalExport['anteckningar'],
+  current: Record<string, Note>,
+  importerade: PersonalExport['notes'],
 ): Record<string, Note> => {
-  const ut = { ...nuvarande }
+  const ut = { ...current }
   for (const post of importerade) {
-    const befintlig = ut[post.ursprungId]
-    if (befintlig !== undefined && befintlig.updated >= post.updated) continue
-    ut[post.ursprungId] = {
-      ursprungTyp: post.ursprungTyp,
-      ursprungId: post.ursprungId,
+    const existing = ut[post.originId]
+    if (existing !== undefined && existing.updated >= post.updated) continue
+    ut[post.originId] = {
+      originType: post.originType,
+      originId: post.originId,
       text: post.text,
       created: post.created,
       updated: post.updated,
@@ -134,67 +180,67 @@ const mergeNotes = (
 }
 
 const mergeSaved = (
-  nuvarande: Record<string, SavedItem>,
+  current: Record<string, SavedItem>,
   importerade: ExportSparad[],
 ): Record<string, SavedItem> => {
-  const ut = { ...nuvarande }
+  const ut = { ...current }
   for (const post of importerade) {
-    if (ut[post.id] === undefined) ut[post.id] = { sparadNar: post.sparadNar }
+    if (ut[post.id] === undefined) ut[post.id] = { savedWhen: post.savedWhen }
   }
   return ut
 }
 
-const mergaBookmarks = (nuvarande: Record<string, boolean>, amnen: string[]): Record<string, boolean> => {
-  const ut = { ...nuvarande }
+const mergaBookmarks = (current: Record<string, boolean>, amnen: string[]): Record<string, boolean> => {
+  const ut = { ...current }
   for (const id of amnen) ut[id] = true
   return ut
 }
 
 const mergeChapterBookmarks = (
-  nuvarande: Record<string, ChapterBookmark>,
+  current: Record<string, ChapterBookmark>,
   kapitel: ChapterBookmark[],
 ): Record<string, ChapterBookmark> => {
-  const ut = { ...nuvarande }
+  const ut = { ...current }
   for (const bookmark of kapitel) ut[chapterKey(bookmark.workId, bookmark.bookSlug, bookmark.chapter)] = bookmark
   return ut
 }
 
-/** Slår ihop en import med nuvarande data (spec: lokala kopian förblir användbar,
- * konflikter löses säkert). Union av sparade poster och bokmärken; anteckningar
- * löses med nyast-vinner. Aldrig destruktivt mot befintlig data. */
+/** Merges an import with the current data (spec: the local copy stays usable,
+ * conflicts are resolved safely). Union of saved items and bookmarks; notes
+ * are resolved with newest-wins. Never destructive toward existing data. */
 export const mergeImport = (
-  nuvarande: PersonalCollections,
+  current: PersonalCollections,
   importen: PersonalExport,
 ): PersonalCollections => ({
-  anteckningar: mergeNotes(nuvarande.anteckningar, importen.anteckningar),
-  sparadeRum: mergeSaved(nuvarande.sparadeRum, importen.sparadeRum),
-  sparadeVandringar: mergeSaved(nuvarande.sparadeVandringar, importen.sparadeVandringar),
-  bookmarks: mergaBookmarks(nuvarande.bookmarks, importen.bokmarken.amnen),
-  chapterBookmarks: mergeChapterBookmarks(nuvarande.chapterBookmarks, importen.bokmarken.kapitel),
+  notes: mergeNotes(current.notes, importen.notes),
+  savedRooms: mergeSaved(current.savedRooms, importen.savedRooms),
+  savedPaths: mergeSaved(current.savedPaths, importen.savedPaths),
+  bookmarks: mergaBookmarks(current.bookmarks, importen.bookmarks.topics),
+  chapterBookmarks: mergeChapterBookmarks(current.chapterBookmarks, importen.bookmarks.chapters),
 })
 
-const noteToMarkdown = (post: PersonalExport['anteckningar'][number]): string =>
+const noteToMarkdown = (post: PersonalExport['notes'][number]): string =>
   [
     `## ${post.title ?? 'Anteckning'}`,
     '',
     post.text,
     '',
-    `_Skapad ${post.created} · updated ${post.updated}_`,
+    `_Skapad ${post.created} · uppdaterad ${post.updated}_`,
   ].join('\n')
 
-/** Läsbar Markdown-spegel av exporten (spec föredrar öppna format). Inte
- * återimporterbar — JSON är round-trip-formatet. */
+/** Readable Markdown mirror of the export (spec prefers open formats). Not
+ * re-importable — JSON is the round-trip format. */
 export const toMarkdown = (exporten: PersonalExport): string => {
-  const delar: string[] = ['# Visdomsatlasen — mina anteckningar och sparat', '']
-  if (exporten.anteckningar.length > 0) {
-    delar.push('# Anteckningar', '')
-    for (const post of exporten.anteckningar) delar.push(noteToMarkdown(post), '')
+  const parts: string[] = ['# Visdomsatlasen — mina anteckningar och sparat', '']
+  if (exporten.notes.length > 0) {
+    parts.push('# Anteckningar', '')
+    for (const post of exporten.notes) parts.push(noteToMarkdown(post), '')
   }
-  const saved = [...exporten.sparadeRum, ...exporten.sparadeVandringar]
+  const saved = [...exporten.savedRooms, ...exporten.savedPaths]
   if (saved.length > 0) {
-    delar.push('# Sparat', '')
-    for (const post of saved) delar.push(`- ${post.title ?? post.id}`)
-    delar.push('')
+    parts.push('# Sparat', '')
+    for (const post of saved) parts.push(`- ${post.title ?? post.id}`)
+    parts.push('')
   }
-  return delar.join('\n')
+  return parts.join('\n')
 }

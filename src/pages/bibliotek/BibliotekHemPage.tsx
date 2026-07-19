@@ -26,26 +26,26 @@ import { valbaraRoom } from '../../lib/roomSelection'
 import styles from './Bibliotek.module.css'
 import { questionCount, Row, roomCount, Section } from './Biblioteksdelar'
 
-// Frågorna samlas bakom en enda ingång (som rummen) — hela listan bor på
-// undersidan, så landningssidan förblir kort och lugn (library.md).
+// The questions are gathered behind a single entry (like the rooms) — the whole list lives on
+// the subpage, so the landing page stays short and calm (library.md).
 const Fragesektion = () => (
   <Section rubrik="Frågor">
-    <Link to="/bibliotek/fragor" className={styles.rad}>
+    <Link to="/bibliotek/fragor" className={styles.row}>
       <Row title="Alla frågor" sub={questionCount(libraryQuestions(allQuestions).length)} />
     </Link>
   </Section>
 )
 
-const Temasektion = () => {
+const ThemeSection = () => {
   const themes = libraryThemes(allThemes)
   return (
     <Section rubrik="Teman">
       {themes.length === 0 ? (
-        <p className={styles.tomt}>Inga teman ännu.</p>
+        <p className={styles.empty}>Inga teman ännu.</p>
       ) : (
-        themes.map((tema) => (
-          <ToLink key={tema.id} to={{ kind: 'tema', slug: tema.slug }} className={styles.rad}>
-            <Row title={tema.label} sub={roomCount(valbaraRoom(tema.id, allRooms).length)} />
+        themes.map((theme) => (
+          <ToLink key={theme.id} to={{ kind: 'tema', slug: theme.slug }} className={styles.row}>
+            <Row title={theme.label} sub={roomCount(valbaraRoom(theme.id, allRooms).length)} />
           </ToLink>
         ))
       )}
@@ -53,25 +53,25 @@ const Temasektion = () => {
   )
 }
 
-// Vandringar är en frivillig, stilla ingång (paths.md, Discoverability) — de
-// får inte stå som en tom, lovande sektion, så den döljs tills publicerade
-// vandringar finns (samma disciplin som traditionerna). Utkast granskas via
-// direkt länk.
+// Paths are an optional, quiet entry (paths.md, Discoverability) — they
+// must not stand as an empty, promising section, so it's hidden until published
+// paths exist (the same discipline as the traditions). Drafts are reviewed via
+// a direct link.
 const Vandringssektion = () => {
-  const vandringar = libraryPaths(allPaths)
-  if (vandringar.length === 0) return null
+  const paths = libraryPaths(allPaths)
+  if (paths.length === 0) return null
   return (
     <Section rubrik="Vandringar">
-      {vandringar.map((vandring) => {
-        const rummen = roomsForPath(vandring, allRooms)
-        const sub = `${roomCount(rummen.length)} · ca ${pathReadingTime(rummen)} min`
+      {paths.map((path) => {
+        const rooms = roomsForPath(path, allRooms)
+        const sub = `${roomCount(rooms.length)} · ca ${pathReadingTime(rooms)} min`
         return (
           <ToLink
-            key={vandring.id}
-            to={{ kind: 'vandring', slug: vandring.slug }}
-            className={styles.rad}
+            key={path.id}
+            to={{ kind: 'vandring', slug: path.slug }}
+            className={styles.row}
           >
-            <Row title={vandring.title} sub={sub} />
+            <Row title={path.title} sub={sub} />
           </ToLink>
         )
       })}
@@ -79,39 +79,39 @@ const Vandringssektion = () => {
   )
 }
 
-const Rumsektion = () => (
+const RoomSection = () => (
   <Section rubrik="Rum">
-    <Link to="/bibliotek/rum" className={styles.rad}>
+    <Link to="/bibliotek/rum" className={styles.row}>
       <Row title="Alla rum" sub={roomCount(libraryRooms(allRooms).length)} />
     </Link>
   </Section>
 )
 
-const Kallsektion = () => (
+const SourceSection = () => (
   <Section rubrik="Källor">
     {librarySources(allSources).map((source) => (
-      <ToLink key={source.id} to={{ kind: 'kallpost', slug: source.slug }} className={styles.rad}>
+      <ToLink key={source.id} to={{ kind: 'kallpost', slug: source.slug }} className={styles.row}>
         <Row title={source.title} sub={sourceName(source)} />
       </ToLink>
     ))}
-    <Link to="/bibliotek/verk" className={styles.rad}>
+    <Link to="/bibliotek/verk" className={styles.row}>
       <Row title="Hela texter" sub="Källtexterna i sin helhet, att läsa och söka i" />
     </Link>
   </Section>
 )
 
-// Traditioner är en sekundär ingång utan egna sidor än (roadmap fas 6:
-// stödposter). Sektionen visas först när publicerade traditions finns.
+// Traditions are a secondary entry without pages of their own yet (roadmap phase 6:
+// support entries). The section appears only when published traditions exist.
 const Traditionssektion = () => {
   const traditions = libraryTraditions(allTraditions)
   if (traditions.length === 0) return null
   return (
     <Section rubrik="Traditioner">
       {traditions.map((tradition) => (
-        <div key={tradition.id} className={styles.stillaRad}>
-          <span className={styles.radTitel}>{tradition.name}</span>
+        <div key={tradition.id} className={styles.quietRow}>
+          <span className={styles.rowTitle}>{tradition.name}</span>
           {tradition.description && (
-            <span className={styles.radSub}>{tradition.description}</span>
+            <span className={styles.rowSub}>{tradition.description}</span>
           )}
         </div>
       ))}
@@ -119,9 +119,9 @@ const Traditionssektion = () => {
   )
 }
 
-// Personer är referenspunkter, inte ingångar (library.md, People and Authors).
-// Sektionen står sist tills vidare (redaktörens beslut 2026-07-18) och döljs
-// tills publicerade personer finns — samma disciplin som vandringarna.
+// People are reference points, not entries (library.md, People and Authors).
+// The section stands last for now (editor's decision 2026-07-18) and is hidden
+// until published people exist — the same discipline as the paths.
 const Personsektion = () => {
   const people = libraryPeople(allPeople)
   if (people.length === 0) return null
@@ -131,7 +131,7 @@ const Personsektion = () => {
         <ToLink
           key={person.id}
           to={{ kind: 'personpost', slug: person.slug }}
-          className={styles.rad}
+          className={styles.row}
         >
           <Row title={person.name} sub={person.years} />
         </ToLink>
@@ -141,10 +141,10 @@ const Personsektion = () => {
 }
 
 /**
- * Bibliotekets landningssida (library.md) — den medvetna ingången till
- * utforskning. Sekundär till läsrummet; lugn, ändlig, utan engagemangsmått.
- * Traditioner och sources står överst som bibliotekets lugna ram (redaktörens
- * beslut 2026-07-18), frågorna samlade längst ner. Sparat nås via navfliken.
+ * The library's landing page (library.md) — the deliberate entry to
+ * exploration. Secondary to the reading room; calm, finite, without engagement metrics.
+ * Traditions and sources stand at the top as the library's calm frame (editor's
+ * decision 2026-07-18), the questions gathered at the bottom. Saved is reached via the nav tab.
  */
 export const BibliotekHemPage = () => {
   useSidtitel('Biblioteket')
@@ -155,14 +155,14 @@ export const BibliotekHemPage = () => {
       <p className={styles.lede}>
         För den som vill leta vidare på egen hand — bland traditioner, källor, teman och frågor.
                     </p>
-      <Link to="/bibliotek/sok" className={styles.sokingang}>
+      <Link to="/bibliotek/sok" className={styles.searchEntry}>
         Sök efter en fråga, tanke eller källa
                     </Link>
       <Traditionssektion />
-      <Kallsektion />
-      <Temasektion />
+      <SourceSection />
+      <ThemeSection />
       <Vandringssektion />
-      <Rumsektion />
+      <RoomSection />
       <Fragesektion />
       <Personsektion />
     </div>

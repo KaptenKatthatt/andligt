@@ -8,7 +8,7 @@ import { parsePostFile, parseRoomFile, type ContentFile, type Parsed } from '../
 import {
   questionSchema,
   sourceSchema,
-  kallpassageSchema,
+  sourcePassageSchema,
   personSchema,
   themeSchema,
   traditionSchema,
@@ -19,51 +19,51 @@ import { validateContent } from '../src/content/editorial/validate'
 
 const CONTENT_ROOT = path.join(process.cwd(), 'src', 'content')
 
-const readMarkdownFiles = (katalog: string): ContentFile[] => {
-  const dir = path.join(CONTENT_ROOT, katalog)
+const readMarkdownFiles = (directory: string): ContentFile[] => {
+  const dir = path.join(CONTENT_ROOT, directory)
   if (!existsSync(dir)) return []
   return readdirSync(dir)
     .filter((name) => name.endsWith('.md'))
     .sort()
     .map((name) => ({
-      sökväg: `src/content/${katalog}/${name}`,
-      råtext: readFileSync(path.join(dir, name), 'utf-8'),
+      filePath: `src/content/${directory}/${name}`,
+      rawText: readFileSync(path.join(dir, name), 'utf-8'),
     }))
 }
 
 const allErrors: string[] = []
 
-const collect = <T>(filer: ContentFile[], tolka: (fil: ContentFile) => Parsed<T>): T[] =>
-  filer.flatMap((fil) => {
-    const tolkning = tolka(fil)
-    allErrors.push(...tolkning.fel)
-    return tolkning.värde ? [tolkning.värde] : []
+const collect = <T>(files: ContentFile[], parse: (file: ContentFile) => Parsed<T>): T[] =>
+  files.flatMap((file) => {
+    const parsed = parse(file)
+    allErrors.push(...parsed.errors)
+    return parsed.value ? [parsed.value] : []
   })
 
-const poster = <T>(katalog: string, schema: z.ZodType<T>): T[] =>
-  collect(readMarkdownFiles(katalog), (fil) => parsePostFile(schema, fil))
+const records = <T>(directory: string, schema: z.ZodType<T>): T[] =>
+  collect(readMarkdownFiles(directory), (file) => parsePostFile(schema, file))
 
-const mängd: ContentSet = {
-  rum: collect(readMarkdownFiles('rooms'), parseRoomFile),
-  themes: poster('themes', themeSchema),
-  frågor: poster('questions', questionSchema),
-  vandringar: poster('paths', pathSchema),
-  sources: poster('sources', sourceSchema),
-  passager: poster('passages', kallpassageSchema),
-  traditions: poster('traditions', traditionSchema),
-  personer: poster('people', personSchema),
+const set: ContentSet = {
+  rooms: collect(readMarkdownFiles('rooms'), parseRoomFile),
+  themes: records('themes', themeSchema),
+  questions: records('questions', questionSchema),
+  paths: records('paths', pathSchema),
+  sources: records('sources', sourceSchema),
+  passages: records('passages', sourcePassageSchema),
+  traditions: records('traditions', traditionSchema),
+  people: records('people', personSchema),
 }
 
-allErrors.push(...validateContent(mängd))
+allErrors.push(...validateContent(set))
 
 if (allErrors.length > 0) {
   console.error(`Innehållsvalidering: ${allErrors.length} fel\n`)
-  for (const fel of allErrors) console.error(`  ✗ ${fel}`)
+  for (const error of allErrors) console.error(`  ✗ ${error}`)
   process.exit(1)
 }
 
-const antal = Object.entries(mängd)
-  .filter(([, poster]) => poster.length > 0)
-  .map(([name, poster]) => `${name} ${poster.length}`)
+const count = Object.entries(set)
+  .filter(([, records]) => records.length > 0)
+  .map(([name, records]) => `${name} ${records.length}`)
   .join(', ')
-console.log(`Innehållsvalidering OK (${antal || 'inget innehåll ännu'})`)
+console.log(`Innehållsvalidering OK (${count || 'inget innehåll ännu'})`)

@@ -1,33 +1,33 @@
-// Privat anteckningssök (search.md, Notes Search): en helt egen väg. Söker BARA
-// den aktuella användarens anteckningar och delar ingenting med det publika
-// indexet — den importerar aldrig sokindex/soklogik, så ingen anteckningstext
-// kan påverka eller läcka in i publika resultat (Fas 9 Privacy/AI Access).
+// Private notes search (search.md, Notes Search): an entirely separate path. Searches ONLY
+// the current user's notes and shares nothing with the public
+// index — it never imports sokindex/soklogik, so no note text
+// can affect or leak into public results (Phase 9 Privacy/AI Access).
 import type { Note } from './personal'
-import { ordlista, soktokens } from './searchNormalize'
+import { wordList, searchTokens } from './searchNormalize'
 
-// Alla meningsbärande ord måste förekomma i anteckningen (AND), som exakt ord,
-// prefix eller — för längre ord — delsträng. Samma svenska normalisering som
-// publika söket, men utan synonymer/rankning: privat text ska hittas, inte vägas.
+// All meaningful words must occur in the note (AND), as an exact word,
+// prefix or — for longer words — substring. The same Swedish normalisation as
+// the public search, but without synonyms/ranking: private text should be found, not weighted.
 const matchar = (tokens: string[], text: string): boolean => {
-  const ord = ordlista(text)
+  const word = wordList(text)
   return tokens.every((token) =>
-    ord.some(
+    word.some(
       (o) => o === token || o.startsWith(token) || (token.length >= 4 && o.includes(token)),
     ),
   )
 }
 
-/** Söker användarens anteckningar, senast ändrad först. Tomma anteckningar och
- * frågor kortare än två meningsbärande tecken ger inget. */
+/** Searches the user's notes, most recently changed first. Empty notes and
+ * queries shorter than two meaningful characters return nothing. */
 export const searchNotes = (
-  fraga: string,
-  anteckningar: Record<string, Note>,
+  question: string,
+  notes: Record<string, Note>,
 ): Note[] => {
-  if (ordlista(fraga).join(' ').length < 2) return []
-  const tokens = soktokens(fraga)
+  if (wordList(question).join(' ').length < 2) return []
+  const tokens = searchTokens(question)
   if (tokens.length === 0) return []
-  return Object.values(anteckningar)
-    .filter((anteckning) => anteckning.text.trim().length > 0)
-    .filter((anteckning) => matchar(tokens, anteckning.text))
+  return Object.values(notes)
+    .filter((note) => note.text.trim().length > 0)
+    .filter((note) => matchar(tokens, note.text))
     .sort((a, b) => b.updated.localeCompare(a.updated))
 }

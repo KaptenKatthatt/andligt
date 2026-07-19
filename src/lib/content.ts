@@ -1,12 +1,12 @@
-// Laddar det redaktionella innehållet (markdown med frontmatter) in i appen.
-// Vites glob läser filerna som råtext vid bygget; tolkningen och valideringen
-// delas med scripts/validera-innehall.ts, som redan stoppat ogiltigt innehåll
-// i check-kedjan — fel här ska därför inte inträffa, men sväljs lugnt och
-// loggas i stället för att fälla appen.
+// Loads the editorial content (markdown with frontmatter) into the app.
+// Vite's glob reads the files as raw text at build time; parsing and validation
+// are shared with scripts/validera-innehall.ts, which has already stopped invalid
+// content in the check chain — so errors here shouldn't occur, but are swallowed
+// calmly and logged instead of taking the app down.
 import {
   questionSchema,
   sourceSchema,
-  kallpassageSchema,
+  sourcePassageSchema,
   personSchema,
   traditionSchema,
   pathSchema,
@@ -21,9 +21,10 @@ import {
 } from '../content/editorial/schema'
 import { collect, toFiles } from '../content/editorial/collect'
 import { parsePostFile, parseRoomFile } from '../content/editorial/parse'
-// Temana (och tröskelns urval) bor i det lätta troskeldata.ts så hemskärmen kan
-// nå dem utan att dra in rummens brödtext; här återexporteras de så bibliotekets
-// uppslag (hittaTema m.fl.) och sökindexet fortsatt kan gå via innehall.
+// The themes (and the threshold's selection) live in the lightweight troskeldata.ts
+// so the home screen can reach them without pulling in the rooms' body text; they're
+// re-exported here so the library's lookups (hittaTema and friends) and the search
+// index can still go through innehall.
 import { allThemes, thresholdThemes } from './homeData'
 
 export { allThemes, thresholdThemes }
@@ -48,12 +49,12 @@ export const allPaths: Path[] = collect(
   (fil) => parsePostFile(pathSchema, fil),
 )
 
-/** Källpassager — kanoniska textutdrag med reference, edition och translation
- * (source-and-context.md, Suggested Passage Model). Rum pekar hit via
- * relationens `passage`, så källans ord hålls åtskilda från redaktionell prosa. */
+/** Source passages — canonical text excerpts with reference, edition and translation
+ * (source-and-context.md, Suggested Passage Model). Rooms point here via the
+ * relation's `passage`, so the source's words are kept apart from editorial prose. */
 export const allPassages: SourcePassage[] = collect(
   toFiles(import.meta.glob<string>('../content/passages/*.md', { query: '?raw', import: 'default', eager: true })),
-  (fil) => parsePostFile(kallpassageSchema, fil),
+  (fil) => parsePostFile(sourcePassageSchema, fil),
 )
 
 export const allTraditions: Tradition[] = collect(
@@ -61,30 +62,30 @@ export const allTraditions: Tradition[] = collect(
   (fil) => parsePostFile(traditionSchema, fil),
 )
 
-/** Personer — referenspunkter i biblioteket, inte ingångar (library.md,
- * People and Authors). Porträtt av gestalterna bakom eller kring källorna. */
+/** People — reference points in the library, not entry points (library.md,
+ * People and Authors). Portraits of the figures behind or around the sources. */
 export const allPeople: Person[] = collect(
   toFiles(import.meta.glob<string>('../content/people/*.md', { query: '?raw', import: 'default', eager: true })),
   (fil) => parsePostFile(personSchema, fil),
 )
 
 export const findRoom = (slug: string): Room | undefined =>
-  allRooms.find((rum) => rum.slug === slug)
+  allRooms.find((room) => room.slug === slug)
 
 export const findRoomById = (id: string): Room | undefined =>
-  allRooms.find((rum) => rum.id === id)
+  allRooms.find((room) => room.id === id)
 
 export const findTheme = (id: string): Theme | undefined =>
-  allThemes.find((tema) => tema.id === id)
+  allThemes.find((theme) => theme.id === id)
 
 export const findThemeBySlug = (slug: string): Theme | undefined =>
-  allThemes.find((tema) => tema.slug === slug)
+  allThemes.find((theme) => theme.slug === slug)
 
 export const findQuestion = (id: string): Question | undefined =>
-  allQuestions.find((fråga) => fråga.id === id)
+  allQuestions.find((question) => question.id === id)
 
 export const findQuestionBySlug = (slug: string): Question | undefined =>
-  allQuestions.find((fråga) => fråga.slug === slug)
+  allQuestions.find((question) => question.slug === slug)
 
 export const findSource = (id: string): Source | undefined =>
   allSources.find((source) => source.id === id)
@@ -99,28 +100,28 @@ export const findPersonBySlug = (slug: string): Person | undefined =>
   allPeople.find((person) => person.slug === slug)
 
 export const findPathBySlug = (slug: string): Path | undefined =>
-  allPaths.find((vandring) => vandring.slug === slug)
+  allPaths.find((path) => path.slug === slug)
 
 export const findPathById = (id: string): Path | undefined =>
-  allPaths.find((vandring) => vandring.id === id)
+  allPaths.find((path) => path.id === id)
 
 export const findPassage = (id: string): SourcePassage | undefined =>
   allPassages.find((passage) => passage.id === id)
 
-/** Delar prosatext i stycken på tomrad — rummens sektioner är ren prosa. */
+/** Splits prose text into paragraphs on blank lines — the rooms' sections are plain prose. */
 export const paragraphs = (text: string): string[] =>
   text
     .split(/\n\s*\n/)
-    .map((stycke) => stycke.replace(/\s*\n\s*/g, ' ').trim())
-    .filter((stycke) => stycke.length > 0)
+    .map((paragraph) => paragraph.replace(/\s*\n\s*/g, ' ').trim())
+    .filter((paragraph) => paragraph.length > 0)
 
-/** Namnet i kolofonen: den tillskrivna rösten före nedtecknaren före verket. */
+/** The name in the colophon: the attributed voice before the recorder before the work. */
 export const sourceName = (source: Source): string =>
   source.attributedAuthor ?? source.author ?? source.title
 
-/** Ärliga osäkerhetsmeningar i klartext (source-and-context.md, Uncertainty):
- * dold osäkerhet försvagar tilliten, inte källan. Delas av läsrummet och
- * källsidan så samma formulering möter läsaren på båda ställena. */
+/** Honest uncertainty statements in plain text (source-and-context.md, Uncertainty):
+ * hidden uncertainty weakens trust, not the source. Shared by the reading room and
+ * the source page so the same wording meets the reader in both places. */
 export const uncertainties = (source: Source): string[] => {
   const name = source.attributedAuthor ?? source.author ?? 'annan hand'
   const rows: string[] = []
@@ -134,7 +135,7 @@ export const uncertainties = (source: Source): string[] => {
   return rows
 }
 
-/** Kort svensk deklaration av hur rummet använder källan (source-and-context.md). */
+/** Short Swedish declaration of how the room uses the source (source-and-context.md). */
 export const useLabel: Record<Room['sources'][number]['use'], string> = {
   'quote': 'Direkt citat.',
   'translation': 'Egen svensk översättning.',

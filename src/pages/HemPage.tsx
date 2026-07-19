@@ -8,35 +8,35 @@ import { thresholdThemes } from '../lib/homeData'
 import { useSidtitel } from '../lib/useSidtitel'
 import styles from './HemPage.module.css'
 
-/** Tröskeln (home-and-entry.md): en fråga, några themes, ett val — sedan
- * kliver gränssnittet undan. Inget datum, ingen aktivitet, inget dagligt
- * innehåll; tröskeln är likadan varje gång och börjar alltid i nuet.
+/** The threshold (home-and-entry.md): one question, a few themes, one choice —
+ * then the interface steps aside. No date, no activity, no daily
+ * content; the threshold is the same every time and always starts in the present.
  *
- * Prestanda (fas 13): hemskärmen laddar bara temana (troskeldata.ts), aldrig
- * hela innehållssamlingen. Rummen — brödtext, sources, allt — hämtas först när
- * ett tema väljs, via en dynamisk import. Chunken är oftast redan precachad av
- * service-workern, så steget märks knappt; läsrummet delar samma chunk. */
+ * Performance (phase 13): the home screen loads only the themes (troskeldata.ts),
+ * never the whole content collection. The rooms — body text, sources, all of it —
+ * are fetched only when a theme is chosen, via a dynamic import. The chunk is
+ * usually already precached by the service worker; the reading room shares it. */
 export const HemPage = () => {
   useSidtitel('Läsrummet')
   const navigate = useNavigate()
-  const { senastLastaRum } = useAtlas()
+  const { recentRooms } = useAtlas()
   const [tomtVal, setTomtVal] = useState(false)
   const [väljer, setVäljer] = useState(false)
-  const selectTheme = async (tema: Theme) => {
+  const selectTheme = async (theme: Theme) => {
     if (väljer) return
     setVäljer(true)
     setTomtVal(false)
     try {
       const { allRooms } = await import('../lib/content')
-      const rum = selectRoom(tema, allRooms, senastLastaRum)
-      if (rum) {
-        void navigate({ to: '/rum/$slug', params: { slug: rum.slug } })
+      const room = selectRoom(theme, allRooms, recentRooms)
+      if (room) {
+        void navigate({ to: '/rum/$slug', params: { slug: room.slug } })
         return
       }
       setTomtVal(true)
     } catch {
-      // Innehållschunken gick inte att hämta (t.ex. offline före första cachning).
-      // Släpp knappen igen så valet kan göras om — inget kraschar, inget hänger.
+      // The content chunk could not be fetched (e.g. offline before first caching).
+      // Release the button again so the choice can be retried — nothing crashes, nothing hangs.
       report({ type: 'sidladdningsfel', resurs: 'innehall' })
     }
     setVäljer(false)
@@ -45,22 +45,22 @@ export const HemPage = () => {
     <div className="screenTab">
       <div className="kicker">Visdomsatlasen</div>
       <div className={styles.hero}>
-        <h1 className={styles.fraga}>Vad vill du bära med dig idag?</h1>
-        <p className={styles.stod}>Välj en tanke att stanna hos en stund.</p>
+        <h1 className={styles.question}>Vad vill du bära med dig idag?</h1>
+        <p className={styles.support}>Välj en tanke att stanna hos en stund.</p>
       </div>
       <div className={styles.themes}>
-        {thresholdThemes.map((tema) => (
+        {thresholdThemes.map((theme) => (
           <button
-            key={tema.id}
+            key={theme.id}
             type="button"
-            className={styles.tema}
-            onClick={() => void selectTheme(tema)}
+            className={styles.theme}
+            onClick={() => void selectTheme(theme)}
           >
-            {tema.label}
+            {theme.label}
           </button>
         ))}
       </div>
-      <p role="status" className={styles.tomt}>
+      <p role="status" className={styles.empty}>
         {tomtVal ? 'Det finns inget färdigt rum här ännu.' : ''}
       </p>
     </div>

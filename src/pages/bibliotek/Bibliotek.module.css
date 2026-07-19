@@ -16,13 +16,13 @@
   line-height: 1.5;
 }
 
-.sektion {
+.section {
   margin-top: 42px;
 }
 
 /* Sökingången: en stilla ruta som liknar ett fält, aldrig framhävd. Söket bor
    i Biblioteket och är lätt att hitta (search.md, Search Entry). */
-.sokingang {
+.searchEntry {
   display: block;
   margin-top: 26px;
   padding: 13px 16px;
@@ -33,17 +33,17 @@
   font-size: 1rem;
 }
 
-.sokingang:hover {
+.searchEntry:hover {
   border-color: var(--accsoft);
   color: var(--accent);
 }
 
 /* Undersidornas huvud (under TopBar), samma mått som verkläsarens. */
-.huvud {
+.head {
   margin-top: 34px;
 }
 
-.huvudTitel {
+.headTitle {
   font-size: 2rem;
   font-weight: 500;
   letter-spacing: -0.01em;
@@ -64,11 +64,11 @@
 }
 
 /* Spara-kontrollen på vandringsöversikten: stilla, aldrig framhävd. */
-.spara {
+.save {
   margin: 18px 0 0;
 }
 
-.sparaknapp {
+.saveButton {
   background: none;
   border: 1px solid var(--faint);
   border-radius: 999px;
@@ -79,12 +79,12 @@
   color: var(--soft-strong);
 }
 
-.sparaknapp[aria-pressed='true'] {
+.saveButton[aria-pressed='true'] {
   color: var(--ink);
   border-color: var(--soft);
 }
 
-.tomt {
+.empty {
   font-size: 1.03125rem;
   color: var(--soft-strong);
   font-style: italic;
@@ -105,19 +105,19 @@
 }
 
 /* Källpostens sakliga metadata — stillsamma rader, ingen tabellkänsla. */
-.metablock {
+.metaBlock {
   margin-top: 22px;
   border-top: 1px solid var(--faint);
   padding-top: 6px;
 }
 
-.metarad {
+.metaRow {
   font-size: 0.9375rem;
   line-height: 1.5;
   margin: 8px 0 0;
 }
 
-.metaetikett {
+.metaLabel {
   display: inline-block;
   min-width: 110px;
   font-size: 0.75rem;
@@ -127,7 +127,7 @@
 }
 
 /* Hårfina rader, samma känsla som RowLink men för statiska biblioteksrutter. */
-.rad {
+.row {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -138,13 +138,13 @@
   text-decoration: none;
 }
 
-.radTitel {
+.rowTitle {
   display: block;
   font-size: 1.25rem;
   line-height: 1.25;
 }
 
-.radSub {
+.rowSub {
   display: block;
   font-size: 0.9375rem;
   color: var(--soft-strong);
@@ -158,7 +158,7 @@
 }
 
 /* Traditionsrad utan länk — stödpost, ingen destination (roadmap fas 6). */
-.stillaRad {
+.quietRow {
   display: block;
   padding: 15px 0;
   border-bottom: 1px solid var(--faint);
@@ -166,7 +166,7 @@
 
 /* Vandringens rum som en semantiskt ordnad lista utan visuella pilar
    (paths.md, Accessibility). Radstilen delas med resten av biblioteket. */
-.vandringslista {
+.pathList {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -186,7 +186,7 @@
   padding-top: 0;
 }
 
-.passagref {
+.passageRef {
   font-size: 0.75rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -194,7 +194,7 @@
   margin: 0;
 }
 
-.passagetext {
+.passageText {
   margin: 10px 0 0;
   padding-left: 14px;
   border-left: 2px solid var(--faint);
@@ -204,22 +204,22 @@
   overflow-wrap: break-word;
 }
 
-.passagetext p {
+.passageText p {
   margin: 0 0 8px;
 }
 
-.passagetext p:last-child {
+.passageText p:last-child {
   margin-bottom: 0;
 }
 
-.passagmeta {
+.passageMeta {
   font-size: 0.84375rem;
   color: var(--soft-strong);
   margin: 10px 0 0;
   line-height: 1.5;
 }
 
-.passaglank {
+.passageLink {
   display: inline-block;
   font-size: 0.875rem;
   color: var(--accent);

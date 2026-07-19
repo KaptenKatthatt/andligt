@@ -3,18 +3,18 @@ import { describe, expect, it } from 'vitest'
 import { accessCookieValue } from './auth'
 import { createAccessGate, mountAccessGate } from './gate'
 
-const KOD = 'hemlig-testarkod-1234567890'
+const CODE = 'hemlig-testarkod-1234567890'
 
-/** Bygger en liten app med spärren monterad och en skyddad dummy-route. */
+/** Builds a small app with the gate mounted and a protected dummy route. */
 const byggApp = (): Hono => {
   const app = new Hono()
-  app.use('*', createAccessGate(KOD))
+  app.use('*', createAccessGate(CODE))
   app.get('/api/library/works', (c) => c.json({ works: [] }))
   app.get('/', (c) => c.html('<!doctype html><title>app</title>'))
   return app
 }
 
-const kaka = `va_access=${accessCookieValue(KOD)}`
+const cookie = `va_access=${accessCookieValue(CODE)}`
 
 describe('createAccessGate', () => {
   it('serverar kod-sidan för HTML-navigering utan cookie', async () => {
@@ -32,14 +32,14 @@ describe('createAccessGate', () => {
     const res = await byggApp().request('/api/access', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({ code: KOD }),
+      body: new URLSearchParams({ code: CODE }),
     })
     expect(res.status).toBe(303)
     expect(res.headers.get('location')).toBe('/')
     const setCookie = res.headers.get('set-cookie') ?? ''
     expect(setCookie).toContain('va_access=')
     expect(setCookie).toContain('HttpOnly')
-    expect(setCookie).not.toContain(KOD)
+    expect(setCookie).not.toContain(CODE)
   })
 
   it('POST /api/access med fel kod ger 401 och kod-sidan', async () => {
@@ -53,7 +53,7 @@ describe('createAccessGate', () => {
   })
 
   it('släpper igenom med giltig cookie', async () => {
-    const res = await byggApp().request('/api/library/works', { headers: { Cookie: kaka } })
+    const res = await byggApp().request('/api/library/works', { headers: { Cookie: cookie } })
     expect(res.status).toBe(200)
     expect(await res.json()).toEqual({ works: [] })
   })
@@ -65,8 +65,8 @@ describe('createAccessGate', () => {
     expect(res.status).toBe(200)
   })
 
-  // Speglar server/index.ts: spärren monteras FÖRE routes registreras, annars
-  // täcker Hono-middlewaren dem inte.
+  // Mirrors server/index.ts: the gate is mounted BEFORE routes are registered, otherwise
+  // the Hono middleware doesn't cover them.
   it('mountAccessGate lämnar appen öppen utan kod (bakåtkompatibelt)', async () => {
     const app = new Hono()
     mountAccessGate(app, undefined)
@@ -77,7 +77,7 @@ describe('createAccessGate', () => {
 
   it('mountAccessGate spärrar när en kod finns', async () => {
     const app = new Hono()
-    mountAccessGate(app, KOD)
+    mountAccessGate(app, CODE)
     app.get('/api/library/works', (c) => c.json({ works: [] }))
     const res = await app.request('/api/library/works')
     expect(res.status).toBe(401)

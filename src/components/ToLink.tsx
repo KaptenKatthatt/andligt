@@ -16,8 +16,8 @@ const screenPath = (id: string) => {
   return '/utforska' as const
 }
 
-// Bibliotekets mål är alla slug-adresserade — en karta räcker, och ett nytt
-// mål är en rad här plus unionsmedlemmen i model.ts.
+// The library's targets are all slug-addressed — one map is enough, and a new
+// target is one line here plus the union member in model.ts.
 const LIBRARY_PATH = {
   rum: '/rum/$slug',
   tema: '/bibliotek/tema/$slug',
@@ -27,10 +27,10 @@ const LIBRARY_PATH = {
   vandring: '/bibliotek/vandring/$slug',
 } as const
 
-type BibliotekTo = Extract<To, { kind: keyof typeof LIBRARY_PATH }>
-const isLibraryTo = (to: To): to is BibliotekTo => to.kind in LIBRARY_PATH
+type LibraryTo = Extract<To, { kind: keyof typeof LIBRARY_PATH }>
+const isLibraryTo = (to: To): to is LibraryTo => to.kind in LIBRARY_PATH
 
-const LibraryLink = ({ to, ...shared }: Props & { to: BibliotekTo }) => (
+const LibraryLink = ({ to, ...shared }: Props & { to: LibraryTo }) => (
   <Link to={LIBRARY_PATH[to.kind]} params={{ slug: to.slug }} {...shared} />
 )
 

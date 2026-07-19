@@ -70,7 +70,7 @@ p {
 
 /* Visuellt dolt men läsbart för skärmläsare. */
 .srOnly,
-.srOnlyFokuserbar:not(:focus) {
+.srOnlyFocusable:not(:focus) {
   position: absolute;
   width: 1px;
   height: 1px;
@@ -83,7 +83,7 @@ p {
 }
 
 /* Hopplänken visas när den nås med tangentbordet. Absolut mot .shell. */
-.srOnlyFokuserbar:focus {
+.srOnlyFocusable:focus {
   position: absolute;
   top: 12px;
   left: 50%;

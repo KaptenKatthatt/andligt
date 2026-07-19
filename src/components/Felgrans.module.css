@@ -15,7 +15,7 @@
   color: var(--soft-strong);
 }
 
-.knapp {
+.button {
   padding: 0.5rem 1.25rem;
   border: 1px solid var(--soft-strong);
   border-radius: 999px;

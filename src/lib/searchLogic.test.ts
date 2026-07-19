@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import type { SearchDoc, SearchType } from './searchIndex'
 import {
-  MAX_SYNLIGA_PER_GRUPP,
-  MAX_SYNLIGA_TOTALT,
+  MAX_VISIBLE_PER_GROUP,
+  MAX_VISIBLE_TOTAL,
   searchInLibrary,
   visibleHits,
   type SearchGroup,
@@ -16,7 +16,7 @@ const dok = (
   extra: Partial<SearchDoc> = {},
 ): SearchDoc => ({ type, id, title, alias: [], keywords: [], text: [], ...extra })
 
-// Ett litet blandat index som täcker rankningsscenarierna.
+// A small mixed index covering the ranking scenarios.
 const index: SearchDoc[] = [
   dok('fraga', 'fq-styra', 'Vad kan du styra?'),
   dok('fraga', 'fq-oro', 'Vad gör oron med dagen?', { text: ['oro inför framtiden'] }),
@@ -29,9 +29,9 @@ const index: SearchDoc[] = [
   dok('kalla', 'k-oro', 'En skrift om oro', { text: ['oro'] }),
 ]
 
-const platt = (grupper: SearchGroup[]): SearchResult[] => grupper.flatMap((grupp) => grupp.traffar)
-const idOrdning = (grupper: SearchGroup[]): string[] => platt(grupper).map((t) => t.dokument.id)
-const finns = (grupper: SearchGroup[], id: string): boolean => idOrdning(grupper).includes(id)
+const platt = (groups: SearchGroup[]): SearchResult[] => groups.flatMap((grupp) => grupp.hits)
+const idOrdning = (groups: SearchGroup[]): string[] => platt(groups).map((t) => t.document.id)
+const finns = (groups: SearchGroup[], id: string): boolean => idOrdning(groups).includes(id)
 
 describe('sokIBiblioteket — grundläggande', () => {
   it('ger inget för tom eller för kort fråga', () => {
@@ -47,27 +47,27 @@ describe('sokIBiblioteket — grundläggande', () => {
 
 describe('sokIBiblioteket — rankning', () => {
   it('sätter en exakt frågetitel överst med rätt nivå', () => {
-    const grupper = searchInLibrary('vad kan du styra', index)
-    expect(idOrdning(grupper)[0]).toBe('fq-styra')
-    expect(platt(grupper)[0]?.traffatFalt).toBe('title-exakt')
+    const groups = searchInLibrary('vad kan du styra', index)
+    expect(idOrdning(groups)[0]).toBe('fq-styra')
+    expect(platt(groups)[0]?.matchedField).toBe('title-exact')
   })
 
   it('låter exakt titel slå en partiell titelträff', () => {
-    const grupper = searchInLibrary('mod', index)
-    const ids = idOrdning(grupper)
+    const groups = searchInLibrary('mod', index)
+    const ids = idOrdning(groups)
     expect(ids.indexOf('fq-mod')).toBeLessThan(ids.indexOf('fq-mod-vart'))
   })
 
   it('hittar en känd författare via aliaset, inte via titeln', () => {
-    const grupper = searchInLibrary('marcus aurelius', index)
-    expect(idOrdning(grupper)[0]).toBe('k-marcus')
-    expect(platt(grupper)[0]?.traffatFalt).toBe('alias-exakt')
+    const groups = searchInLibrary('marcus aurelius', index)
+    expect(idOrdning(groups)[0]).toBe('k-marcus')
+    expect(platt(groups)[0]?.matchedField).toBe('alias-exact')
   })
 
   it('låter en relevant fråga stå före källor (frågan slår författaren)', () => {
-    const grupper = searchInLibrary('oro', index)
-    expect(grupper[0]?.type).toBe('fraga')
-    const ids = idOrdning(grupper)
+    const groups = searchInLibrary('oro', index)
+    expect(groups[0]?.type).toBe('fraga')
+    const ids = idOrdning(groups)
     expect(ids.indexOf('fq-oro')).toBeLessThan(ids.indexOf('k-oro'))
   })
 })
@@ -91,7 +91,7 @@ describe('sokIBiblioteket — språk och tolerans', () => {
   })
 
   it('låter inte en kort synonym prefix-matcha ett orelaterat ord', () => {
-    // »lugn« har synonymen »ro« — den får inte fastna i »romersk«.
+    // »lugn« has the synonym »ro« — it must not get stuck in »romersk«.
     const medRomersk = [...index, dok('tradition', 't-rom', 'Antik tradition', { text: ['romersk tid'] })]
     expect(finns(searchInLibrary('lugn', medRomersk), 't-rom')).toBe(false)
   })
@@ -105,37 +105,37 @@ describe('sokIBiblioteket — flera ord (AND)', () => {
 })
 
 describe('synligaTraffar — ändliga resultat', () => {
-  const grupp = (type: SearchType, antal: number): SearchGroup => ({
+  const grupp = (type: SearchType, count: number): SearchGroup => ({
     type,
-    rubrik: type,
-    traffar: Array.from({ length: antal }, (_, i) => ({
-      dokument: dok(type, `${type}-${i}`, `${type} ${i}`),
-      poang: 100 - i,
-      traffatFalt: 'title' as const,
+    heading: type,
+    hits: Array.from({ length: count }, (_, i) => ({
+      document: dok(type, `${type}-${i}`, `${type} ${i}`),
+      score: 100 - i,
+      matchedField: 'title' as const,
     })),
   })
 
   it('visar som mest fem per grupp och röjer resten bakom Visa fler', () => {
     const [synlig] = visibleHits([grupp('rum', 7)], new Set())
-    expect(synlig?.synliga.length).toBe(MAX_SYNLIGA_PER_GRUPP)
-    expect(synlig?.dolda).toBe(2)
+    expect(synlig?.visible.length).toBe(MAX_VISIBLE_PER_GROUP)
+    expect(synlig?.hidden).toBe(2)
   })
 
   it('visar hela gruppen när den är expanderad', () => {
     const [synlig] = visibleHits([grupp('rum', 7)], new Set<SearchType>(['rum']))
-    expect(synlig?.synliga.length).toBe(7)
-    expect(synlig?.dolda).toBe(0)
+    expect(synlig?.visible.length).toBe(7)
+    expect(synlig?.hidden).toBe(0)
   })
 
   it('håller den samlade initialvyn inom tjugo träffar', () => {
-    const grupper = [
+    const groups = [
       grupp('fraga', 5),
       grupp('tema', 5),
       grupp('rum', 5),
       grupp('vandring', 5),
       grupp('kalla', 5),
     ]
-    const totalt = visibleHits(grupper, new Set()).reduce((s, g) => s + g.synliga.length, 0)
-    expect(totalt).toBeLessThanOrEqual(MAX_SYNLIGA_TOTALT)
+    const totalt = visibleHits(groups, new Set()).reduce((s, g) => s + g.visible.length, 0)
+    expect(totalt).toBeLessThanOrEqual(MAX_VISIBLE_TOTAL)
   })
 })

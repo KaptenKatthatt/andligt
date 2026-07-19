@@ -1,6 +1,6 @@
-// Bibliotekssökets sida (search.md): ett debouncat fält, URL-buret sökstate,
-// grupperade ändliga resultat och en separat privat anteckningsgrupp. Söket bor
-// i Biblioteket och tar aldrig place i läsrummet. Ingen popularitetssignal.
+// The library search page (search.md): a debounced field, URL-carried search state,
+// grouped finite results and a separate private notes group. Search lives
+// in the Library and never takes place in the reading room. No popularity signal.
 import { useEffect, useState } from 'react'
 import { TopBar } from '../../components/TopBar'
 import { searchLibrary } from '../../lib/api'
@@ -8,82 +8,82 @@ import type { Note } from '../../lib/personal'
 import { searchNotes } from '../../lib/searchNotes'
 import { searchIndexData, type SearchType, type SearchParams } from '../../lib/searchIndex'
 import { searchInLibrary, visibleHits, type SearchGroup, type VisibleGroup } from '../../lib/searchLogic'
-import { normalisera } from '../../lib/searchNormalize'
+import { normalize } from '../../lib/searchNormalize'
 import { anonymizeQuestion, report } from '../../lib/telemetry'
 import { useAsync } from '../../lib/useAsync'
 import { useAtlas } from '../../lib/store'
 import { useDebounced } from '../../lib/useDebounced'
 import { useSidtitel } from '../../lib/useSidtitel'
-import { Filter, SourceTextGroup, Resultatvy, Sokfalt, type SourceTextResponse, type SearchMode } from './SokDelar'
+import { Filter, SourceTextGroup, ResultView, SearchField, type SourceTextResponse, type SearchMode } from './SokDelar'
 
-// Vilka grupper som expanderats, ihågkommet per normaliserad fråga över
-// navigation inom sessionen (search.md: sökstate får vara tillfälligt).
+// Which groups are expanded, remembered per normalized query across
+// navigation within the session (search.md: search state may be temporary).
 const expansionsminne = new Map<string, Set<SearchType>>()
-const getExpansion = (nyckel: string): Set<SearchType> => new Set(expansionsminne.get(nyckel))
+const getExpansion = (key: string): Set<SearchType> => new Set(expansionsminne.get(key))
 
-// Den delbara sökparametern; tom fråga och intet filter utelämnas ur URL:en.
+// The shareable search parameter; an empty query and no filter are omitted from the URL.
 const searchObject = (term: string, type: SearchType | undefined): SearchParams => ({
   ...(term ? { q: term } : {}),
   ...(type ? { type } : {}),
 })
 
-type Härlett = {
+type Derived = {
   synliga: VisibleGroup[]
   notes: Note[]
   redaktionellaOchNoter: number
   fel: boolean
 }
 
-// Härleder de redaktionella resultaten och den privata anteckningsgruppen ur
-// termen. Ren funktion (utanför komponenten) så sidan hålls liten och läsbar.
+// Derives the editorial results and the private notes group from
+// the term. A pure function (outside the component) so the page stays small and readable.
 const deriveResult = (
   term: string,
   type: SearchType | undefined,
   expanderade: ReadonlySet<SearchType>,
-  anteckningar: Record<string, Note>,
-): Härlett => {
-  let grupper: SearchGroup[] = []
+  noteMap: Record<string, Note>,
+): Derived => {
+  let groups: SearchGroup[] = []
   let fel = false
   try {
-    grupper = searchInLibrary(term, searchIndexData)
+    groups = searchInLibrary(term, searchIndexData)
   } catch {
     fel = true
   }
-  const filtrerade = type ? grupper.filter((grupp) => grupp.type === type) : grupper
+  const filtrerade = type ? groups.filter((grupp) => grupp.type === type) : groups
   const synliga = visibleHits(filtrerade, expanderade)
-  const notes = type ? [] : searchNotes(term, anteckningar)
+  const notes = type ? [] : searchNotes(term, noteMap)
   const redaktionellaOchNoter =
-    filtrerade.reduce((summa, grupp) => summa + grupp.traffar.length, 0) + notes.length
+    filtrerade.reduce((sum, grupp) => sum + grupp.hits.length, 0) + notes.length
   return { synliga, notes, redaktionellaOchNoter, fel }
 }
 
-const computeMode = (nyckel: string, fel: boolean): SearchMode =>
-  nyckel.length < 2 ? 'tom' : fel ? 'fel' : 'klar'
+const computeMode = (key: string, fel: boolean): SearchMode =>
+  key.length < 2 ? 'tom' : fel ? 'fel' : 'klar'
 
-const TOMT_KALLTEXTSVAR: SourceTextResponse = { books: [], hits: [] }
+const EMPTY_SOURCE_TEXT: SourceTextResponse = { books: [], hits: [] }
 
 const sourceTextCountOf = (svar: SourceTextResponse | null): number =>
   (svar?.books.length ?? 0) + (svar?.hits.length ?? 0)
 
-// Inga träffar alls (och verssöket är inte längre på väg): först då visas
-// no-results, aldrig medan källtextträffar fortfarande laddas.
-const isCompletelyEmpty = (redaktionellaOchNoter: number, kalltextAntal: number, laddar: boolean): boolean =>
-  redaktionellaOchNoter === 0 && kalltextAntal === 0 && !laddar
+// No hits at all (and the verse search is no longer in flight): only then is
+// no-results shown, never while source-text hits are still loading.
+const isCompletelyEmpty = (redaktionellaOchNoter: number, kalltextAntal: number, loading: boolean): boolean =>
+  redaktionellaOchNoter === 0 && kalltextAntal === 0 && !loading
 
-// Lägger till en expanderad grupp och sparar det i sessionsminnet.
+// Adds an expanded group and saves it in the session memory.
 const nyExpansion = (
-  föregående: ReadonlySet<SearchType>,
-  nyckel: string,
-  grupptyp: SearchType,
+  previous: ReadonlySet<SearchType>,
+  key: string,
+  groupType: SearchType,
 ): Set<SearchType> => {
-  const next = new Set(föregående).add(grupptyp)
-  expansionsminne.set(nyckel, next)
+  const next = new Set(previous).add(groupType)
+  expansionsminne.set(key, next)
   return next
 }
 
-// Sökfältets tillstånd: debouncat värde, Enter söker direkt, termen speglas i
-// URL:en och expanderade grupper minns per fråga. Samlat i en hook så själva
-// sidan blir liten och läsbar.
+// The search field's state: debounced value, Enter searches immediately, the term is mirrored in
+// the URL and expanded groups are remembered per query. Gathered into a hook so the
+// page itself stays small and readable.
 const useSoktillstand = (
   q: string,
   type: SearchType | undefined,
@@ -93,25 +93,25 @@ const useSoktillstand = (
   const [direkt, setDirekt] = useState<string | null>(null)
   const debounced = useDebounced(query.trim(), 250)
   const term = direkt ?? debounced
-  const nyckel = normalisera(term)
-  const [expanderade, setExpanderade] = useState<Set<SearchType>>(() => getExpansion(nyckel))
+  const key = normalize(term)
+  const [expanderade, setExpanderade] = useState<Set<SearchType>>(() => getExpansion(key))
 
   useEffect(() => {
     if (term !== q) onNavigera(searchObject(term, type))
   }, [term, q, type, onNavigera])
 
   useEffect(() => {
-    setExpanderade(getExpansion(normalisera(term)))
+    setExpanderade(getExpansion(normalize(term)))
   }, [term])
 
   return {
     query,
     term,
-    nyckel,
+    key,
     expanderade,
-    visaFler: (grupptyp: SearchType) => setExpanderade((prev) => nyExpansion(prev, nyckel, grupptyp)),
-    ändraFråga: (värde: string) => {
-      setQuery(värde)
+    visaFler: (groupType: SearchType) => setExpanderade((prev) => nyExpansion(prev, key, groupType)),
+    ändraFråga: (value: string) => {
+      setQuery(value)
       setDirekt(null)
     },
     sökDirekt: () => setDirekt(query.trim()),
@@ -126,18 +126,18 @@ type Props = {
 
 export const SokBibliotekPage = ({ q, type, onNavigera }: Props) => {
   useSidtitel('Sök i Biblioteket')
-  const { query, term, nyckel, expanderade, visaFler, ändraFråga, sökDirekt } = useSoktillstand(
+  const { query, term, key, expanderade, visaFler, ändraFråga, sökDirekt } = useSoktillstand(
     q,
     type,
     onNavigera,
   )
-  const anteckningar = useAtlas().anteckningar
+  const noteMap = useAtlas().notes
 
-  // Verssöket (verkläsarens FTS) körs bara utan typfilter och för fråga ≥ 2
-  // tecken; annars ett tomt svar utan nätanrop. Egen väg, egen laddning.
-  const searchSourceText = nyckel.length >= 2 && type === undefined
+  // The verse search (the reader's FTS) runs only without a type filter and for a query ≥ 2
+  // characters; otherwise an empty response with no network call. Its own path, its own loading.
+  const searchSourceText = key.length >= 2 && type === undefined
   const kalltext = useAsync<SourceTextResponse>(
-    () => (searchSourceText ? searchLibrary(term) : Promise.resolve(TOMT_KALLTEXTSVAR)),
+    () => (searchSourceText ? searchLibrary(term) : Promise.resolve(EMPTY_SOURCE_TEXT)),
     [term, searchSourceText],
   )
 
@@ -145,38 +145,38 @@ export const SokBibliotekPage = ({ q, type, onNavigera }: Props) => {
     term,
     type,
     expanderade,
-    anteckningar,
+    noteMap,
   )
   const kalltextAntal = sourceTextCountOf(kalltext.data)
-  const antal = redaktionellaOchNoter + kalltextAntal
+  const count = redaktionellaOchNoter + kalltextAntal
   const ingaTraffar = isCompletelyEmpty(redaktionellaOchNoter, kalltextAntal, kalltext.loading)
 
-  // Fas 14: rapportera bara tekniskt minimum ur söket — ett index-fel eller en
-  // helt tom sökning (anonymiserat). Anteckningssöket rör detta aldrig, och
-  // frågans text loggas aldrig — bara längd och ordantal.
+  // Phase 14: report only the technical minimum from the search — an index error or a
+  // completely empty search (anonymized). The notes search never touches this, and
+  // the query text is never logged — only length and word count.
   useEffect(() => {
-    if (nyckel.length < 2) return
+    if (key.length < 2) return
     if (fel) report({ type: 'sokfel', detalj: 'index' })
     else if (ingaTraffar) report({ type: 'sok-nolltraff', ...anonymizeQuestion(term) })
-  }, [nyckel, fel, ingaTraffar, term])
+  }, [key, fel, ingaTraffar, term])
 
   return (
     <div className="screenSub">
       <TopBar />
-      <Sokfalt query={query} onChange={ändraFråga} onSubmit={sökDirekt} />
-      <Filter aktiv={type} antal={antal} onVal={(nyTyp) => onNavigera(searchObject(term, nyTyp))} />
-      <Resultatvy
-        läge={computeMode(nyckel, fel)}
+      <SearchField query={query} onChange={ändraFråga} onSubmit={sökDirekt} />
+      <Filter aktiv={type} antal={count} onVal={(nyTyp) => onNavigera(searchObject(term, nyTyp))} />
+      <ResultView
+        läge={computeMode(key, fel)}
         ingaTraffar={ingaTraffar}
         synliga={synliga}
         kalltext={
           type === undefined ? (
-            <SourceTextGroup key={nyckel} svar={kalltext.data} fel={kalltext.error} />
+            <SourceTextGroup key={key} svar={kalltext.data} fel={kalltext.error} />
           ) : null
         }
         notes={notes}
-        nyckel={nyckel}
-        antal={antal}
+        nyckel={key}
+        antal={count}
         onVisaFler={visaFler}
       />
     </div>

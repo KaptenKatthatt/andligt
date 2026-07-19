@@ -4,7 +4,7 @@
 
 /* Vandrings-, sparade- och anteckningskort: lugna, bokmärkeslika — aldrig
    uppgiftskort. En mening skriven i marginalen. */
-.kort,
+.card,
 .note {
   display: block;
   padding: 15px 0 17px;
@@ -13,14 +13,14 @@
   color: inherit;
 }
 
-.kortTitel,
-.noteTitel {
+.cardTitle,
+.noteTitle {
   display: block;
   font-size: 1.1875rem;
   line-height: 1.3;
 }
 
-.kortText {
+.cardText {
   display: block;
   font-size: 1rem;
   color: var(--soft-strong);
@@ -29,7 +29,7 @@
 }
 
 /* Anteckningens utdrag kursiveras — skiljer sig från vandringens introtext. */
-.noteUtdrag {
+.noteExcerpt {
   display: block;
   font-size: 1rem;
   color: var(--soft-strong);
@@ -38,7 +38,7 @@
   line-height: 1.5;
 }
 
-.kortMeta,
+.cardMeta,
 .noteMeta {
   display: block;
   font-size: 0.84375rem;
@@ -46,20 +46,20 @@
   margin-top: 6px;
 }
 
-.tomlage {
+.emptyState {
   margin-top: 46px;
   border-top: 1px solid var(--faint);
   padding-top: 18px;
 }
 
-.tomText {
+.emptyText {
   font-size: 1.0625rem;
   color: var(--ink);
   line-height: 1.5;
   margin: 0;
 }
 
-.tomHint {
+.emptyHint {
   font-size: 1rem;
   color: var(--soft-strong);
   font-style: italic;
