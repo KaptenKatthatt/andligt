@@ -27,13 +27,13 @@ import styles from './RoomPage.module.css'
  * and never leads away — the arrow promises depth here, not navigation. */
 const ColophonRow = ({
   label,
-  öppen,
+  open,
   onVaxla,
   detaljId,
   children,
 }: {
   label: string
-  öppen: boolean
+  open: boolean
   onVaxla: () => void
   detaljId: string
   children: React.ReactNode
@@ -42,13 +42,13 @@ const ColophonRow = ({
     <button
       type="button"
       className={styles.colophonRow}
-      aria-expanded={öppen}
+      aria-expanded={open}
       aria-controls={detaljId}
       onClick={onVaxla}
     >
-      {label} <span aria-hidden>{öppen ? '▴' : '▾'}</span>
+      {label} <span aria-hidden>{open ? '▴' : '▾'}</span>
     </button>
-    <div id={detaljId} hidden={!öppen} className={styles.detail}>
+    <div id={detaljId} hidden={!open} className={styles.detail}>
       {children}
     </div>
   </div>
@@ -90,9 +90,9 @@ const groupBySource = (relations: SourceRelation[]): [Source, SourceRelation[]][
 
 // A source's rows in the detail: bibliography + use + edition per relation,
 // then the source's uncertainty once and the link to the source page.
-const SourceBlock = ({ source, relationer }: { source: Source; relationer: SourceRelation[] }) => {
+const SourceBlock = ({ source, relations }: { source: Source; relations: SourceRelation[] }) => {
   const rows = [
-    ...relationer.flatMap((relation) => {
+    ...relations.flatMap((relation) => {
       const passage = relation.passage ? findPassage(relation.passage) : undefined
       return [
         sourceRow(source, passage?.reference ?? relation.reference),
@@ -101,12 +101,12 @@ const SourceBlock = ({ source, relationer }: { source: Source; relationer: Sourc
       ]
     }),
     ...uncertainties(source),
-  ].filter((rad): rad is string => Boolean(rad))
+  ].filter((row): row is string => Boolean(row))
   return (
     <div className={styles.sourceBlock}>
-      {rows.map((rad, i) => (
-        <p key={`${rad}-${i}`} className={styles.detailRow}>
-          {rad}
+      {rows.map((row, i) => (
+        <p key={`${row}-${i}`} className={styles.detailRow}>
+          {row}
         </p>
       ))}
       <Link to="/bibliotek/kalla/$slug" params={{ slug: source.slug }} className={styles.detailLink}>
@@ -121,10 +121,10 @@ const SourceBlock = ({ source, relationer }: { source: Source; relationer: Sourc
  * Visibility). Stays bibliographic; the source's words and full passage text
  * live on the source page, where »Om texten« leads after a deliberate choice. Rooms with
  * several sources show all relations, grouped per source entry. */
-const SourceDetail = ({ rum }: { rum: Room }) => (
+const SourceDetail = ({ room }: { room: Room }) => (
   <>
-    {groupBySource(rum.sources).map(([source, relationer]) => (
-      <SourceBlock key={source.id} source={source} relationer={relationer} />
+    {groupBySource(room.sources).map(([source, relations]) => (
+      <SourceBlock key={source.id} source={source} relations={relations} />
     ))}
   </>
 )
@@ -134,37 +134,37 @@ const SourceDetail = ({ rum }: { rum: Room }) => (
 const kolofonetikett = (room: Room, source: Source): string =>
   new Set(room.sources.map((relation) => relation.source)).size > 1 ? 'Källor' : sourceName(source)
 
-const RoomEnding = ({ rum }: { rum: Room }) => {
+const RoomEnding = ({ room }: { room: Room }) => {
   const { savedRooms, toggleSavedRoom, notes, setNote, removeNote } = useAtlas()
-  const [öppenRad, setÖppenRad] = useState<'source' | 'bakgrund' | null>(null)
-  const [anteckningÖppen, setAnteckningÖppen] = useState(false)
-  const primarySource = rum.sources.find((k) => k.primary) ?? rum.sources[0]
+  const [openRow, setOpenRow] = useState<'source' | 'bakgrund' | null>(null)
+  const [noteOpen, setNoteOpen] = useState(false)
+  const primarySource = room.sources.find((k) => k.primary) ?? room.sources[0]
   const source = primarySource ? findSource(primarySource.source) : undefined
-  const sparat = !!savedRooms[rum.id]
-  const toggle = (rad: 'source' | 'bakgrund') =>
-    setÖppenRad((current) => (current === rad ? null : rad))
+  const saved = !!savedRooms[room.id]
+  const toggle = (row: 'source' | 'bakgrund') =>
+    setOpenRow((current) => (current === row ? null : row))
   return (
     <>
       <div className={styles.rule} />
       <div className={styles.colophon}>
         {source && (
           <ColophonRow
-            label={kolofonetikett(rum, source)}
-            öppen={öppenRad === 'source'}
+            label={kolofonetikett(room, source)}
+            open={openRow === 'source'}
             onVaxla={() => toggle('source')}
             detaljId="kalldetalj"
           >
-            <SourceDetail rum={rum} />
+            <SourceDetail room={room} />
           </ColophonRow>
         )}
-        {rum.historicalContext && (
+        {room.historicalContext && (
           <ColophonRow
             label="Historisk bakgrund"
-            öppen={öppenRad === 'bakgrund'}
+            open={openRow === 'bakgrund'}
             onVaxla={() => toggle('bakgrund')}
             detaljId="bakgrundsdetalj"
           >
-            {paragraphs(rum.historicalContext).map((paragraph, i) => (
+            {paragraphs(room.historicalContext).map((paragraph, i) => (
               <p key={i} className={styles.detailRow}>
                 {paragraph}
               </p>
@@ -176,26 +176,26 @@ const RoomEnding = ({ rum }: { rum: Room }) => {
         <button
           type="button"
           className={styles.endingAction}
-          aria-pressed={sparat}
-          onClick={() => toggleSavedRoom(rum.id)}
+          aria-pressed={saved}
+          onClick={() => toggleSavedRoom(room.id)}
         >
-          {sparat ? 'Sparad' : 'Spara'}
+          {saved ? 'Sparad' : 'Spara'}
         </button>
         <button
           type="button"
           className={styles.endingAction}
-          onClick={() => setAnteckningÖppen(true)}
+          onClick={() => setNoteOpen(true)}
         >
           Skriv ner en tanke
         </button>
       </div>
-      {anteckningÖppen && (
+      {noteOpen && (
         <NotesSheet
-          title={rum.title}
-          value={notes[rum.id]?.text ?? ''}
-          onChange={(text) => setNote('room', rum.id, text)}
-          onDelete={() => removeNote(rum.id)}
-          onClose={() => setAnteckningÖppen(false)}
+          title={room.title}
+          value={notes[room.id]?.text ?? ''}
+          onChange={(text) => setNote('room', room.id, text)}
+          onDelete={() => removeNote(room.id)}
+          onClose={() => setNoteOpen(false)}
         />
       )}
     </>
@@ -206,17 +206,17 @@ const RoomEnding = ({ rum }: { rum: Room }) => {
  * parameter `vandring`). Two equivalent, quiet choices — never autoplay, never a »rätt«
  * choice (paths.md, Moving Between Stops). The last room gets the optional closing
  * reflection instead, without congratulation or progress metric. */
-const PathFooter = ({ vandring, rum }: { vandring: Path; rum: Room }) => {
+const PathFooter = ({ path, room }: { path: Path; room: Room }) => {
   const navigate = useNavigate()
-  const order = roomsForPath(vandring, allRooms)
-  const index = order.findIndex((room) => room.id === rum.id)
+  const order = roomsForPath(path, allRooms)
+  const index = order.findIndex((room) => room.id === room.id)
   if (index === -1) return null
   const next = order[index + 1]
   if (!next) {
-    if (vandring.closingReflection === undefined) return null
+    if (path.closingReflection === undefined) return null
     return (
       <div className={styles.pathEnd}>
-        {paragraphs(vandring.closingReflection).map((paragraph, i) => (
+        {paragraphs(path.closingReflection).map((paragraph, i) => (
           <p key={i} className={styles.pathEndParagraph}>
             {paragraph}
           </p>
@@ -227,13 +227,13 @@ const PathFooter = ({ vandring, rum }: { vandring: Path; rum: Room }) => {
   // »Stanna här« clears the path context: the footer disappears and the room becomes
   // standalone again. The reader stays put — nothing is navigated away.
   const stanna = () =>
-    navigate({ to: '/rum/$slug', params: { slug: rum.slug }, search: {}, replace: true })
+    navigate({ to: '/rum/$slug', params: { slug: room.slug }, search: {}, replace: true })
   return (
     <div className={styles.path}>
       <Link
         to="/rum/$slug"
         params={{ slug: next.slug }}
-        search={{ vandring: vandring.slug }}
+        search={{ path: path.slug }}
         className={styles.pathAction}
       >
         Fortsätt vandringen
@@ -277,12 +277,12 @@ const useRelationskontroll = (room: Room | undefined): void => {
     if (!room) return
     for (const relation of room.sources) {
       if (!findSource(relation.source))
-        report({ type: 'bruten-kallalank', från: room.id, till: relation.source })
+        report({ type: 'broken-source-link', from: room.id, to: relation.source })
       else if (relation.passage !== undefined && !findPassage(relation.passage))
         report({
-          type: 'ogiltig-innehallsrelation',
-          slag: 'passage',
-          från: room.id,
+          type: 'invalid-content-relation',
+          kind: 'passage',
+          from: room.id,
           reference: relation.passage,
         })
     }
@@ -294,9 +294,9 @@ const useRelationskontroll = (room: Room | undefined): void => {
  * which chooses only published rooms; drafts are reached labelled via a direct link and
  * serve as the editorial review view. The search parameter `vandringSlug` is set
  * only when the room is reached from within a path and controls the path footer. */
-export const RoomPage = ({ slug, vandringSlug }: { slug: string; vandringSlug?: string }) => {
+export const RoomPage = ({ slug, pathSlug }: { slug: string; pathSlug?: string }) => {
   const room = findRoom(slug)
-  const path = vandringSlug !== undefined ? findPathBySlug(vandringSlug) : undefined
+  const path = pathSlug !== undefined ? findPathBySlug(pathSlug) : undefined
   useRumsminne(room, path)
   useRelationskontroll(room)
   useDocumentTitle(room?.title)
@@ -336,8 +336,8 @@ export const RoomPage = ({ slug, vandringSlug }: { slug: string; vandringSlug?: 
           </p>
         ))}
       </div>
-      <RoomEnding rum={room} />
-      {path !== undefined && <PathFooter vandring={path} rum={room} />}
+      <RoomEnding room={room} />
+      {path !== undefined && <PathFooter path={path} room={room} />}
     </div>
   )
 }

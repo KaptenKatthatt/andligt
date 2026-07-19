@@ -20,11 +20,11 @@ export const HomePage = () => {
   useDocumentTitle('Läsrummet')
   const navigate = useNavigate()
   const { recentRooms } = useAtlas()
-  const [tomtVal, setTomtVal] = useState(false)
-  const [väljer, setVäljer] = useState(false)
+  const [emptyChoice, setTomtVal] = useState(false)
+  const [selecting, setSelecting] = useState(false)
   const selectTheme = async (theme: Theme) => {
-    if (väljer) return
-    setVäljer(true)
+    if (selecting) return
+    setSelecting(true)
     setTomtVal(false)
     try {
       const { allRooms } = await import('../lib/content')
@@ -37,9 +37,9 @@ export const HomePage = () => {
     } catch {
       // The content chunk could not be fetched (e.g. offline before first caching).
       // Release the button again so the choice can be retried — nothing crashes, nothing hangs.
-      report({ type: 'sidladdningsfel', resurs: 'innehall' })
+      report({ type: 'page-load-error', resource: 'innehall' })
     }
-    setVäljer(false)
+    setSelecting(false)
   }
   return (
     <div className="screenTab">
@@ -61,7 +61,7 @@ export const HomePage = () => {
         ))}
       </div>
       <p role="status" className={styles.empty}>
-        {tomtVal ? 'Det finns inget färdigt rum här ännu.' : ''}
+        {emptyChoice ? 'Det finns inget färdigt rum här ännu.' : ''}
       </p>
     </div>
   )

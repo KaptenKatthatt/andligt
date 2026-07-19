@@ -1,6 +1,6 @@
 /* Lugnt tomläge när en sida inte gick att visa (fas 14). Centrerat, dämpat,
  * en enda handling — ingen teknisk stacktrace åt läsaren. */
-.fel {
+.error {
   display: flex;
   flex-direction: column;
   align-items: center;

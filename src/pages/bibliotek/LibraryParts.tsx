@@ -41,7 +41,7 @@ export const Sidhuvud = ({
   )
 }
 
-export const Beskrivning = ({ text }: { text?: string }) => (
+export const Description = ({ text }: { text?: string }) => (
   <>
     {text !== undefined &&
       paragraphs(text).map((paragraph, i) => (
@@ -52,12 +52,12 @@ export const Beskrivning = ({ text }: { text?: string }) => (
   </>
 )
 
-export const RoomList = ({ rum, tomtBesked }: { rum: Room[]; tomtBesked: string }) => (
+export const RoomList = ({ rooms, emptyMessage }: { rooms: Room[]; emptyMessage: string }) => (
   <>
-    {rum.length === 0 ? (
-      <p className={styles.empty}>{tomtBesked}</p>
+    {rooms.length === 0 ? (
+      <p className={styles.empty}>{emptyMessage}</p>
     ) : (
-      rum.map((room) => <RoomRow key={room.id} rum={room} />)
+      rooms.map((room) => <RoomRow key={room.id} room={room} />)
     )}
   </>
 )
@@ -72,9 +72,9 @@ export const Row = ({ title, sub }: { title: string; sub?: string }) => (
   </>
 )
 
-export const Section = ({ rubrik, children }: { rubrik: string; children: ReactNode }) => (
+export const Section = ({ heading, children }: { heading: string; children: ReactNode }) => (
   <div className={styles.section}>
-    <h2 className="kicker sectionKicker">{rubrik}</h2>
+    <h2 className="kicker sectionKicker">{heading}</h2>
     {children}
   </div>
 )

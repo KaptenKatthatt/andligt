@@ -19,32 +19,32 @@ import {
   Group,
   EmptyState,
   PathCard,
-  type Kort,
+  type Card,
 } from './SavedParts'
 
-type SavedPath = { vandring: Path; senastRum: string | undefined }
+type SavedPath = { path: Path; recentRoom: string | undefined }
 
-const RoomGroup = ({ rum }: { rum: Room[] }) =>
-  rum.length === 0 ? null : (
-    <Group rubrik="Rum">
-      {rum.map((room) => (
-        <RoomRow key={room.id} rum={room} />
+const RoomGroup = ({ rooms }: { rooms: Room[] }) =>
+  rooms.length === 0 ? null : (
+    <Group heading="Rum">
+      {rooms.map((room) => (
+        <RoomRow key={room.id} room={room} />
       ))}
     </Group>
   )
 
-const PathGroup = ({ vandringar }: { vandringar: SavedPath[] }) =>
-  vandringar.length === 0 ? null : (
-    <Group rubrik="Vandringar">
-      {vandringar.map(({ vandring, senastRum }) => (
-        <PathCard key={vandring.id} vandring={vandring} senastRum={senastRum} />
+const PathGroup = ({ paths }: { paths: SavedPath[] }) =>
+  paths.length === 0 ? null : (
+    <Group heading="Vandringar">
+      {paths.map(({ path, recentRoom }) => (
+        <PathCard key={path.id} path={path} recentRoom={recentRoom} />
       ))}
     </Group>
   )
 
 const BookmarkGroup = ({ topics }: { topics: { id: string; title: string; tradition: string; min: number }[] }) =>
   topics.length === 0 ? null : (
-    <Group rubrik="Bokmärken">
+    <Group heading="Bokmärken">
       {topics.map((topic) => (
         <RowLink
           key={topic.id}
@@ -58,10 +58,10 @@ const BookmarkGroup = ({ topics }: { topics: { id: string; title: string; tradit
     </Group>
   )
 
-const SourcesGroup = ({ kapitel }: { kapitel: ChapterBookmark[] }) =>
-  kapitel.length === 0 ? null : (
-    <Group rubrik="Källor">
-      {kapitel.map((b) => (
+const SourcesGroup = ({ chapters }: { chapters: ChapterBookmark[] }) =>
+  chapters.length === 0 ? null : (
+    <Group heading="Källor">
+      {chapters.map((b) => (
         <RowLink
           key={chapterKey(b.workId, b.bookSlug, b.chapter)}
           to={{ kind: 'kapitel', workId: b.workId, bookSlug: b.bookSlug, chapter: b.chapter }}
@@ -74,11 +74,11 @@ const SourcesGroup = ({ kapitel }: { kapitel: ChapterBookmark[] }) =>
     </Group>
   )
 
-const NoteGroup = ({ kort }: { kort: Kort[] }) =>
-  kort.length === 0 ? null : (
-    <Group rubrik="Anteckningar">
-      {kort.map((k) => (
-        <NoteCard key={k.key} title={k.title} text={k.text} datum={k.datum} to={k.to} />
+const NoteGroup = ({ card }: { card: Card[] }) =>
+  card.length === 0 ? null : (
+    <Group heading="Anteckningar">
+      {card.map((k) => (
+        <NoteCard key={k.key} title={k.title} text={k.text} date={k.date} to={k.to} />
       ))}
     </Group>
   )
@@ -86,16 +86,16 @@ const NoteGroup = ({ kort }: { kort: Kort[] }) =>
 /** Recently visited (spec Recently Opened Items): only orientation, never a
  * demanding queue. Separate from Saved and clearable by the reader. No »Fortsätt
  * läsa« phrasing. */
-const RecentlyVisitedGroup = ({ rum, onRensa }: { rum: Room[]; onRensa: () => void }) =>
-  rum.length === 0 ? null : (
+const RecentlyVisitedGroup = ({ rooms, onClear }: { rooms: Room[]; onClear: () => void }) =>
+  rooms.length === 0 ? null : (
     <section className={styles.recent}>
       <div className={styles.recentHead}>
         <h2 className="kicker sectionKicker">Senast besökt</h2>
-        <button type="button" className={styles.clear} onClick={onRensa}>
+        <button type="button" className={styles.clear} onClick={onClear}>
           Rensa
         </button>
       </div>
-      {rum.map((room) => (
+      {rooms.map((room) => (
         <RowLink
           key={room.id}
           to={{ kind: 'rum', slug: room.slug }}
@@ -109,14 +109,14 @@ const RecentlyVisitedGroup = ({ rum, onRensa }: { rum: Room[]; onRensa: () => vo
 
 const savedPathsList = (
   savedPaths: Record<string, SavedItem>,
-  vandringsplatser: Record<string, string>,
+  pathPositions: Record<string, string>,
 ): SavedPath[] =>
   savedIdsByTime(savedPaths)
     .map((id) => findPathById(id))
     .filter((path): path is Path => path !== undefined)
     .map((path) => ({
-      vandring: path,
-      senastRum: findRoomById(vandringsplatser[path.id] ?? '')?.title,
+      path,
+      recentRoom: findRoomById(pathPositions[path.id] ?? '')?.title,
     }))
 
 /** Saved (notes-and-saved.md): a quiet place for what the reader chose to keep,
@@ -134,17 +134,17 @@ export const CollectionPage = () => {
     .filter((id) => store.bookmarks[id])
     .map(findTopic)
     .filter((topic) => topic !== undefined)
-  const kapitel = Object.values(store.chapterBookmarks).sort((a, b) => b.savedAt - a.savedAt)
+  const chapters = Object.values(store.chapterBookmarks).sort((a, b) => b.savedAt - a.savedAt)
   const short = sortedNotes(store.notes).map(noteToCard)
   const recent = store.recentRooms
     .map((id) => findRoomById(id))
     .filter((room): room is Room => room !== undefined)
 
-  const ingetSparat =
+  const nothingSaved =
     rooms.length === 0 &&
     paths.length === 0 &&
     topics.length === 0 &&
-    kapitel.length === 0 &&
+    chapters.length === 0 &&
     short.length === 0
 
   return (
@@ -152,18 +152,18 @@ export const CollectionPage = () => {
       <div className="kicker">Visdomsatlasen</div>
       <h1 className={styles.title}>Sparat</h1>
       <p className={styles.lede}>Det du sparat och tänkt.</p>
-      {ingetSparat ? (
+      {nothingSaved ? (
         <EmptyState />
       ) : (
         <>
-          <RoomGroup rum={rooms} />
-          <PathGroup vandringar={paths} />
+          <RoomGroup rooms={rooms} />
+          <PathGroup paths={paths} />
           <BookmarkGroup topics={topics} />
-          <SourcesGroup kapitel={kapitel} />
-          <NoteGroup kort={short} />
+          <SourcesGroup chapters={chapters} />
+          <NoteGroup card={short} />
         </>
       )}
-      <RecentlyVisitedGroup rum={recent} onRensa={store.clearRecentlyVisited} />
+      <RecentlyVisitedGroup rooms={recent} onClear={store.clearRecentlyVisited} />
     </div>
   )
 }

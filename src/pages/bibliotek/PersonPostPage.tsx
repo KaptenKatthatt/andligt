@@ -2,7 +2,7 @@ import { TopBar } from '../../components/TopBar'
 import { findPersonBySlug } from '../../lib/content'
 import { NotFoundNote } from '../NotFoundNote'
 import styles from './Library.module.css'
-import { Beskrivning, Sidhuvud } from './LibraryParts'
+import { Description, Sidhuvud } from './LibraryParts'
 
 /** Person page in the library (library.md, People and Authors): a reference point,
  * not an entry — a portrait in calm prose, without authority claims. Separate from
@@ -17,7 +17,7 @@ export const PersonPostPage = ({ slug }: { slug: string }) => {
       <Sidhuvud kicker="Person" title={person.name} status={person.status}>
         {person.years !== undefined && <p className={styles.artal}>{person.years}</p>}
       </Sidhuvud>
-      <Beskrivning text={person.description} />
+      <Description text={person.description} />
     </div>
   )
 }

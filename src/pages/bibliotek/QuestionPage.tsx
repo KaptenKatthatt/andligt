@@ -12,13 +12,13 @@ import {
 } from '../../lib/content'
 import { NotFoundNote } from '../NotFoundNote'
 import styles from './Library.module.css'
-import { Beskrivning, Row, RoomList, Section, Sidhuvud } from './LibraryParts'
+import { Description, Row, RoomList, Section, Sidhuvud } from './LibraryParts'
 
-const ThemePart = ({ fråga }: { fråga: Question }) => {
-  const themes = publishedThrough(fråga.themes, findTheme)
+const ThemePart = ({ question }: { question: Question }) => {
+  const themes = publishedThrough(question.themes, findTheme)
   if (themes.length === 0) return null
   return (
-    <Section rubrik="Teman">
+    <Section heading="Teman">
       {themes.map((theme) => (
         <ToLink key={theme.id} to={{ kind: 'tema', slug: theme.slug }} className={styles.row}>
           <Row title={theme.label} />
@@ -28,11 +28,11 @@ const ThemePart = ({ fråga }: { fråga: Question }) => {
   )
 }
 
-const SourcePart = ({ fråga }: { fråga: Question }) => {
-  const sources = sourcesForQuestion(fråga.id, allRooms, allSources)
+const SourcePart = ({ question }: { question: Question }) => {
+  const sources = sourcesForQuestion(question.id, allRooms, allSources)
   if (sources.length === 0) return null
   return (
-    <Section rubrik="Källor">
+    <Section heading="Källor">
       {sources.map((source) => (
         <ToLink key={source.id} to={{ kind: 'kallpost', slug: source.slug }} className={styles.row}>
           <Row title={source.title} sub={sourceName(source)} />
@@ -42,11 +42,11 @@ const SourcePart = ({ fråga }: { fråga: Question }) => {
   )
 }
 
-const Narliggande = ({ fråga }: { fråga: Question }) => {
-  const questions = publishedThrough(fråga.relatedQuestions ?? [], findQuestion)
+const Narliggande = ({ question }: { question: Question }) => {
+  const questions = publishedThrough(question.relatedQuestions ?? [], findQuestion)
   if (questions.length === 0) return null
   return (
-    <Section rubrik="Närliggande frågor">
+    <Section heading="Närliggande frågor">
       {questions.map((relaterad) => (
         <ToLink
           key={relaterad.id}
@@ -70,16 +70,16 @@ export const QuestionPage = ({ slug }: { slug: string }) => {
     <div className="screenSub">
       <TopBar />
       <Sidhuvud kicker="Fråga" title={question.text} status={question.status} />
-      <Beskrivning text={question.description} />
-      <Section rubrik="Rum">
+      <Description text={question.description} />
+      <Section heading="Rum">
         <RoomList
-          rum={roomsForQuestion(question.id, allRooms)}
-          tomtBesked="Det finns inga färdiga rum kring frågan ännu."
+          rooms={roomsForQuestion(question.id, allRooms)}
+          emptyMessage="Det finns inga färdiga rum kring frågan ännu."
         />
       </Section>
-      <ThemePart fråga={question} />
-      <SourcePart fråga={question} />
-      <Narliggande fråga={question} />
+      <ThemePart question={question} />
+      <SourcePart question={question} />
+      <Narliggande question={question} />
     </div>
   )
 }

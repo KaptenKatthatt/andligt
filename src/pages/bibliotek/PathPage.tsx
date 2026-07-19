@@ -18,16 +18,16 @@ import {
 import { useAtlas } from '../../lib/store'
 import { NotFoundNote } from '../NotFoundNote'
 import styles from './Library.module.css'
-import { Beskrivning, Row, Section, Sidhuvud } from './LibraryParts'
+import { Description, Row, Section, Sidhuvud } from './LibraryParts'
 
 /** A quiet orientation row: the path's traditions followed by an approximate
  * total reading time (paths.md, Path Overview — sources are shown discreetly, the time
  * is approximate and never a goal). */
-const Metarad = ({ rummen }: { rummen: Room[] }) => {
-  const traditions = traditionsForPath(rummen, allSources, allTraditions)
+const Metarad = ({ rooms }: { rooms: Room[] }) => {
+  const traditions = traditionsForPath(rooms, allSources, allTraditions)
   const parts = [
     ...traditions.map((tradition) => tradition.name),
-    `ca ${pathReadingTime(rummen)} min sammanlagt`,
+    `ca ${pathReadingTime(rooms)} min sammanlagt`,
   ]
   return <p className={styles.antal}>{parts.join(' · ')}</p>
 }
@@ -35,16 +35,16 @@ const Metarad = ({ rummen }: { rummen: Room[] }) => {
 /** A quiet save control (notes-and-saved.md, Saving): »Spara«/»Sparad«,
  * no celebratory feedback, no counter. A saved path only means
  * the reader wants to be able to return — never a commitment to finish. */
-const SavePath = ({ vandring }: { vandring: Path }) => {
+const SavePath = ({ path }: { path: Path }) => {
   const { savedPaths, toggleSavedPath } = useAtlas()
-  const saved = !!savedPaths[vandring.id]
+  const saved = !!savedPaths[path.id]
   return (
     <div className={styles.save}>
       <button
         type="button"
         className={styles.saveButton}
         aria-pressed={saved}
-        onClick={() => toggleSavedPath(vandring.id)}
+        onClick={() => toggleSavedPath(path.id)}
       >
         {saved ? 'Sparad' : 'Spara'}
       </button>
@@ -54,13 +54,13 @@ const SavePath = ({ vandring }: { vandring: Path }) => {
 
 /** The central question — the heart of the path. Shown only when it's published;
  * otherwise the draft question is reached via the library, not from here. */
-const Fragedel = ({ vandring }: { vandring: Path }) => {
-  const [fråga] = publishedThrough([vandring.centralQuestion], findQuestion)
-  if (!fråga) return null
+const Fragedel = ({ path }: { path: Path }) => {
+  const [question] = publishedThrough([path.centralQuestion], findQuestion)
+  if (!question) return null
   return (
-    <Section rubrik="Fråga">
-      <ToLink to={{ kind: 'fraga', slug: fråga.slug }} className={styles.row}>
-        <Row title={fråga.text} />
+    <Section heading="Fråga">
+      <ToLink to={{ kind: 'fraga', slug: question.slug }} className={styles.row}>
+        <Row title={question.text} />
       </ToLink>
     </Section>
   )
@@ -71,31 +71,31 @@ const Fragedel = ({ vandring }: { vandring: Path }) => {
  * (Accessibility). Each row opens the room with the path as context. A
  * neutral »Fortsätt där du stannade« is placed at the top if a room is remembered — only
  * orientation, never progress. */
-const RoomPart = ({ vandring, rummen }: { vandring: Path; rummen: Room[] }) => {
+const RoomPart = ({ path, rooms }: { path: Path; rooms: Room[] }) => {
   const { pathPositions } = useAtlas()
-  const place = rummen.find((room) => room.id === pathPositions[vandring.id])
+  const place = rooms.find((room) => room.id === pathPositions[path.id])
   return (
-    <Section rubrik="Rummen">
+    <Section heading="Rummen">
       {place && (
         <Link
           to="/rum/$slug"
           params={{ slug: place.slug }}
-          search={{ vandring: vandring.slug }}
+          search={{ path: path.slug }}
           className={styles.row}
         >
           <Row title="Fortsätt där du stannade" sub={place.title} />
         </Link>
       )}
-      {rummen.length === 0 ? (
+      {rooms.length === 0 ? (
         <p className={styles.empty}>Den här vandringen har inga rum ännu.</p>
       ) : (
         <ol className={styles.pathList}>
-          {rummen.map((room) => (
+          {rooms.map((room) => (
             <li key={room.id}>
               <Link
                 to="/rum/$slug"
                 params={{ slug: room.slug }}
-                search={{ vandring: vandring.slug }}
+                search={{ path: path.slug }}
                 className={styles.row}
               >
                 <Row title={room.title} sub={`${room.readingTimeMinutes} min`} />
@@ -121,11 +121,11 @@ export const PathPage = ({ slug }: { slug: string }) => {
     <div className="screenSub">
       <TopBar />
       <Sidhuvud kicker="Vandring" title={path.title} status={path.status} />
-      <Metarad rummen={rooms} />
-      <SavePath vandring={path} />
-      <Beskrivning text={path.introduction} />
-      <Fragedel vandring={path} />
-      <RoomPart vandring={path} rummen={rooms} />
+      <Metarad rooms={rooms} />
+      <SavePath path={path} />
+      <Description text={path.introduction} />
+      <Fragedel path={path} />
+      <RoomPart path={path} rooms={rooms} />
     </div>
   )
 }

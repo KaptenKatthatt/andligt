@@ -14,21 +14,21 @@ const fokuserbaraI = (rot: HTMLElement): HTMLElement[] =>
   Array.from(rot.querySelectorAll<HTMLElement>(FOKUSERBAR_VALJARE))
 
 /** Keeps Tab/Shift+Tab cycling within the sheet. */
-const trapTab = (ark: HTMLElement, händelse: KeyboardEvent) => {
+const trapTab = (ark: HTMLElement, event: KeyboardEvent) => {
   const fokuserbara = fokuserbaraI(ark)
   const first = fokuserbara.at(0)
   const sista = fokuserbara.at(-1)
   if (!first || !sista) {
-    händelse.preventDefault()
+    event.preventDefault()
     ark.focus()
     return
   }
   const active = document.activeElement
-  if (händelse.shiftKey && (active === first || active === ark)) {
-    händelse.preventDefault()
+  if (event.shiftKey && (active === first || active === ark)) {
+    event.preventDefault()
     sista.focus()
-  } else if (!händelse.shiftKey && active === sista) {
-    händelse.preventDefault()
+  } else if (!event.shiftKey && active === sista) {
+    event.preventDefault()
     first.focus()
   }
 }
@@ -41,11 +41,11 @@ const trapTab = (ark: HTMLElement, händelse: KeyboardEvent) => {
  */
 export const useDialogKeyboard = (
   arkRef: RefObject<HTMLElement | null>,
-  onStäng: () => void,
+  onClose: () => void,
 ): void => {
-  const closeRef = useRef(onStäng)
+  const closeRef = useRef(onClose)
   useEffect(() => {
-    closeRef.current = onStäng
+    closeRef.current = onClose
   })
   // The trigger is stored in a ref that survives StrictMode remounting; on
   // remount focus is already in the sheet and must not overwrite the memory.
@@ -57,11 +57,11 @@ export const useDialogKeyboard = (
     const active = document.activeElement
     if (!ark.contains(active)) tidigareRef.current = active
     ark.focus()
-    const vidTangent = (händelse: KeyboardEvent) => {
-      if (händelse.key === 'Escape') {
+    const vidTangent = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
         closeRef.current()
-      } else if (händelse.key === 'Tab') {
-        trapTab(ark, händelse)
+      } else if (event.key === 'Tab') {
+        trapTab(ark, event)
       }
     }
     document.addEventListener('keydown', vidTangent)

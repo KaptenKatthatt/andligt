@@ -21,7 +21,7 @@ import {
   type SavedItem,
   type Origin,
 } from './personal'
-import { HISTORIKLANGD } from './roomSelection'
+import { HISTORY_LENGTH } from './roomSelection'
 import { readJson, writeJson } from './storage'
 import {
   BG_OPTIONS,
@@ -38,7 +38,7 @@ const STORAGE_KEY = 'visdomsatlasen'
 
 type LastRead = { id: string; mode: ReadMode }
 
-const nu = (): string => new Date().toISOString()
+const now = (): string => new Date().toISOString()
 
 // Classifies a note key during migration: room ids (the `rum-` prefix, which
 // all rooms carry) become `rum`, everything else (topic ids from the old app, unidentifiable)
@@ -90,7 +90,7 @@ type AtlasActions = {
   setNote: (type: Origin, ursprungId: string, text: string) => void
   removeNote: (ursprungId: string) => void
   clearRecentlyVisited: () => void
-  importPersonal: (importen: PersonalExport) => void
+  importPersonal: (incoming: PersonalExport) => void
   clearPersonal: () => void
 }
 
@@ -123,7 +123,7 @@ export type SavedRaw = Partial<Omit<AtlasState, 'notes' | 'savedRooms' | 'savedP
 // shapes — both the old data structure and the Swedish keys (anteckningar/
 // sparadeRum/sparadeVandringar) from before the English migration.
 const restoredPersonal = (saved: SavedRaw): Pick<AtlasState, 'notes' | 'savedRooms' | 'savedPaths'> => ({
-  notes: migrateNotes(saved.notes, saved.anteckningar ?? saved.notes, classifyOrigin, nu()),
+  notes: migrateNotes(saved.notes, saved.anteckningar ?? saved.notes, classifyOrigin, now()),
   savedRooms: migrateSaved(saved.savedRooms ?? saved.sparadeRum),
   savedPaths: migrateSaved(saved.savedPaths ?? saved.sparadeVandringar),
 })
@@ -256,7 +256,7 @@ const useCollectionActions = (setState: SetAtlasState): CollectionActions => {
         ...s,
         recentRooms: [id, ...s.recentRooms.filter((last) => last !== id)].slice(
           0,
-          HISTORIKLANGD,
+          HISTORY_LENGTH,
         ),
       })),
     [setState],
@@ -286,7 +286,7 @@ const toggleSaved = (
 ): Record<string, SavedItem> => {
   const next = { ...items }
   if (next[id]) delete next[id]
-  else next[id] = { savedWhen: nu() }
+  else next[id] = { savedWhen: now() }
   return next
 }
 
@@ -307,7 +307,7 @@ const usePersonligtActions = (setState: SetAtlasState): PersonligtActions => {
         ...s,
         notes: {
           ...s.notes,
-          [ursprungId]: updatedNote(s.notes[ursprungId], type, ursprungId, text, nu()),
+          [ursprungId]: updatedNote(s.notes[ursprungId], type, ursprungId, text, now()),
         },
       })),
     [setState],
@@ -355,8 +355,8 @@ const emptyPersonal = {
 
 const useDataActions = (setState: SetAtlasState): DataActions => {
   const importPersonal = useCallback(
-    (importen: PersonalExport) =>
-      setState((s) => ({ ...s, ...mergeImport(personalCollections(s), importen) })),
+    (incoming: PersonalExport) =>
+      setState((s) => ({ ...s, ...mergeImport(personalCollections(s), incoming) })),
     [setState],
   )
   const clearPersonal = useCallback(

@@ -6,7 +6,7 @@ import { ToLink } from '../components/ToLink'
 import type { Path } from '../content/editorial/schema'
 import { findTopic } from '../content/topics'
 import { findRoomById } from '../lib/content'
-import { dateLabel, utdrag, type Note } from '../lib/personal'
+import { dateLabel, excerpt, type Note } from '../lib/personal'
 import styles from './SavedParts.module.css'
 
 /** Where a note links back to: the reading room (rum) or the topic essay. A
@@ -17,20 +17,20 @@ export type NoteringsMal =
   | { kind: 'las'; id: string; mode: 'essa' }
 
 /** A note card's data: title, text, date and an optional origin target. */
-export type Kort = {
+export type Card = {
   key: string
   title: string
   text: string
-  datum: string | undefined
+  date: string | undefined
   to: NoteringsMal | undefined
 }
 
 // The note tied to its origin (spec Notes and Sources): rooms link
 // to the reading room, topic notes to the essay. If the origin isn't found the
 // text still renders — without a link, but never hidden. Shared by Saved and search.
-export const noteToCard = (note: Note): Kort => {
-  const datum = dateLabel(note.updated)
-  const bas = { key: note.originId, text: note.text, datum }
+export const noteToCard = (note: Note): Card => {
+  const date = dateLabel(note.updated)
+  const bas = { key: note.originId, text: note.text, date }
   if (note.originType === 'room') {
     const room = findRoomById(note.originId)
     const to = room ? ({ kind: 'rum', slug: room.slug } as const) : undefined
@@ -42,9 +42,9 @@ export const noteToCard = (note: Note): Kort => {
 }
 
 /** A group is shown only when it has content (spec Saved Section). */
-export const Group = ({ rubrik, children }: { rubrik: string; children: ReactNode }) => (
+export const Group = ({ heading, children }: { heading: string; children: ReactNode }) => (
   <section className={styles.grupp}>
-    <h2 className="kicker sectionKicker">{rubrik}</h2>
+    <h2 className="kicker sectionKicker">{heading}</h2>
     {children}
   </section>
 )
@@ -53,16 +53,16 @@ export const Group = ({ rubrik, children }: { rubrik: string; children: ReactNod
  * orientation — the last-opened room. Never room count, percentage or remaining
  * (spec Saved Paths). */
 export const PathCard = ({
-  vandring,
-  senastRum,
+  path,
+  recentRoom,
 }: {
-  vandring: Path
-  senastRum: string | undefined
+  path: Path
+  recentRoom: string | undefined
 }) => (
-  <ToLink to={{ kind: 'vandring', slug: vandring.slug }} className={styles.card}>
-    <span className={styles.cardTitle}>{vandring.title}</span>
-    <span className={styles.cardText}>{utdrag(vandring.introduction, 96)}</span>
-    {senastRum !== undefined && <span className={styles.cardMeta}>Senast: {senastRum}</span>}
+  <ToLink to={{ kind: 'vandring', slug: path.slug }} className={styles.card}>
+    <span className={styles.cardTitle}>{path.title}</span>
+    <span className={styles.cardText}>{excerpt(path.introduction, 96)}</span>
+    {recentRoom !== undefined && <span className={styles.cardMeta}>Senast: {recentRoom}</span>}
   </ToLink>
 )
 
@@ -72,25 +72,25 @@ export const PathCard = ({
 export const NoteCard = ({
   title,
   text,
-  datum,
+  date,
   to,
 }: {
   title: string
   text: string
-  datum: string | undefined
+  date: string | undefined
   to: NoteringsMal | undefined
 }) => {
-  const innehåll = (
+  const content = (
     <>
       <span className={styles.noteTitle}>{title}</span>
-      <span className={styles.noteExcerpt}>»{utdrag(text)}«</span>
-      {datum !== undefined && <span className={styles.noteMeta}>{datum}</span>}
+      <span className={styles.noteExcerpt}>»{excerpt(text)}«</span>
+      {date !== undefined && <span className={styles.noteMeta}>{date}</span>}
     </>
   )
-  if (to === undefined) return <div className={styles.note}>{innehåll}</div>
+  if (to === undefined) return <div className={styles.note}>{content}</div>
   return (
     <ToLink to={to} className={styles.note}>
-      {innehåll}
+      {content}
     </ToLink>
   )
 }

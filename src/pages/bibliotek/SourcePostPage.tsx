@@ -12,7 +12,7 @@ import {
 } from '../../lib/content'
 import { NotFoundNote } from '../NotFoundNote'
 import styles from './Library.module.css'
-import { Beskrivning, RoomList, Section, Sidhuvud } from './LibraryParts'
+import { Description, RoomList, Section, Sidhuvud } from './LibraryParts'
 
 const TYPETIKETT: Record<Source['type'], string> = {
   'book': 'Bok',
@@ -43,28 +43,28 @@ const upphovsrad = (source: Source): string | undefined => {
   return source.attribution === 'attributed' ? `Tillskrivs ${name}` : name
 }
 
-const MetaRow = ({ label, värde }: { label: string; värde?: string }) =>
-  värde === undefined || värde === '' ? null : (
+const MetaRow = ({ label, value }: { label: string; value?: string }) =>
+  value === undefined || value === '' ? null : (
     <p className={styles.metaRow}>
       <span className={styles.metaLabel}>{label}</span>
-      {värde}
+      {value}
     </p>
   )
 
 const SourceMeta = ({ source }: { source: Source }) => {
-  const traditionsnamn = publishedThrough(source.traditions ?? [], findTradition).map(
+  const traditionNames = publishedThrough(source.traditions ?? [], findTradition).map(
     (tradition) => tradition.name,
   )
   return (
     <div className={styles.metaBlock}>
-      <MetaRow label="Upphov" värde={upphovsrad(source)} />
-      <MetaRow label="Tradition" värde={traditionsnamn.join(', ')} />
+      <MetaRow label="Upphov" value={upphovsrad(source)} />
+      <MetaRow label="Tradition" value={traditionNames.join(', ')} />
       <MetaRow
         label="Tillkomst"
-        värde={[source.approximateDating, source.place].filter(Boolean).join(' · ')}
+        value={[source.approximateDating, source.place].filter(Boolean).join(' · ')}
       />
-      <MetaRow label="Originalspråk" värde={source.originalLanguage} />
-      <MetaRow label="Rättigheter" värde={RATTIGHETSETIKETT[source.rights]} />
+      <MetaRow label="Originalspråk" value={source.originalLanguage} />
+      <MetaRow label="Rättigheter" value={RATTIGHETSETIKETT[source.rights]} />
     </div>
   )
 }
@@ -118,7 +118,7 @@ export const SourcePostPage = ({ slug }: { slug: string }) => {
   const source = findSourceBySlug(slug)
   if (!source) return <NotFoundNote subject="Källan" />
   const uncertainty = uncertainties(source)
-  const passager = passagesForSource(source.id, allPassages)
+  const passages = passagesForSource(source.id, allPassages)
   return (
     <div className="screenSub">
       <TopBar />
@@ -126,25 +126,25 @@ export const SourcePostPage = ({ slug }: { slug: string }) => {
         {source.originalTitle && <p className={styles.originalTitle}>{source.originalTitle}</p>}
       </Sidhuvud>
       <SourceMeta source={source} />
-      <Beskrivning text={source.description} />
+      <Description text={source.description} />
       {uncertainty.length > 0 && (
-        <Section rubrik="Osäkerhet">
-          {uncertainty.map((rad) => (
-            <p key={rad} className={styles.description}>
-              {rad}
+        <Section heading="Osäkerhet">
+          {uncertainty.map((row) => (
+            <p key={row} className={styles.description}>
+              {row}
             </p>
           ))}
         </Section>
       )}
-      {passager.length > 0 && (
-        <Section rubrik="Passager">
-          {passager.map((passage) => (
+      {passages.length > 0 && (
+        <Section heading="Passager">
+          {passages.map((passage) => (
             <Passageblock key={passage.id} passage={passage} />
           ))}
         </Section>
       )}
       {source.libraryWork !== undefined && (
-        <Section rubrik="Hela texten">
+        <Section heading="Hela texten">
           <Link
             to="/bibliotek/verk/$workId"
             params={{ workId: source.libraryWork }}
@@ -155,10 +155,10 @@ export const SourcePostPage = ({ slug }: { slug: string }) => {
           </Link>
         </Section>
       )}
-      <Section rubrik="Rum ur denna source">
+      <Section heading="Rum ur denna source">
         <RoomList
-          rum={roomsForSource(source.id, allRooms)}
-          tomtBesked="Det finns inga färdiga rum ur källan ännu."
+          rooms={roomsForSource(source.id, allRooms)}
+          emptyMessage="Det finns inga färdiga rum ur källan ännu."
         />
       </Section>
     </div>

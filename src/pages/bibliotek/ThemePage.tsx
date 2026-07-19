@@ -5,13 +5,13 @@ import { allQuestions, allRooms, findThemeBySlug } from '../../lib/content'
 import { valbaraRoom } from '../../lib/roomSelection'
 import { NotFoundNote } from '../NotFoundNote'
 import styles from './Library.module.css'
-import { Beskrivning, Row, RoomList, Section, Sidhuvud } from './LibraryParts'
+import { Description, Row, RoomList, Section, Sidhuvud } from './LibraryParts'
 
-const QuestionPart = ({ temaId }: { temaId: string }) => {
-  const questions = questionsForTheme(temaId, allQuestions)
+const QuestionPart = ({ themeId }: { themeId: string }) => {
+  const questions = questionsForTheme(themeId, allQuestions)
   if (questions.length === 0) return null
   return (
-    <Section rubrik="Frågor">
+    <Section heading="Frågor">
       {questions.map((question) => (
         <ToLink key={question.id} to={{ kind: 'fraga', slug: question.slug }} className={styles.row}>
           <Row title={question.text} />
@@ -30,12 +30,12 @@ export const ThemePage = ({ slug }: { slug: string }) => {
     <div className="screenSub">
       <TopBar />
       <Sidhuvud kicker="Tema" title={theme.label} status={theme.status} />
-      <Beskrivning text={theme.description} />
-      <QuestionPart temaId={theme.id} />
-      <Section rubrik="Rum">
+      <Description text={theme.description} />
+      <QuestionPart themeId={theme.id} />
+      <Section heading="Rum">
         <RoomList
-          rum={valbaraRoom(theme.id, allRooms)}
-          tomtBesked="Det finns inga färdiga rum här ännu."
+          rooms={valbaraRoom(theme.id, allRooms)}
+          emptyMessage="Det finns inga färdiga rum här ännu."
         />
       </Section>
     </div>

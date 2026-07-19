@@ -29,7 +29,7 @@ import { questionCount, Row, roomCount, Section } from './LibraryParts'
 // The questions are gathered behind a single entry (like the rooms) — the whole list lives on
 // the subpage, so the landing page stays short and calm (library.md).
 const Fragesektion = () => (
-  <Section rubrik="Frågor">
+  <Section heading="Frågor">
     <Link to="/bibliotek/fragor" className={styles.row}>
       <Row title="Alla frågor" sub={questionCount(libraryQuestions(allQuestions).length)} />
     </Link>
@@ -39,7 +39,7 @@ const Fragesektion = () => (
 const ThemeSection = () => {
   const themes = libraryThemes(allThemes)
   return (
-    <Section rubrik="Teman">
+    <Section heading="Teman">
       {themes.length === 0 ? (
         <p className={styles.empty}>Inga teman ännu.</p>
       ) : (
@@ -57,11 +57,11 @@ const ThemeSection = () => {
 // must not stand as an empty, promising section, so it's hidden until published
 // paths exist (the same discipline as the traditions). Drafts are reviewed via
 // a direct link.
-const Vandringssektion = () => {
+const PathSection = () => {
   const paths = libraryPaths(allPaths)
   if (paths.length === 0) return null
   return (
-    <Section rubrik="Vandringar">
+    <Section heading="Vandringar">
       {paths.map((path) => {
         const rooms = roomsForPath(path, allRooms)
         const sub = `${roomCount(rooms.length)} · ca ${pathReadingTime(rooms)} min`
@@ -80,7 +80,7 @@ const Vandringssektion = () => {
 }
 
 const RoomSection = () => (
-  <Section rubrik="Rum">
+  <Section heading="Rum">
     <Link to="/bibliotek/rum" className={styles.row}>
       <Row title="Alla rum" sub={roomCount(libraryRooms(allRooms).length)} />
     </Link>
@@ -88,7 +88,7 @@ const RoomSection = () => (
 )
 
 const SourceSection = () => (
-  <Section rubrik="Källor">
+  <Section heading="Källor">
     {librarySources(allSources).map((source) => (
       <ToLink key={source.id} to={{ kind: 'kallpost', slug: source.slug }} className={styles.row}>
         <Row title={source.title} sub={sourceName(source)} />
@@ -106,7 +106,7 @@ const Traditionssektion = () => {
   const traditions = libraryTraditions(allTraditions)
   if (traditions.length === 0) return null
   return (
-    <Section rubrik="Traditioner">
+    <Section heading="Traditioner">
       {traditions.map((tradition) => (
         <div key={tradition.id} className={styles.quietRow}>
           <span className={styles.rowTitle}>{tradition.name}</span>
@@ -126,7 +126,7 @@ const Personsektion = () => {
   const people = libraryPeople(allPeople)
   if (people.length === 0) return null
   return (
-    <Section rubrik="Personer">
+    <Section heading="Personer">
       {people.map((person) => (
         <ToLink
           key={person.id}
@@ -161,7 +161,7 @@ export const LibraryHomePage = () => {
       <Traditionssektion />
       <SourceSection />
       <ThemeSection />
-      <Vandringssektion />
+      <PathSection />
       <RoomSection />
       <Fragesektion />
       <Personsektion />

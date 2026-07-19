@@ -28,10 +28,10 @@ const searchObject = (term: string, type: SearchType | undefined): SearchParams 
 })
 
 type Derived = {
-  synliga: VisibleGroup[]
+  visible: VisibleGroup[]
   notes: Note[]
   redaktionellaOchNoter: number
-  fel: boolean
+  error: boolean
 }
 
 // Derives the editorial results and the private notes group from
@@ -39,36 +39,36 @@ type Derived = {
 const deriveResult = (
   term: string,
   type: SearchType | undefined,
-  expanderade: ReadonlySet<SearchType>,
+  expanded: ReadonlySet<SearchType>,
   noteMap: Record<string, Note>,
 ): Derived => {
   let groups: SearchGroup[] = []
-  let fel = false
+  let error = false
   try {
     groups = searchInLibrary(term, searchIndexData)
   } catch {
-    fel = true
+    error = true
   }
-  const filtrerade = type ? groups.filter((grupp) => grupp.type === type) : groups
-  const synliga = visibleHits(filtrerade, expanderade)
+  const filtered = type ? groups.filter((group) => group.type === type) : groups
+  const visible = visibleHits(filtered, expanded)
   const notes = type ? [] : searchNotes(term, noteMap)
   const redaktionellaOchNoter =
-    filtrerade.reduce((sum, grupp) => sum + grupp.hits.length, 0) + notes.length
-  return { synliga, notes, redaktionellaOchNoter, fel }
+    filtered.reduce((sum, group) => sum + group.hits.length, 0) + notes.length
+  return { visible, notes, redaktionellaOchNoter, error }
 }
 
-const computeMode = (key: string, fel: boolean): SearchMode =>
-  key.length < 2 ? 'tom' : fel ? 'fel' : 'klar'
+const computeMode = (key: string, error: boolean): SearchMode =>
+  key.length < 2 ? 'tom' : error ? 'fel' : 'klar'
 
 const EMPTY_SOURCE_TEXT: SourceTextResponse = { books: [], hits: [] }
 
-const sourceTextCountOf = (svar: SourceTextResponse | null): number =>
-  (svar?.books.length ?? 0) + (svar?.hits.length ?? 0)
+const sourceTextCountOf = (response: SourceTextResponse | null): number =>
+  (response?.books.length ?? 0) + (response?.hits.length ?? 0)
 
 // No hits at all (and the verse search is no longer in flight): only then is
 // no-results shown, never while source-text hits are still loading.
-const isCompletelyEmpty = (redaktionellaOchNoter: number, kalltextAntal: number, loading: boolean): boolean =>
-  redaktionellaOchNoter === 0 && kalltextAntal === 0 && !loading
+const isCompletelyEmpty = (redaktionellaOchNoter: number, sourceTextCount: number, loading: boolean): boolean =>
+  redaktionellaOchNoter === 0 && sourceTextCount === 0 && !loading
 
 // Adds an expanded group and saves it in the session memory.
 const nyExpansion = (
@@ -87,14 +87,14 @@ const nyExpansion = (
 const useSoktillstand = (
   q: string,
   type: SearchType | undefined,
-  onNavigera: (sök: SearchParams) => void,
+  onNavigera: (search: SearchParams) => void,
 ) => {
   const [query, setQuery] = useState(q)
   const [direkt, setDirekt] = useState<string | null>(null)
   const debounced = useDebounced(query.trim(), 250)
   const term = direkt ?? debounced
   const key = normalize(term)
-  const [expanderade, setExpanderade] = useState<Set<SearchType>>(() => getExpansion(key))
+  const [expanded, setExpanderade] = useState<Set<SearchType>>(() => getExpansion(key))
 
   useEffect(() => {
     if (term !== q) onNavigera(searchObject(term, type))
@@ -108,25 +108,25 @@ const useSoktillstand = (
     query,
     term,
     key,
-    expanderade,
-    visaFler: (groupType: SearchType) => setExpanderade((prev) => nyExpansion(prev, key, groupType)),
-    ändraFråga: (value: string) => {
+    expanded,
+    showMore: (groupType: SearchType) => setExpanderade((prev) => nyExpansion(prev, key, groupType)),
+    changeQuery: (value: string) => {
       setQuery(value)
       setDirekt(null)
     },
-    sökDirekt: () => setDirekt(query.trim()),
+    searchDirect: () => setDirekt(query.trim()),
   }
 }
 
 type Props = {
   q: string
   type: SearchType | undefined
-  onNavigera: (sök: SearchParams) => void
+  onNavigera: (search: SearchParams) => void
 }
 
 export const SearchLibraryPage = ({ q, type, onNavigera }: Props) => {
   useDocumentTitle('Sök i Biblioteket')
-  const { query, term, key, expanderade, visaFler, ändraFråga, sökDirekt } = useSoktillstand(
+  const { query, term, key, expanded, showMore, changeQuery, searchDirect } = useSoktillstand(
     q,
     type,
     onNavigera,
@@ -136,48 +136,48 @@ export const SearchLibraryPage = ({ q, type, onNavigera }: Props) => {
   // The verse search (the reader's FTS) runs only without a type filter and for a query ≥ 2
   // characters; otherwise an empty response with no network call. Its own path, its own loading.
   const searchSourceText = key.length >= 2 && type === undefined
-  const kalltext = useAsync<SourceTextResponse>(
+  const sourceText = useAsync<SourceTextResponse>(
     () => (searchSourceText ? searchLibrary(term) : Promise.resolve(EMPTY_SOURCE_TEXT)),
     [term, searchSourceText],
   )
 
-  const { synliga, notes, redaktionellaOchNoter, fel } = deriveResult(
+  const { visible, notes, redaktionellaOchNoter, error } = deriveResult(
     term,
     type,
-    expanderade,
+    expanded,
     noteMap,
   )
-  const kalltextAntal = sourceTextCountOf(kalltext.data)
-  const count = redaktionellaOchNoter + kalltextAntal
-  const ingaTraffar = isCompletelyEmpty(redaktionellaOchNoter, kalltextAntal, kalltext.loading)
+  const sourceTextCount = sourceTextCountOf(sourceText.data)
+  const count = redaktionellaOchNoter + sourceTextCount
+  const noHits = isCompletelyEmpty(redaktionellaOchNoter, sourceTextCount, sourceText.loading)
 
   // Phase 14: report only the technical minimum from the search — an index error or a
   // completely empty search (anonymized). The notes search never touches this, and
   // the query text is never logged — only length and word count.
   useEffect(() => {
     if (key.length < 2) return
-    if (fel) report({ type: 'sokfel', detalj: 'index' })
-    else if (ingaTraffar) report({ type: 'sok-nolltraff', ...anonymizeQuestion(term) })
-  }, [key, fel, ingaTraffar, term])
+    if (error) report({ type: 'search-error', detail: 'index' })
+    else if (noHits) report({ type: 'search-no-hits', ...anonymizeQuestion(term) })
+  }, [key, error, noHits, term])
 
   return (
     <div className="screenSub">
       <TopBar />
-      <SearchField query={query} onChange={ändraFråga} onSubmit={sökDirekt} />
-      <Filter aktiv={type} antal={count} onVal={(nyTyp) => onNavigera(searchObject(term, nyTyp))} />
+      <SearchField query={query} onChange={changeQuery} onSubmit={searchDirect} />
+      <Filter active={type} count={count} onVal={(newType) => onNavigera(searchObject(term, newType))} />
       <ResultView
-        läge={computeMode(key, fel)}
-        ingaTraffar={ingaTraffar}
-        synliga={synliga}
-        kalltext={
+        mode={computeMode(key, error)}
+        noHits={noHits}
+        visible={visible}
+        sourceText={
           type === undefined ? (
-            <SourceTextGroup key={key} svar={kalltext.data} fel={kalltext.error} />
+            <SourceTextGroup key={key} response={sourceText.data} error={sourceText.error} />
           ) : null
         }
         notes={notes}
-        nyckel={key}
-        antal={count}
-        onVisaFler={visaFler}
+        key={key}
+        count={count}
+        onVisaFler={showMore}
       />
     </div>
   )

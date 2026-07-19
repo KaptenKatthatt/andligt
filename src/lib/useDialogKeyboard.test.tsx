@@ -7,9 +7,9 @@ import { useDialogKeyboard } from './useDialogKeyboard'
 
 afterEach(cleanup)
 
-const Ark = ({ onStäng }: { onStäng: () => void }) => {
+const Ark = ({ onClose }: { onClose: () => void }) => {
   const arkRef = useRef<HTMLDivElement>(null)
-  useDialogKeyboard(arkRef, onStäng)
+  useDialogKeyboard(arkRef, onClose)
   return (
     <div ref={arkRef} role="dialog" aria-label="Testark" tabIndex={-1}>
       <button type="button">Första</button>
@@ -19,34 +19,34 @@ const Ark = ({ onStäng }: { onStäng: () => void }) => {
 }
 
 const WithTrigger = () => {
-  const [öppet, sättÖppet] = useState(false)
+  const [open, setOpen] = useState(false)
   return (
     <div>
-      <button type="button" onClick={() => sättÖppet(true)}>
+      <button type="button" onClick={() => setOpen(true)}>
         Öppna
       </button>
-      {öppet && <Ark onStäng={() => sättÖppet(false)} />}
+      {open && <Ark onClose={() => setOpen(false)} />}
     </div>
   )
 }
 
 describe('useDialogKeyboard', () => {
   it('flyttar initialfokus till arket', () => {
-    render(<Ark onStäng={() => {}} />)
+    render(<Ark onClose={() => {}} />)
     expect(document.activeElement).toBe(screen.getByRole('dialog', { name: 'Testark' }))
   })
 
   it('stänger på Escape', async () => {
     const user = userEvent.setup()
-    const onStäng = vi.fn()
-    render(<Ark onStäng={onStäng} />)
+    const onClose = vi.fn()
+    render(<Ark onClose={onClose} />)
     await user.keyboard('{Escape}')
-    expect(onStäng).toHaveBeenCalledTimes(1)
+    expect(onClose).toHaveBeenCalledTimes(1)
   })
 
   it('cyklar Tab-fokus inom arket', async () => {
     const user = userEvent.setup()
-    render(<Ark onStäng={() => {}} />)
+    render(<Ark onClose={() => {}} />)
     const first = screen.getByRole('button', { name: 'Första' })
     const sista = screen.getByRole('button', { name: 'Sista' })
 

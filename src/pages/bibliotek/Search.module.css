@@ -91,7 +91,7 @@
   flex: none;
 }
 
-.visaFler {
+.showMore {
   background: none;
   border: none;
   color: var(--accent);
@@ -102,13 +102,13 @@
   text-underline-offset: 3px;
 }
 
-.visaFler:hover {
+.showMore:hover {
   text-decoration: underline;
 }
 
 /* Sök-tillstånd: tomläge, inga träffar, fel — alltid lugna, aldrig fyllda med
    orelaterade rekommendationer. */
-.tillstand {
+.state {
   margin-top: 40px;
 }
 
@@ -230,11 +230,11 @@
 }
 
 /* Privat anteckningsträff (search.md, Notes Search): tydligt märkt som privat. */
-.privatKort {
+.privateCard {
   margin-top: 12px;
 }
 
-.privatMarkor {
+.privateMark {
   display: block;
   font-size: 0.6875rem;
   letter-spacing: 0.08em;

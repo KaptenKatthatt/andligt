@@ -260,10 +260,10 @@ const chapterRoute = createRoute({
 const roomRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/rum/$slug',
-  validateSearch: (search: Record<string, unknown>): { vandring?: string } =>
-    typeof search['vandring'] === 'string' ? { vandring: search['vandring'] } : {},
+  validateSearch: (search: Record<string, unknown>): { path?: string } =>
+    typeof search['vandring'] === 'string' ? { path: search['vandring'] } : {},
   component: function RumRoute() {
-    return <RoomPage slug={roomRoute.useParams().slug} vandringSlug={roomRoute.useSearch().vandring} />
+    return <RoomPage slug={roomRoute.useParams().slug} pathSlug={roomRoute.useSearch().path} />
   },
 })
 
@@ -293,7 +293,7 @@ const searchLibraryRoute = createRoute({
       <SearchLibraryPage
         q={search.q ?? ''}
         type={search.type}
-        onNavigera={(sök) => navigate({ search: sök, replace: true })}
+        onNavigera={(search) => navigate({ search: search, replace: true })}
       />
     )
   },
