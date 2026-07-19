@@ -12,29 +12,29 @@ import {
 } from '../../lib/content'
 import { NotFoundNote } from '../NotFoundNote'
 import styles from './Bibliotek.module.css'
-import { Beskrivning, Row, Rumslista, Section, Sidhuvud } from './Biblioteksdelar'
+import { Beskrivning, Row, RoomList, Section, Sidhuvud } from './Biblioteksdelar'
 
-const Temadel = ({ fråga }: { fråga: Question }) => {
+const ThemePart = ({ fråga }: { fråga: Question }) => {
   const themes = publishedThrough(fråga.themes, findTheme)
   if (themes.length === 0) return null
   return (
     <Section rubrik="Teman">
-      {themes.map((tema) => (
-        <ToLink key={tema.id} to={{ kind: 'tema', slug: tema.slug }} className={styles.rad}>
-          <Row title={tema.label} />
+      {themes.map((theme) => (
+        <ToLink key={theme.id} to={{ kind: 'tema', slug: theme.slug }} className={styles.row}>
+          <Row title={theme.label} />
         </ToLink>
       ))}
     </Section>
   )
 }
 
-const Kalldel = ({ fråga }: { fråga: Question }) => {
+const SourcePart = ({ fråga }: { fråga: Question }) => {
   const sources = sourcesForQuestion(fråga.id, allRooms, allSources)
   if (sources.length === 0) return null
   return (
     <Section rubrik="Källor">
       {sources.map((source) => (
-        <ToLink key={source.id} to={{ kind: 'kallpost', slug: source.slug }} className={styles.rad}>
+        <ToLink key={source.id} to={{ kind: 'kallpost', slug: source.slug }} className={styles.row}>
           <Row title={source.title} sub={sourceName(source)} />
         </ToLink>
       ))}
@@ -43,15 +43,15 @@ const Kalldel = ({ fråga }: { fråga: Question }) => {
 }
 
 const Narliggande = ({ fråga }: { fråga: Question }) => {
-  const frågor = publishedThrough(fråga.relatedQuestions ?? [], findQuestion)
-  if (frågor.length === 0) return null
+  const questions = publishedThrough(fråga.relatedQuestions ?? [], findQuestion)
+  if (questions.length === 0) return null
   return (
     <Section rubrik="Närliggande frågor">
-      {frågor.map((relaterad) => (
+      {questions.map((relaterad) => (
         <ToLink
           key={relaterad.id}
           to={{ kind: 'fraga', slug: relaterad.slug }}
-          className={styles.rad}
+          className={styles.row}
         >
           <Row title={relaterad.text} />
         </ToLink>
@@ -60,26 +60,26 @@ const Narliggande = ({ fråga }: { fråga: Question }) => {
   )
 }
 
-/** Frågesida (library.md, Questions): description, rum, themes och
- * källmaterial. En place att välja från — aldrig en automatisk lässekvens.
- * TopBar utan onBack ⇒ historiksteg bakåt — biblioteksplatsen bevaras. */
+/** Question page (library.md, Questions): description, rooms, themes and
+ * source material. A place to choose from — never an automatic reading sequence.
+ * TopBar without onBack ⇒ history step back — the library location is preserved. */
 export const FragaPage = ({ slug }: { slug: string }) => {
-  const fråga = findQuestionBySlug(slug)
-  if (!fråga) return <NotFoundNote subject="Frågan" />
+  const question = findQuestionBySlug(slug)
+  if (!question) return <NotFoundNote subject="Frågan" />
   return (
     <div className="screenSub">
       <TopBar />
-      <Sidhuvud kicker="Fråga" title={fråga.text} status={fråga.status} />
-      <Beskrivning text={fråga.description} />
+      <Sidhuvud kicker="Fråga" title={question.text} status={question.status} />
+      <Beskrivning text={question.description} />
       <Section rubrik="Rum">
-        <Rumslista
-          rum={roomsForQuestion(fråga.id, allRooms)}
+        <RoomList
+          rum={roomsForQuestion(question.id, allRooms)}
           tomtBesked="Det finns inga färdiga rum kring frågan ännu."
         />
       </Section>
-      <Temadel fråga={fråga} />
-      <Kalldel fråga={fråga} />
-      <Narliggande fråga={fråga} />
+      <ThemePart fråga={question} />
+      <SourcePart fråga={question} />
+      <Narliggande fråga={question} />
     </div>
   )
 }

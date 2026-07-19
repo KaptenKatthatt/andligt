@@ -1,11 +1,11 @@
-.rad {
+.row {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
   align-items: center;
 }
 
-.knapp {
+.button {
   composes: hitArea from global;
   display: inline-block;
   background: none;

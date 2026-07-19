@@ -6,14 +6,14 @@ import type { Origin } from '../lib/personal'
 import { personalCollections, useAtlas } from '../lib/store'
 import styles from './DinaData.module.css'
 
-// Läsbara titlar för exportens anteckningar och sparade poster, per ursprung.
+// Readable titles for the export's notes and saved entries, by origin.
 const titelFor = (type: Origin, id: string): string | undefined => {
-  if (type === 'rum') return findRoomById(id)?.title
-  if (type === 'vandring') return findPathById(id)?.title
+  if (type === 'room') return findRoomById(id)?.title
+  if (type === 'path') return findPathById(id)?.title
   return findTopic(id)?.title
 }
 
-// Laddar ner en textfil via en objekt-URL och ett osynligt ankare.
+// Downloads a text file via an object URL and an invisible anchor.
 const download = (innehåll: string, filnamn: string, mediatyp: string): void => {
   const blob = new Blob([innehåll], { type: mediatyp })
   const url = URL.createObjectURL(blob)
@@ -21,8 +21,8 @@ const download = (innehåll: string, filnamn: string, mediatyp: string): void =>
   ankare.href = url
   ankare.download = filnamn
   ankare.click()
-  // Skjut upp återkallandet: vissa webbläsare (Safari/mobil) avbryter
-  // nedladdningen om objekt-URL:en återkallas synkront innan den lästs.
+  // Defer the revoke: some browsers (Safari/mobile) abort the
+  // download if the object URL is revoked synchronously before it's read.
   setTimeout(() => URL.revokeObjectURL(url), 0)
 }
 
@@ -34,13 +34,13 @@ const readImportSafely = (text: string): PersonalExport | null => {
   }
 }
 
-/** Rensa lokal data: en enkel bekräftelse som räknar upp exakt vad som försvinner
- * och pekar på export först, så rensningen aldrig blir en överraskning. */
+/** Clear local data: a simple confirmation that lists exactly what will disappear
+ * and points to export first, so clearing is never a surprise. */
 const Rensning = ({ onRensa }: { onRensa: () => void }) => {
   const [bekräftar, setBekräftar] = useState(false)
   if (!bekräftar)
     return (
-      <button type="button" className={styles.knapp} onClick={() => setBekräftar(true)}>
+      <button type="button" className={styles.button} onClick={() => setBekräftar(true)}>
         Rensa lokal data
       </button>
     )
@@ -50,10 +50,10 @@ const Rensning = ({ onRensa }: { onRensa: () => void }) => {
         Detta tar bort alla anteckningar, sparade rum och vandringar, bokmärken och läshistorik
         från den här enheten. Utseendet behålls. Exportera först om du vill spara en kopia.
       </p>
-      <div className={styles.rad}>
+      <div className={styles.row}>
         <button
           type="button"
-          className={styles.knapp}
+          className={styles.button}
           onClick={() => {
             onRensa()
             setBekräftar(false)
@@ -61,7 +61,7 @@ const Rensning = ({ onRensa }: { onRensa: () => void }) => {
         >
           Ta bort allt
         </button>
-        <button type="button" className={styles.knapp} onClick={() => setBekräftar(false)}>
+        <button type="button" className={styles.button} onClick={() => setBekräftar(false)}>
           Avbryt
         </button>
       </div>
@@ -69,10 +69,10 @@ const Rensning = ({ onRensa }: { onRensa: () => void }) => {
   )
 }
 
-/** Dina data (notes-and-saved.md, Export/Import): exportera personlig data i
- * öppna format, importera tillbaka och rensa lokalt — läsarens reflektioner ska
- * aldrig låsas in. Personlig data behandlas aldrig av AI och lämnar aldrig
- * enheten utom när läsaren själv exporterar den. */
+/** Your data (notes-and-saved.md, Export/Import): export personal data in
+ * open formats, import it back and clear it locally — the reader's reflections should
+ * never be locked in. Personal data is never processed by AI and never leaves
+ * the device except when the reader exports it themselves. */
 export const DinaData = () => {
   const store = useAtlas()
   const [fel, setFel] = useState<string | undefined>(undefined)
@@ -87,28 +87,28 @@ export const DinaData = () => {
       setFel('Filen kunde inte läsas.')
       return
     }
-    store.importeraPersonligt(data)
+    store.importPersonal(data)
     setFel(undefined)
   }
 
   return (
     <div>
-      <div className={styles.rad}>
+      <div className={styles.row}>
         <button
           type="button"
-          className={styles.knapp}
+          className={styles.button}
           onClick={() => download(JSON.stringify(bygg(), null, 2), `visdomsatlasen-${stamp}.json`, 'application/json')}
         >
           Exportera
         </button>
         <button
           type="button"
-          className={styles.knapp}
+          className={styles.button}
           onClick={() => download(toMarkdown(bygg()), `visdomsatlasen-${stamp}.md`, 'text/markdown')}
         >
           Exportera som text
         </button>
-        <label className={styles.knapp}>
+        <label className={styles.button}>
           Importera
           <input
             type="file"
@@ -123,7 +123,7 @@ export const DinaData = () => {
         </label>
       </div>
       {fel !== undefined && <p className={styles.fel}>{fel}</p>}
-      <Rensning onRensa={store.rensaPersonligt} />
+      <Rensning onRensa={store.clearPersonal} />
     </div>
   )
 }

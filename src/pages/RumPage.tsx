@@ -23,9 +23,9 @@ import { useSidtitel } from '../lib/useSidtitel'
 import { NotFoundNote } from './NotFoundNote'
 import styles from './RumPage.module.css'
 
-/** En rad i rummets kolofon: spärrade versaler med nedåtpil. Öppnas på place
- * och leder aldrig bort — pilen lovar fördjupning här, inte förflyttning. */
-const Kolofonrad = ({
+/** A row in the room's colophon: letter-spaced caps with a downward arrow. Opens in place
+ * and never leads away — the arrow promises depth here, not navigation. */
+const ColophonRow = ({
   label,
   öppen,
   onVaxla,
@@ -41,28 +41,28 @@ const Kolofonrad = ({
   <div>
     <button
       type="button"
-      className={styles.kolofonrad}
+      className={styles.colophonRow}
       aria-expanded={öppen}
       aria-controls={detaljId}
       onClick={onVaxla}
     >
       {label} <span aria-hidden>{öppen ? '▴' : '▾'}</span>
     </button>
-    <div id={detaljId} hidden={!öppen} className={styles.detalj}>
+    <div id={detaljId} hidden={!öppen} className={styles.detail}>
       {children}
     </div>
   </div>
 )
 
-// Bibliografiraden: verk, reference och härkomst (language · dating) i en följd.
+// The bibliography row: work, reference and provenance (language · dating) in sequence.
 const sourceRow = (source: Source, reference: string | undefined): string => {
   const title = [source.title, reference].filter(Boolean).join(', ')
   const origin = [source.originalLanguage, source.approximateDating].filter(Boolean).join(' · ')
   return [title, origin].filter(Boolean).join(' · ')
 }
 
-// Editionsraden syns bara när en passage anger edition (source-and-context.md,
-// Translation Policy): edition och, för egen translation, ansvarig hand.
+// The edition row shows only when a passage specifies an edition (source-and-context.md,
+// Translation Policy): edition and, for an in-house translation, the responsible hand.
 const editionsrad = (passage: SourcePassage | undefined): string | undefined => {
   if (!passage?.edition) return undefined
   const translation = passage.translator ? ` · translation ${passage.translator}` : ''
@@ -71,26 +71,26 @@ const editionsrad = (passage: SourcePassage | undefined): string | undefined => 
 
 type SourceRelation = Room['sources'][number]
 
-// Relationerna grupperade per källpost i frontmatterordning, så att ett rum
-// med flera nedslag i samma verk (t.ex. två bibelställen) får ett block med
-// en osäkerhetsdeklaration och en »Om texten«-länk — inte upprepade.
-const groupBySource = (relationer: SourceRelation[]): [Source, SourceRelation[]][] => {
-  const grupper: [Source, SourceRelation[]][] = []
-  for (const relation of relationer) {
-    const befintlig = grupper.find(([source]) => source.id === relation.source)
-    if (befintlig) {
-      befintlig[1].push(relation)
+// The relations grouped per source entry in frontmatter order, so that a room
+// with several references into the same work (e.g. two Bible passages) gets one block with
+// a single uncertainty declaration and one »Om texten« link — not repeated.
+const groupBySource = (relations: SourceRelation[]): [Source, SourceRelation[]][] => {
+  const groups: [Source, SourceRelation[]][] = []
+  for (const relation of relations) {
+    const existing = groups.find(([source]) => source.id === relation.source)
+    if (existing) {
+      existing[1].push(relation)
       continue
     }
     const source = findSource(relation.source)
-    if (source) grupper.push([source, [relation]])
+    if (source) groups.push([source, [relation]])
   }
-  return grupper
+  return groups
 }
 
-// En källas rader i detaljen: bibliografi + use + edition per relation,
-// därefter källans osäkerhet en gång och länken till källsidan.
-const Kallblock = ({ source, relationer }: { source: Source; relationer: SourceRelation[] }) => {
+// A source's rows in the detail: bibliography + use + edition per relation,
+// then the source's uncertainty once and the link to the source page.
+const SourceBlock = ({ source, relationer }: { source: Source; relationer: SourceRelation[] }) => {
   const rows = [
     ...relationer.flatMap((relation) => {
       const passage = relation.passage ? findPassage(relation.passage) : undefined
@@ -103,87 +103,87 @@ const Kallblock = ({ source, relationer }: { source: Source; relationer: SourceR
     ...uncertainties(source),
   ].filter((rad): rad is string => Boolean(rad))
   return (
-    <div className={styles.kallblock}>
+    <div className={styles.sourceBlock}>
       {rows.map((rad, i) => (
-        <p key={`${rad}-${i}`} className={styles.detaljrad}>
+        <p key={`${rad}-${i}`} className={styles.detailRow}>
           {rad}
         </p>
       ))}
-      <Link to="/bibliotek/kalla/$slug" params={{ slug: source.slug }} className={styles.detaljlank}>
+      <Link to="/bibliotek/kalla/$slug" params={{ slug: source.slug }} className={styles.detailLink}>
         Om texten
       </Link>
     </div>
   )
 }
 
-/** Källdetaljen bakom namnet: verk, reference, bruksdeklaration och ärlig
- * osäkerhet — synligt först på begäran (source-and-context.md, Source
- * Visibility). Håller sig bibliografisk; källans ord och full passagetext
- * bor på källsidan, dit »Om texten« leder efter ett medvetet val. Rum med
- * flera sources visar alla relationer, grupperade per källpost. */
-const Kalldetalj = ({ rum }: { rum: Room }) => (
+/** The source detail behind the name: work, reference, use declaration and honest
+ * uncertainty — visible only on request (source-and-context.md, Source
+ * Visibility). Stays bibliographic; the source's words and full passage text
+ * live on the source page, where »Om texten« leads after a deliberate choice. Rooms with
+ * several sources show all relations, grouped per source entry. */
+const SourceDetail = ({ rum }: { rum: Room }) => (
   <>
     {groupBySource(rum.sources).map(([source, relationer]) => (
-      <Kallblock key={source.id} source={source} relationer={relationer} />
+      <SourceBlock key={source.id} source={source} relationer={relationer} />
     ))}
   </>
 )
 
-// Kolofonens label: källans röst när rummet bygger på ett verk,
-// »Källor« när det bygger på flera (första flerkällsrummet: Fas 12).
-const kolofonetikett = (rum: Room, source: Source): string =>
-  new Set(rum.sources.map((relation) => relation.source)).size > 1 ? 'Källor' : sourceName(source)
+// The colophon's label: the source's voice when the room builds on one work,
+// »Källor« when it builds on several (the first multi-source room: phase 12).
+const kolofonetikett = (room: Room, source: Source): string =>
+  new Set(room.sources.map((relation) => relation.source)).size > 1 ? 'Källor' : sourceName(source)
 
-const Rumsavslut = ({ rum }: { rum: Room }) => {
-  const { sparadeRum, vaxlaSparatRum, anteckningar, sattAnteckning, taBortAnteckning } = useAtlas()
+const RoomEnding = ({ rum }: { rum: Room }) => {
+  const { savedRooms, toggleSavedRoom, notes, setNote, removeNote } = useAtlas()
   const [öppenRad, setÖppenRad] = useState<'source' | 'bakgrund' | null>(null)
   const [anteckningÖppen, setAnteckningÖppen] = useState(false)
   const primarySource = rum.sources.find((k) => k.primary) ?? rum.sources[0]
   const source = primarySource ? findSource(primarySource.source) : undefined
-  const sparat = !!sparadeRum[rum.id]
+  const sparat = !!savedRooms[rum.id]
   const toggle = (rad: 'source' | 'bakgrund') =>
-    setÖppenRad((nuvarande) => (nuvarande === rad ? null : rad))
+    setÖppenRad((current) => (current === rad ? null : rad))
   return (
     <>
-      <div className={styles.streck} />
-      <div className={styles.kolofon}>
+      <div className={styles.rule} />
+      <div className={styles.colophon}>
         {source && (
-          <Kolofonrad
+          <ColophonRow
             label={kolofonetikett(rum, source)}
             öppen={öppenRad === 'source'}
             onVaxla={() => toggle('source')}
             detaljId="kalldetalj"
           >
-            <Kalldetalj rum={rum} />
-          </Kolofonrad>
+            <SourceDetail rum={rum} />
+          </ColophonRow>
         )}
         {rum.historicalContext && (
-          <Kolofonrad
+          <ColophonRow
             label="Historisk bakgrund"
             öppen={öppenRad === 'bakgrund'}
             onVaxla={() => toggle('bakgrund')}
             detaljId="bakgrundsdetalj"
           >
-            {paragraphs(rum.historicalContext).map((stycke, i) => (
-              <p key={i} className={styles.detaljrad}>
-                {stycke}
+            {paragraphs(rum.historicalContext).map((paragraph, i) => (
+              <p key={i} className={styles.detailRow}>
+                {paragraph}
               </p>
             ))}
-          </Kolofonrad>
+          </ColophonRow>
         )}
       </div>
-      <div className={styles.avslut}>
+      <div className={styles.ending}>
         <button
           type="button"
-          className={styles.avslutshandling}
+          className={styles.endingAction}
           aria-pressed={sparat}
-          onClick={() => vaxlaSparatRum(rum.id)}
+          onClick={() => toggleSavedRoom(rum.id)}
         >
           {sparat ? 'Sparad' : 'Spara'}
         </button>
         <button
           type="button"
-          className={styles.avslutshandling}
+          className={styles.endingAction}
           onClick={() => setAnteckningÖppen(true)}
         >
           Skriv ner en tanke
@@ -192,9 +192,9 @@ const Rumsavslut = ({ rum }: { rum: Room }) => {
       {anteckningÖppen && (
         <NotesSheet
           title={rum.title}
-          value={anteckningar[rum.id]?.text ?? ''}
-          onChange={(text) => sattAnteckning('rum', rum.id, text)}
-          onDelete={() => taBortAnteckning(rum.id)}
+          value={notes[rum.id]?.text ?? ''}
+          onChange={(text) => setNote('room', rum.id, text)}
+          onDelete={() => removeNote(rum.id)}
           onClose={() => setAnteckningÖppen(false)}
         />
       )}
@@ -202,142 +202,142 @@ const Rumsavslut = ({ rum }: { rum: Room }) => {
   )
 }
 
-/** Vandringens fot: syns bara när rummet läses inom en vandring (sökparametern
- * `vandring`). Två likvärdiga, stilla val — aldrig autoplay, aldrig ett »rätt«
- * val (paths.md, Moving Between Stops). Sista rummet får den valfria avslutande
- * reflektionen i stället, utan gratulation eller förloppsmått. */
-const Vandringsfot = ({ vandring, rum }: { vandring: Path; rum: Room }) => {
+/** The path's footer: shown only when the room is read within a path (the search
+ * parameter `vandring`). Two equivalent, quiet choices — never autoplay, never a »rätt«
+ * choice (paths.md, Moving Between Stops). The last room gets the optional closing
+ * reflection instead, without congratulation or progress metric. */
+const PathFooter = ({ vandring, rum }: { vandring: Path; rum: Room }) => {
   const navigate = useNavigate()
   const order = roomsForPath(vandring, allRooms)
-  const index = order.findIndex((ettRum) => ettRum.id === rum.id)
+  const index = order.findIndex((room) => room.id === rum.id)
   if (index === -1) return null
   const next = order[index + 1]
   if (!next) {
     if (vandring.closingReflection === undefined) return null
     return (
-      <div className={styles.vandringsslut}>
-        {paragraphs(vandring.closingReflection).map((stycke, i) => (
-          <p key={i} className={styles.vandringsslutStycke}>
-            {stycke}
+      <div className={styles.pathEnd}>
+        {paragraphs(vandring.closingReflection).map((paragraph, i) => (
+          <p key={i} className={styles.pathEndParagraph}>
+            {paragraph}
           </p>
         ))}
       </div>
     )
   }
-  // »Stanna här« tömmer vandringskontexten: foten försvinner och rummet blir
-  // fristående igen. Läsaren stannar kvar — inget navigeras bort.
+  // »Stanna här« clears the path context: the footer disappears and the room becomes
+  // standalone again. The reader stays put — nothing is navigated away.
   const stanna = () =>
     navigate({ to: '/rum/$slug', params: { slug: rum.slug }, search: {}, replace: true })
   return (
-    <div className={styles.vandring}>
+    <div className={styles.path}>
       <Link
         to="/rum/$slug"
         params={{ slug: next.slug }}
         search={{ vandring: vandring.slug }}
-        className={styles.vandringshandling}
+        className={styles.pathAction}
       >
         Fortsätt vandringen
       </Link>
-      <button type="button" className={styles.vandringshandling} onClick={stanna}>
+      <button type="button" className={styles.pathAction} onClick={stanna}>
         Stanna här
       </button>
     </div>
   )
 }
 
-/** Skriver orienteringsminnet: senast lästa rum (så rumsvalet undviker
- * omedelbar upprepning) och senast öppnade rum i vandringen (så läsaren kan
- * återvända). Bara publicerat registreras — utkast som förhandsgranskas via
- * direkt länk ska varken tränga ut publicerade rum ur det lilla fönstret eller
- * skriva vandringsminne (paths.md: minnet är orientering, aldrig förlopp). */
-const useRumsminne = (rum: Room | undefined, vandring: Path | undefined): void => {
-  const { registreraLastRum, registreraVandringsplats } = useAtlas()
-  const publishedRoomId = rum?.status === 'published' ? rum.id : undefined
+/** Writes the orientation memory: last-read room (so room selection avoids
+ * immediate repetition) and the last-opened room in the path (so the reader can
+ * return). Only published content is recorded — drafts previewed via a
+ * direct link should neither push published rooms out of the small window nor
+ * write path memory (paths.md: the memory is orientation, never progress). */
+const useRumsminne = (room: Room | undefined, path: Path | undefined): void => {
+  const { registerLastRoom, registerPathPosition } = useAtlas()
+  const publishedRoomId = room?.status === 'published' ? room.id : undefined
   const pathPositionId =
-    vandring?.status === 'published' &&
+    path?.status === 'published' &&
     publishedRoomId !== undefined &&
-    vandring.rum.includes(publishedRoomId)
-      ? vandring.id
+    path.rooms.includes(publishedRoomId)
+      ? path.id
       : undefined
   useEffect(() => {
-    if (publishedRoomId !== undefined) registreraLastRum(publishedRoomId)
-  }, [publishedRoomId, registreraLastRum])
+    if (publishedRoomId !== undefined) registerLastRoom(publishedRoomId)
+  }, [publishedRoomId, registerLastRoom])
   useEffect(() => {
     if (pathPositionId !== undefined && publishedRoomId !== undefined)
-      registreraVandringsplats(pathPositionId, publishedRoomId)
-  }, [pathPositionId, publishedRoomId, registreraVandringsplats])
+      registerPathPosition(pathPositionId, publishedRoomId)
+  }, [pathPositionId, publishedRoomId, registerPathPosition])
 }
 
-/** Fas 14: fångar brutna källrelationer — ett rum som pekar på en source eller
- * passage som inte kan slås upp. Build-grinden (check:content) ska hindra det
- * för publicerat innehåll, så detta är ett skyddsnät mot drift/regressions.
- * Loggar bara id:n, aldrig text. */
-const useRelationskontroll = (rum: Room | undefined): void => {
+/** Phase 14: catches broken source relations — a room pointing at a source or
+ * passage that cannot be resolved. The build gate (check:content) should prevent it
+ * for published content, so this is a safety net against drift/regressions.
+ * Logs only ids, never text. */
+const useRelationskontroll = (room: Room | undefined): void => {
   useEffect(() => {
-    if (!rum) return
-    for (const relation of rum.sources) {
+    if (!room) return
+    for (const relation of room.sources) {
       if (!findSource(relation.source))
-        report({ type: 'bruten-kallalank', från: rum.id, till: relation.source })
+        report({ type: 'bruten-kallalank', från: room.id, till: relation.source })
       else if (relation.passage !== undefined && !findPassage(relation.passage))
         report({
           type: 'ogiltig-innehallsrelation',
           slag: 'passage',
-          från: rum.id,
+          från: room.id,
           reference: relation.passage,
         })
     }
-  }, [rum])
+  }, [room])
 }
 
-/** Läsrummet (reading-room.md): en text, en tanke, ett naturligt slut.
- * Inga rekommendationer, inget nästa rum. Tröskeln öppnar hit via rumsvalet,
- * som bara väljer publicerade rum; utkast nås märkta via direkt länk och
- * fungerar som redaktionens granskningsvy. Sökparametern `vandringSlug` sätts
- * bara när rummet nås inifrån en vandring och styr vandringsfoten. */
+/** The reading room (reading-room.md): one text, one thought, a natural end.
+ * No recommendations, no next room. The threshold opens here via room selection,
+ * which chooses only published rooms; drafts are reached labelled via a direct link and
+ * serve as the editorial review view. The search parameter `vandringSlug` is set
+ * only when the room is reached from within a path and controls the path footer. */
 export const RumPage = ({ slug, vandringSlug }: { slug: string; vandringSlug?: string }) => {
-  const rum = findRoom(slug)
-  const vandring = vandringSlug !== undefined ? findPathBySlug(vandringSlug) : undefined
-  useRumsminne(rum, vandring)
-  useRelationskontroll(rum)
-  useSidtitel(rum?.title)
-  if (!rum) return <NotFoundNote subject="Rummet" />
-  const tema = findTheme(rum.themes[0] ?? '')
+  const room = findRoom(slug)
+  const path = vandringSlug !== undefined ? findPathBySlug(vandringSlug) : undefined
+  useRumsminne(room, path)
+  useRelationskontroll(room)
+  useSidtitel(room?.title)
+  if (!room) return <NotFoundNote subject="Rummet" />
+  const theme = findTheme(room.themes[0] ?? '')
   return (
     <div className="screenReader">
       <TopBar right={<ReadingSettingsButton />} />
-      <section className={styles.sektion}>
-        <header className={styles.huvud}>
+      <section className={styles.section}>
+        <header className={styles.head}>
           <div className="kicker">
-            {tema?.label ?? ''}
-            {rum.status !== 'published' && ' · Utkast'}
+            {theme?.label ?? ''}
+            {room.status !== 'published' && ' · Utkast'}
           </div>
-          <h1 className={styles.title}>{rum.title}</h1>
+          <h1 className={styles.title}>{room.title}</h1>
         </header>
-        {paragraphs(rum.opening).map((stycke, i) => (
+        {paragraphs(room.opening).map((paragraph, i) => (
           <p key={i} className={styles.stycke}>
-            {stycke}
+            {paragraph}
           </p>
         ))}
-        <div className={`dots ${styles.paus}`}>···</div>
+        <div className={`dots ${styles.pause}`}>···</div>
       </section>
-      <section className={styles.sektion}>
-        {paragraphs(rum.core).map((stycke, i) => (
+      <section className={styles.section}>
+        {paragraphs(room.core).map((paragraph, i) => (
           <p key={i} className={styles.stycke}>
-            {stycke}
+            {paragraph}
           </p>
         ))}
-        <div className={`dots ${styles.paus}`}>···</div>
+        <div className={`dots ${styles.pause}`}>···</div>
       </section>
-      <p className={styles.tanke}>{rum.thoughtToCarry}</p>
-      <div className={styles.fragor}>
-        {rum.reflectionQuestions.map((fråga) => (
-          <p key={fråga} className={styles.fraga}>
-            {fråga}
+      <p className={styles.thought}>{room.thoughtToCarry}</p>
+      <div className={styles.questions}>
+        {room.reflectionQuestions.map((question) => (
+          <p key={question} className={styles.question}>
+            {question}
           </p>
         ))}
       </div>
-      <Rumsavslut rum={rum} />
-      {vandring !== undefined && <Vandringsfot vandring={vandring} rum={rum} />}
+      <RoomEnding rum={room} />
+      {path !== undefined && <PathFooter vandring={path} rum={room} />}
     </div>
   )
 }

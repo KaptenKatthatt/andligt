@@ -5,7 +5,7 @@ import { findTopic } from '../content/topics'
 import { findRoomById, findPathById } from '../lib/content'
 import {
   chapterKey,
-  sorteradeNotes,
+  sortedNotes,
   savedIdsByTime,
   type ChapterBookmark,
   type SavedItem,
@@ -22,18 +22,18 @@ import {
   type Kort,
 } from './SparatDelar'
 
-type SparadVandring = { vandring: Path; senastRum: string | undefined }
+type SavedPath = { vandring: Path; senastRum: string | undefined }
 
 const RoomGroup = ({ rum }: { rum: Room[] }) =>
   rum.length === 0 ? null : (
     <Group rubrik="Rum">
-      {rum.map((ettRum) => (
-        <RoomRow key={ettRum.id} rum={ettRum} />
+      {rum.map((room) => (
+        <RoomRow key={room.id} rum={room} />
       ))}
     </Group>
   )
 
-const PathGroup = ({ vandringar }: { vandringar: SparadVandring[] }) =>
+const PathGroup = ({ vandringar }: { vandringar: SavedPath[] }) =>
   vandringar.length === 0 ? null : (
     <Group rubrik="Vandringar">
       {vandringar.map(({ vandring, senastRum }) => (
@@ -83,24 +83,24 @@ const NoteGroup = ({ kort }: { kort: Kort[] }) =>
     </Group>
   )
 
-/** Senast besökt (spec Recently Opened Items): bara orientering, aldrig en
- * krävande kö. Skild från Sparat och rensbar av läsaren. Ingen »Fortsätt
- * läsa«-formulering. */
+/** Recently visited (spec Recently Opened Items): only orientation, never a
+ * demanding queue. Separate from Saved and clearable by the reader. No »Fortsätt
+ * läsa« phrasing. */
 const RecentlyVisitedGroup = ({ rum, onRensa }: { rum: Room[]; onRensa: () => void }) =>
   rum.length === 0 ? null : (
-    <section className={styles.senast}>
-      <div className={styles.senastHuvud}>
+    <section className={styles.recent}>
+      <div className={styles.recentHead}>
         <h2 className="kicker sectionKicker">Senast besökt</h2>
-        <button type="button" className={styles.rensa} onClick={onRensa}>
+        <button type="button" className={styles.clear} onClick={onRensa}>
           Rensa
         </button>
       </div>
-      {rum.map((ettRum) => (
+      {rum.map((room) => (
         <RowLink
-          key={ettRum.id}
-          to={{ kind: 'rum', slug: ettRum.slug }}
-          title={ettRum.title}
-          sub={ettRum.summary}
+          key={room.id}
+          to={{ kind: 'rum', slug: room.slug }}
+          title={room.title}
+          sub={room.summary}
           size="md"
         />
       ))}
@@ -108,44 +108,44 @@ const RecentlyVisitedGroup = ({ rum, onRensa }: { rum: Room[]; onRensa: () => vo
   )
 
 const savedPathsList = (
-  sparadeVandringar: Record<string, SavedItem>,
+  savedPaths: Record<string, SavedItem>,
   vandringsplatser: Record<string, string>,
-): SparadVandring[] =>
-  savedIdsByTime(sparadeVandringar)
+): SavedPath[] =>
+  savedIdsByTime(savedPaths)
     .map((id) => findPathById(id))
-    .filter((vandring): vandring is Path => vandring !== undefined)
-    .map((vandring) => ({
-      vandring,
-      senastRum: findRoomById(vandringsplatser[vandring.id] ?? '')?.title,
+    .filter((path): path is Path => path !== undefined)
+    .map((path) => ({
+      vandring: path,
+      senastRum: findRoomById(vandringsplatser[path.id] ?? '')?.title,
     }))
 
-/** Sparat (notes-and-saved.md): en stilla place för det läsaren valt att bevara,
- * grupperat och lätt att överblicka — aldrig ett innehållsflöde, aldrig ett mått
- * på framsteg. Bara grupper med innehåll visas; är inget sparat möter ett lugnt
- * tomläge. Senast besökt ligger separat sist, för orientering. */
+/** Saved (notes-and-saved.md): a quiet place for what the reader chose to keep,
+ * grouped and easy to take in — never a content feed, never a measure
+ * of progress. Only groups with content are shown; if nothing is saved a calm
+ * empty state greets you. Recently visited sits separately last, for orientation. */
 export const SamlingPage = () => {
   useSidtitel('Sparat')
   const store = useAtlas()
-  const rum = savedIdsByTime(store.sparadeRum)
+  const rooms = savedIdsByTime(store.savedRooms)
     .map((id) => findRoomById(id))
-    .filter((ettRum): ettRum is Room => ettRum !== undefined)
-  const vandringar = savedPathsList(store.sparadeVandringar, store.vandringsplatser)
+    .filter((room): room is Room => room !== undefined)
+  const paths = savedPathsList(store.savedPaths, store.pathPositions)
   const topics = Object.keys(store.bookmarks)
     .filter((id) => store.bookmarks[id])
     .map(findTopic)
     .filter((topic) => topic !== undefined)
   const kapitel = Object.values(store.chapterBookmarks).sort((a, b) => b.savedAt - a.savedAt)
-  const kort = sorteradeNotes(store.anteckningar).map(noteToCard)
-  const recent = store.senastLastaRum
+  const short = sortedNotes(store.notes).map(noteToCard)
+  const recent = store.recentRooms
     .map((id) => findRoomById(id))
-    .filter((ettRum): ettRum is Room => ettRum !== undefined)
+    .filter((room): room is Room => room !== undefined)
 
   const ingetSparat =
-    rum.length === 0 &&
-    vandringar.length === 0 &&
+    rooms.length === 0 &&
+    paths.length === 0 &&
     topics.length === 0 &&
     kapitel.length === 0 &&
-    kort.length === 0
+    short.length === 0
 
   return (
     <div className="screenTab">
@@ -156,14 +156,14 @@ export const SamlingPage = () => {
         <EmptyState />
       ) : (
         <>
-          <RoomGroup rum={rum} />
-          <PathGroup vandringar={vandringar} />
+          <RoomGroup rum={rooms} />
+          <PathGroup vandringar={paths} />
           <BookmarkGroup topics={topics} />
           <SourcesGroup kapitel={kapitel} />
-          <NoteGroup kort={kort} />
+          <NoteGroup kort={short} />
         </>
       )}
-      <RecentlyVisitedGroup rum={recent} onRensa={store.rensaSenastBesokt} />
+      <RecentlyVisitedGroup rum={recent} onRensa={store.clearRecentlyVisited} />
     </div>
   )
 }

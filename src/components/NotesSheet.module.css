@@ -37,18 +37,18 @@
   color: var(--soft-strong);
 }
 
-.bekrafta {
+.confirm {
   display: flex;
   align-items: center;
   gap: 14px;
 }
 
-.bekraftaFraga {
+.confirmQuestion {
   font-size: 0.84375rem;
   color: var(--ink);
 }
 
-.bekraftaJa {
+.confirmYes {
   composes: hitArea from global;
   background: none;
   border: none;

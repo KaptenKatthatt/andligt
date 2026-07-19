@@ -3,9 +3,9 @@ import {
   dateLabel,
   migrateNotes,
   migrateSaved,
-  sorteradeNotes,
+  sortedNotes,
   savedIdsByTime,
-  uppdateradNote,
+  updatedNote,
   utdrag,
   type Note,
 } from './personal'
@@ -14,12 +14,19 @@ const NU = '2026-07-14T10:00:00.000Z'
 
 describe('migreraSparade', () => {
   it('migrerar gammal boolean-form: true blir post utan datum, false släpps', () => {
-    expect(migrateSaved({ a: true, b: false })).toEqual({ a: { sparadNar: null } })
+    expect(migrateSaved({ a: true, b: false })).toEqual({ a: { savedWhen: null } })
   })
 
   it('släpper igenom redan migrerad form orörd (idempotent)', () => {
-    const redan = { a: { sparadNar: '2026-07-01T00:00:00.000Z' }, b: { sparadNar: null } }
+    const redan = { a: { savedWhen: '2026-07-01T00:00:00.000Z' }, b: { savedWhen: null } }
     expect(migrateSaved(redan)).toEqual(redan)
+  })
+
+  it('läser den svenska nyckeln sparadNar ur äldre lagring', () => {
+    expect(migrateSaved({ a: { sparadNar: '2026-07-01T00:00:00.000Z' }, b: { sparadNar: null } })).toEqual({
+      a: { savedWhen: '2026-07-01T00:00:00.000Z' },
+      b: { savedWhen: null },
+    })
   })
 
   it('faller tillbaka på tomt vid korrupt eller saknad indata', () => {
@@ -31,46 +38,47 @@ describe('migreraSparade', () => {
 })
 
 describe('migreraAnteckningar', () => {
-  const klassificera = (id: string): 'rum' | 'amne' => (id.startsWith('rum-') ? 'rum' : 'amne')
+  const classify = (id: string): 'room' | 'topic' => (id.startsWith('rum-') ? 'room' : 'topic')
 
   it('migrerar gamla string-notes till ursprungskopplade poster', () => {
-    const ut = migrateNotes({ 'rum-a': 'en tanke', 'amne-b': 'en annan' }, undefined, klassificera, NU)
+    const ut = migrateNotes({ 'rum-a': 'en tanke', 'amne-b': 'en annan' }, undefined, classify, NU)
     expect(ut['rum-a']).toEqual({
-      ursprungTyp: 'rum',
-      ursprungId: 'rum-a',
+      originType: 'room',
+      originId: 'rum-a',
       text: 'en tanke',
       created: NU,
       updated: NU,
     })
-    expect(ut['amne-b']?.ursprungTyp).toBe('amne')
+    expect(ut['amne-b']?.originType).toBe('topic')
   })
 
   it('prunar tomma anteckningar', () => {
-    expect(migrateNotes({ a: '   ', b: '' }, undefined, klassificera, NU)).toEqual({})
+    expect(migrateNotes({ a: '   ', b: '' }, undefined, classify, NU)).toEqual({})
   })
 
   it('låter redan migrerad post vinna över gammal string med samma id', () => {
     const ny: Note = {
-      ursprungTyp: 'rum',
-      ursprungId: 'rum-a',
+      originType: 'room',
+      originId: 'rum-a',
       text: 'nyare',
       created: '2026-06-01T00:00:00.000Z',
       updated: '2026-06-02T00:00:00.000Z',
     }
-    const ut = migrateNotes({ 'rum-a': 'äldre' }, { 'rum-a': ny }, klassificera, NU)
+    const ut = migrateNotes({ 'rum-a': 'äldre' }, { 'rum-a': ny }, classify, NU)
     expect(ut['rum-a']).toEqual(ny)
   })
 
   it('är idempotent på redan migrerad form', () => {
     const redan = {
-      x: { ursprungTyp: 'amne', ursprungId: 'x', text: 't', created: NU, updated: NU },
+      x: { originType: 'topic', originId: 'x', text: 't', created: NU, updated: NU },
     }
-    expect(migrateNotes(undefined, redan, klassificera, NU)).toEqual(redan)
+    expect(migrateNotes(undefined, redan, classify, NU)).toEqual(redan)
   })
 
-  it('bevarar tidsstämplar ur äldre poster med svenska nycklar (skapad/uppdaterad)', () => {
-    // Deployad app före engelsk-migreringen lagrade skapad/uppdaterad — de får
-    // aldrig nollställas vid uppgradering.
+  it('läser äldre poster med svenska nycklar och värden (ursprungTyp/ursprungId, rum→room)', () => {
+    // A deployed app before the English migration stored ursprungTyp/ursprungId with
+    // the values rum/vandring/amne plus skapad/uppdaterad — none of that may be lost
+    // or reset on upgrade.
     const gammal = {
       x: {
         ursprungTyp: 'rum',
@@ -80,61 +88,63 @@ describe('migreraAnteckningar', () => {
         uppdaterad: '2026-05-09T00:00:00.000Z',
       },
     }
-    const ut = migrateNotes(undefined, gammal, klassificera, NU)
+    const ut = migrateNotes(undefined, gammal, classify, NU)
+    expect(ut['x']?.originType).toBe('room')
+    expect(ut['x']?.originId).toBe('rum-a')
     expect(ut['x']?.created).toBe('2026-05-01T00:00:00.000Z')
     expect(ut['x']?.updated).toBe('2026-05-09T00:00:00.000Z')
   })
 
   it('räddar en korrupt migrerad post med trygga fallbacks men bevarar texten', () => {
-    const ut = migrateNotes(undefined, { x: { text: 'kvar' } }, klassificera, NU)
-    expect(ut.x).toEqual({ ursprungTyp: 'amne', ursprungId: 'x', text: 'kvar', created: NU, updated: NU })
+    const ut = migrateNotes(undefined, { x: { text: 'kvar' } }, classify, NU)
+    expect(ut.x).toEqual({ originType: 'topic', originId: 'x', text: 'kvar', created: NU, updated: NU })
   })
 })
 
 describe('uppdateradAnteckning', () => {
   it('bevarar created från befintlig post och flyttar fram updated', () => {
-    const befintlig: Note = {
-      ursprungTyp: 'rum',
-      ursprungId: 'r',
+    const existing: Note = {
+      originType: 'room',
+      originId: 'r',
       text: 'gammal',
       created: '2026-06-01T00:00:00.000Z',
       updated: '2026-06-01T00:00:00.000Z',
     }
-    const ut = uppdateradNote(befintlig, 'rum', 'r', 'ny', NU)
+    const ut = updatedNote(existing, 'room', 'r', 'ny', NU)
     expect(ut.created).toBe('2026-06-01T00:00:00.000Z')
     expect(ut.updated).toBe(NU)
     expect(ut.text).toBe('ny')
   })
 
   it('sätter created till nu för en helt ny anteckning', () => {
-    expect(uppdateradNote(undefined, 'amne', 'a', 'text', NU).created).toBe(NU)
+    expect(updatedNote(undefined, 'topic', 'a', 'text', NU).created).toBe(NU)
   })
 })
 
 describe('sorteradeAnteckningar', () => {
   it('sorterar senast ändrad först och utelämnar tomma', () => {
-    const anteckning = (id: string, updated: string, text = 'x'): Note => ({
-      ursprungTyp: 'rum',
-      ursprungId: id,
+    const note = (id: string, updated: string, text = 'x'): Note => ({
+      originType: 'room',
+      originId: id,
       text,
       created: updated,
       updated,
     })
-    const ut = sorteradeNotes({
-      a: anteckning('a', '2026-07-01T00:00:00.000Z'),
-      b: anteckning('b', '2026-07-10T00:00:00.000Z'),
-      c: anteckning('c', '2026-07-05T00:00:00.000Z', '  '),
+    const ut = sortedNotes({
+      a: note('a', '2026-07-01T00:00:00.000Z'),
+      b: note('b', '2026-07-10T00:00:00.000Z'),
+      c: note('c', '2026-07-05T00:00:00.000Z', '  '),
     })
-    expect(ut.map((post) => post.ursprungId)).toEqual(['b', 'a'])
+    expect(ut.map((post) => post.originId)).toEqual(['b', 'a'])
   })
 })
 
 describe('sparadeIdITidsordning', () => {
   it('sorterar senast sparat först och lägger daterade före odaterade', () => {
     const ut = savedIdsByTime({
-      gammal: { sparadNar: '2026-07-01T00:00:00.000Z' },
-      utandatum: { sparadNar: null },
-      ny: { sparadNar: '2026-07-10T00:00:00.000Z' },
+      gammal: { savedWhen: '2026-07-01T00:00:00.000Z' },
+      utandatum: { savedWhen: null },
+      ny: { savedWhen: '2026-07-10T00:00:00.000Z' },
     })
     expect(ut).toEqual(['ny', 'gammal', 'utandatum'])
   })

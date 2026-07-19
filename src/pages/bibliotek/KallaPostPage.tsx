@@ -12,7 +12,7 @@ import {
 } from '../../lib/content'
 import { NotFoundNote } from '../NotFoundNote'
 import styles from './Bibliotek.module.css'
-import { Beskrivning, Rumslista, Section, Sidhuvud } from './Biblioteksdelar'
+import { Beskrivning, RoomList, Section, Sidhuvud } from './Biblioteksdelar'
 
 const TYPETIKETT: Record<Source['type'], string> = {
   'book': 'Bok',
@@ -34,8 +34,8 @@ const RATTIGHETSETIKETT: Record<Source['rights'], string> = {
   'unknown': 'Oklar rättighetsstatus',
 }
 
-// Ärlig osäkerhet i klartext (source-and-context.md, Uncertainty): en
-// tillskriven röst presenteras som tillskriven, aldrig som säkert attribution.
+// Honest uncertainty in plain text (source-and-context.md, Uncertainty): an
+// attributed voice is presented as attributed, never as certain attribution.
 const upphovsrad = (source: Source): string | undefined => {
   if (source.attributedAuthor === undefined) return source.author
   const nedtecknare = source.author ? `, nedtecknad av ${source.author}` : ''
@@ -43,33 +43,33 @@ const upphovsrad = (source: Source): string | undefined => {
   return source.attribution === 'attributed' ? `Tillskrivs ${name}` : name
 }
 
-const Metarad = ({ label, värde }: { label: string; värde?: string }) =>
+const MetaRow = ({ label, värde }: { label: string; värde?: string }) =>
   värde === undefined || värde === '' ? null : (
-    <p className={styles.metarad}>
-      <span className={styles.metaetikett}>{label}</span>
+    <p className={styles.metaRow}>
+      <span className={styles.metaLabel}>{label}</span>
       {värde}
     </p>
   )
 
-const Kallmeta = ({ source }: { source: Source }) => {
+const SourceMeta = ({ source }: { source: Source }) => {
   const traditionsnamn = publishedThrough(source.traditions ?? [], findTradition).map(
     (tradition) => tradition.name,
   )
   return (
-    <div className={styles.metablock}>
-      <Metarad label="Upphov" värde={upphovsrad(source)} />
-      <Metarad label="Tradition" värde={traditionsnamn.join(', ')} />
-      <Metarad
+    <div className={styles.metaBlock}>
+      <MetaRow label="Upphov" värde={upphovsrad(source)} />
+      <MetaRow label="Tradition" värde={traditionsnamn.join(', ')} />
+      <MetaRow
         label="Tillkomst"
         värde={[source.approximateDating, source.place].filter(Boolean).join(' · ')}
       />
-      <Metarad label="Originalspråk" värde={source.originalLanguage} />
-      <Metarad label="Rättigheter" värde={RATTIGHETSETIKETT[source.rights]} />
+      <MetaRow label="Originalspråk" värde={source.originalLanguage} />
+      <MetaRow label="Rättigheter" värde={RATTIGHETSETIKETT[source.rights]} />
     </div>
   )
 }
 
-// Passagens metarad: translation, edition och år, stilla sammanfogade.
+// The passage's meta row: translation, edition and year, quietly joined.
 const passagemeta = (passage: SourcePassage): string =>
   [
     passage.translator && `Översättning: ${passage.translator}`,
@@ -79,31 +79,31 @@ const passagemeta = (passage: SourcePassage): string =>
     .filter(Boolean)
     .join(' · ')
 
-/** En källpassage: exakt reference, källans ord som semantiskt blockcitat
- * (originalText och/eller translation) och bibliografisk härkomst. Källans
- * ord hålls tydligt åtskilda från redaktionell prosa (source-and-context.md). */
+/** A source passage: exact reference, the source's words as a semantic block quote
+ * (originalText and/or translation) and bibliographic provenance. The source's
+ * words are kept clearly separate from editorial prose (source-and-context.md). */
 const Passageblock = ({ passage }: { passage: SourcePassage }) => {
   const meta = passagemeta(passage)
   return (
     <div className={styles.passage}>
-      <p className={styles.passagref}>{passage.reference}</p>
+      <p className={styles.passageRef}>{passage.reference}</p>
       {passage.originalText && (
-        <blockquote className={styles.passagetext}>
-          {paragraphs(passage.originalText).map((stycke, i) => (
-            <p key={i}>{stycke}</p>
+        <blockquote className={styles.passageText}>
+          {paragraphs(passage.originalText).map((paragraph, i) => (
+            <p key={i}>{paragraph}</p>
           ))}
         </blockquote>
       )}
       {passage.translation && (
-        <blockquote className={styles.passagetext}>
-          {paragraphs(passage.translation).map((stycke, i) => (
-            <p key={i}>{stycke}</p>
+        <blockquote className={styles.passageText}>
+          {paragraphs(passage.translation).map((paragraph, i) => (
+            <p key={i}>{paragraph}</p>
           ))}
         </blockquote>
       )}
-      {meta && <p className={styles.passagmeta}>{meta}</p>}
+      {meta && <p className={styles.passageMeta}>{meta}</p>}
       {passage.url && (
-        <a className={styles.passaglank} href={passage.url} target="_blank" rel="noreferrer">
+        <a className={styles.passageLink} href={passage.url} target="_blank" rel="noreferrer">
           Källa på nätet
         </a>
       )}
@@ -111,9 +111,9 @@ const Passageblock = ({ passage }: { passage: SourcePassage }) => {
   )
 }
 
-/** Källpost (library.md, Sources): saklig metadata, kopplade rum och vägen
- * in i biblioteksläsaren när hela texten finns där. Ingen auktoritetsprosa.
- * TopBar utan onBack ⇒ historiksteg bakåt — biblioteksplatsen bevaras. */
+/** Source entry (library.md, Sources): factual metadata, linked rooms and the way
+ * into the library reader when the full text is there. No authority prose.
+ * TopBar without onBack ⇒ history step back — the library location is preserved. */
 export const KallaPostPage = ({ slug }: { slug: string }) => {
   const source = findSourceBySlug(slug)
   if (!source) return <NotFoundNote subject="Källan" />
@@ -125,7 +125,7 @@ export const KallaPostPage = ({ slug }: { slug: string }) => {
       <Sidhuvud kicker={TYPETIKETT[source.type]} title={source.title} status={source.status}>
         {source.originalTitle && <p className={styles.originalTitle}>{source.originalTitle}</p>}
       </Sidhuvud>
-      <Kallmeta source={source} />
+      <SourceMeta source={source} />
       <Beskrivning text={source.description} />
       {uncertainty.length > 0 && (
         <Section rubrik="Osäkerhet">
@@ -148,15 +148,15 @@ export const KallaPostPage = ({ slug }: { slug: string }) => {
           <Link
             to="/bibliotek/verk/$workId"
             params={{ workId: source.libraryWork }}
-            className={styles.rad}
+            className={styles.row}
           >
-            <span className={styles.radTitel}>Läs hela texten</span>
+            <span className={styles.rowTitle}>Läs hela texten</span>
             <span className={styles.chev}>›</span>
           </Link>
         </Section>
       )}
       <Section rubrik="Rum ur denna source">
-        <Rumslista
+        <RoomList
           rum={roomsForSource(source.id, allRooms)}
           tomtBesked="Det finns inga färdiga rum ur källan ännu."
         />

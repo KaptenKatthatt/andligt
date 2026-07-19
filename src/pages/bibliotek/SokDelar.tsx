@@ -1,21 +1,21 @@
-// Presentationsdelar för bibliotekssöket (search.md): grupperade resultat,
-// ändliga med »Visa fler«, samt lugna tom-/no-results-/fellägen. Ingen del visar
-// popularitet, förlopp eller orelaterade rekommendationer.
+// Presentation parts for the library search (search.md): grouped results,
+// finite with »Visa fler«, plus calm empty/no-results/error states. No part shows
+// popularity, progress or unrelated recommendations.
 import { Link } from '@tanstack/react-router'
 import { useState, type ReactNode } from 'react'
 import { ToLink } from '../../components/ToLink'
 import { slugOfBook, type BookHit, type SearchHit } from '../../lib/api'
 import type { Note } from '../../lib/personal'
 import { SEARCH_TYPES, type SearchType } from '../../lib/searchIndex'
-import { MAX_SYNLIGA_PER_GRUPP, RUBRIK, type SearchResult, type VisibleGroup } from '../../lib/searchLogic'
+import { MAX_VISIBLE_PER_GROUP, HEADINGS, type SearchResult, type VisibleGroup } from '../../lib/searchLogic'
 import { NoteCard, noteToCard } from '../SparatDelar'
 import styles from './Sok.module.css'
 
-/** Verssökets svar från servern (verkläsarens FTS över källtexterna). */
+/** The verse search's response from the server (the reader's FTS over the source texts). */
 export type SourceTextResponse = { books: BookHit[]; hits: SearchHit[] }
 
-/** »Visa fler«-kontrollen: röjer de dolda träffarna i en grupp. Renderar inget
- * när inget är dolt — resultatet är alltid ändligt (search.md, Number of Results). */
+/** The »Visa fler« control: reveals the hidden hits in a group. Renders nothing
+ * when nothing is hidden — the result is always finite (search.md, Number of Results). */
 const VisaFler = ({ dolda, onClick }: { dolda: number; onClick: () => void }) =>
   dolda <= 0 ? null : (
     <button type="button" className={styles.visaFler} onClick={onClick}>
@@ -24,17 +24,17 @@ const VisaFler = ({ dolda, onClick }: { dolda: number; onClick: () => void }) =>
   )
 
 const HitRow = ({ traff }: { traff: SearchResult }) => {
-  const { title, underrad, meta, mal } = traff.dokument
+  const { title, subtitle, meta, target } = traff.document
   const innehåll = (
     <span>
-      <span className={styles.radTitel}>{title}</span>
-      {underrad !== undefined && <span className={styles.radSub}>{underrad}</span>}
-      {meta !== undefined && <span className={styles.radMeta}>{meta}</span>}
+      <span className={styles.rowTitle}>{title}</span>
+      {subtitle !== undefined && <span className={styles.rowSub}>{subtitle}</span>}
+      {meta !== undefined && <span className={styles.rowMeta}>{meta}</span>}
     </span>
   )
-  if (mal === undefined) return <div className={styles.stillaRad}>{innehåll}</div>
+  if (target === undefined) return <div className={styles.quietRow}>{innehåll}</div>
   return (
-    <ToLink to={mal} className={styles.rad}>
+    <ToLink to={target} className={styles.row}>
       {innehåll}
       <span className={styles.chev}>›</span>
     </ToLink>
@@ -49,30 +49,30 @@ const SearchGroupSection = ({
   onVisaFler: () => void
 }) => (
   <section className={styles.grupp}>
-    <h2 className="kicker sectionKicker">{synlig.grupp.rubrik}</h2>
-    {synlig.synliga.map((traff) => (
-      <HitRow key={traff.dokument.id} traff={traff} />
+    <h2 className="kicker sectionKicker">{synlig.group.heading}</h2>
+    {synlig.visible.map((traff) => (
+      <HitRow key={traff.document.id} traff={traff} />
     ))}
-    <VisaFler dolda={synlig.dolda} onClick={onVisaFler} />
+    <VisaFler dolda={synlig.hidden} onClick={onVisaFler} />
   </section>
 )
 
-// Privata anteckningsträffar — egen grupp sist, varje kort tydligt märkt privat.
-// Ändlig som övriga grupper: som mest fem, resten bakom »Visa fler«. Nollställs
-// per fråga genom att sidan nyckar komponenten (key={nyckel}).
+// Private note hits — their own group last, each card clearly marked private.
+// Finite like the other groups: at most five, the rest behind »Visa fler«. Reset
+// per query by the page keying the component (key={nyckel}).
 const NoteGroupSearch = ({ anteckningar }: { anteckningar: Note[] }) => {
   const [visaAlla, setVisaAlla] = useState(false)
   if (anteckningar.length === 0) return null
-  const synliga = visaAlla ? anteckningar : anteckningar.slice(0, MAX_SYNLIGA_PER_GRUPP)
+  const synliga = visaAlla ? anteckningar : anteckningar.slice(0, MAX_VISIBLE_PER_GROUP)
   return (
     <section className={styles.grupp}>
       <h2 className="kicker sectionKicker">Anteckningar</h2>
-      {synliga.map((anteckning) => {
-        const kort = noteToCard(anteckning)
+      {synliga.map((note) => {
+        const short = noteToCard(note)
         return (
-          <div key={kort.key} className={styles.privatKort}>
+          <div key={short.key} className={styles.privatKort}>
             <span className={styles.privatMarkor}>Privat anteckning</span>
-            <NoteCard title={kort.title} text={kort.text} datum={kort.datum} to={kort.to} />
+            <NoteCard title={short.title} text={short.text} datum={short.datum} to={short.to} />
           </div>
         )
       })}
@@ -81,8 +81,8 @@ const NoteGroupSearch = ({ anteckningar }: { anteckningar: Note[] }) => {
   )
 }
 
-// Renderar FTS-snippeten med ⟦…⟧-markörer som markerade träfford (tillgänglig
-// markup, inte enbart färg).
+// Renders the FTS snippet with ⟦…⟧ markers as highlighted hit words (accessible
+// markup, not color alone).
 const Snippet = ({ text }: { text: string }) => (
   <span className={styles.snippet}>
     {text.split(/⟦|⟧/).map((del, i) =>
@@ -101,11 +101,11 @@ const BookRow = ({ hit }: { hit: BookHit }) => (
   <Link
     to="/bibliotek/verk/$workId/$bookSlug"
     params={{ workId: hit.workId, bookSlug: slugOfBook(hit.workId, hit.bookId) }}
-    className={styles.rad}
+    className={styles.row}
   >
     <span>
-      <span className={styles.radTitel}>{hit.bookName}</span>
-      <span className={styles.radSub}>{hit.workTitle}</span>
+      <span className={styles.rowTitle}>{hit.bookName}</span>
+      <span className={styles.rowSub}>{hit.workTitle}</span>
     </span>
     <span className={styles.chev}>›</span>
   </Link>
@@ -119,7 +119,7 @@ const VerseRow = ({ hit }: { hit: SearchHit }) => (
       bookSlug: slugOfBook(hit.workId, hit.bookId),
       chapter: String(hit.chapter),
     }}
-    className={styles.kalltextHit}
+    className={styles.sourceTextHit}
   >
     <span className={styles.hitRef}>
       {hit.workTitle} · {hit.bookName} {hit.chapter}:{hit.verse}
@@ -128,9 +128,9 @@ const VerseRow = ({ hit }: { hit: SearchHit }) => (
   </Link>
 )
 
-/** Gruppen »Ur källtexterna«: verkläsarens FTS-verssök som en del av det samlade
- * söket (behåller /bibliotek-sok orörd). Tyst laddning — gruppen dyker upp när
- * data finns; vid fel en lugn rad, aldrig orelaterat innehåll. */
+/** The »Ur källtexterna« group: the reader's FTS verse search as part of the combined
+ * search (keeps /bibliotek-sok untouched). Silent loading — the group appears when
+ * data exists; on error a calm line, never unrelated content. */
 export const SourceTextGroup = ({
   svar,
   fel,
@@ -143,11 +143,11 @@ export const SourceTextGroup = ({
     return (
       <section className={styles.grupp}>
         <h2 className="kicker sectionKicker">Ur källtexterna</h2>
-        <p className={styles.tomhint}>Sökningen i källtexterna kunde inte genomföras just nu.</p>
+        <p className={styles.emptyHint}>Sökningen i källtexterna kunde inte genomföras just nu.</p>
       </section>
     )
   if (svar === null || (svar.books.length === 0 && svar.hits.length === 0)) return null
-  const verses = visaAlla ? svar.hits : svar.hits.slice(0, MAX_SYNLIGA_PER_GRUPP)
+  const verses = visaAlla ? svar.hits : svar.hits.slice(0, MAX_VISIBLE_PER_GROUP)
   const dolda = svar.hits.length - verses.length
   return (
     <section className={styles.grupp}>
@@ -163,15 +163,15 @@ export const SourceTextGroup = ({
   )
 }
 
-/** Sökfältet: programmatiskt kopplad label, Enter söker direkt, Escape rensar
- * (type=search). Normal tab-order. */
-export const Sokfalt = ({
+/** The search field: programmatically linked label, Enter searches immediately, Escape clears
+ * (type=search). Normal tab order. */
+export const SearchField = ({
   query,
   onChange,
   onSubmit,
 }: {
   query: string
-  onChange: (värde: string) => void
+  onChange: (value: string) => void
   onSubmit: () => void
 }) => (
   <form
@@ -187,11 +187,11 @@ export const Sokfalt = ({
     <input
       id="bibliotekssok"
       type="search"
-      className={styles.falt}
+      className={styles.field}
       value={query}
       onChange={(händelse) => onChange(händelse.target.value)}
       placeholder="Sök efter en fråga, tanke eller källa"
-      // Hela skärmen är sök — fältet är sidans enda uppgift och nås avsiktligt.
+      // The whole screen is search — the field is the page's sole purpose and is reached deliberately.
       // eslint-disable-next-line jsx-a11y/no-autofocus
       autoFocus
     />
@@ -199,34 +199,34 @@ export const Sokfalt = ({
 )
 
 const SearchEmptyState = () => (
-  <p className={styles.tomtext}>Sök bland frågor, rum, källor och traditioner.</p>
+  <p className={styles.emptyText}>Sök bland frågor, rum, källor och traditioner.</p>
 )
 
 const NoHits = () => (
   <div className={styles.tillstand} role="status">
-    <p className={styles.tomtext}>Vi hittade inget som stämde med din sökning.</p>
-    <p className={styles.tomhint}>
+    <p className={styles.emptyText}>Vi hittade inget som stämde med din sökning.</p>
+    <p className={styles.emptyHint}>
       Prova ett bredare ord eller sök efter en fråga, ett tema eller en källa.
                             </p>
   </div>
 )
 
-const Fellage = () => (
+const ErrorState = () => (
   <div className={styles.tillstand} role="status">
-    <p className={styles.tomtext}>Sökningen kunde inte genomföras just nu.</p>
-    <p className={styles.tomhint}>Försök igen eller gå tillbaka till Biblioteket.</p>
+    <p className={styles.emptyText}>Sökningen kunde inte genomföras just nu.</p>
+    <p className={styles.emptyHint}>Försök igen eller gå tillbaka till Biblioteket.</p>
   </div>
 )
 
 export type SearchMode = 'tom' | 'fel' | 'klar'
 
-const hitCount = (antal: number): string => (antal === 1 ? '1 träff' : `${antal} träffar`)
+const hitCount = (count: number): string => (count === 1 ? '1 träff' : `${count} träffar`)
 
-/** Resultatvyn: tomläge före sökning, felläge, no-results eller de grupperade,
- * ändliga träffarna — redaktionella grupper, sedan »Ur källtexterna«, sist den
- * privata anteckningsgruppen. `ingaTraffar` avgörs av sidan (räknar även in
- * verssöket) så no-results aldrig visas medan källtextträffar är på väg. */
-export const Resultatvy = ({
+/** The result view: empty state before searching, error state, no-results or the grouped,
+ * finite hits — editorial groups, then »Ur källtexterna«, last the
+ * private notes group. `ingaTraffar` is decided by the page (which also counts
+ * the verse search) so no-results is never shown while source-text hits are on the way. */
+export const ResultView = ({
   läge,
   ingaTraffar,
   synliga,
@@ -246,7 +246,7 @@ export const Resultatvy = ({
   onVisaFler: (type: SearchType) => void
 }) => {
   if (läge === 'tom') return <SearchEmptyState />
-  if (läge === 'fel') return <Fellage />
+  if (läge === 'fel') return <ErrorState />
   if (ingaTraffar) return <NoHits />
   return (
     <>
@@ -254,11 +254,11 @@ export const Resultatvy = ({
         {hitCount(antal)}
       </p>
       {synliga.map((synlig) =>
-        synlig.synliga.length > 0 || synlig.dolda > 0 ? (
+        synlig.visible.length > 0 || synlig.hidden > 0 ? (
           <SearchGroupSection
-            key={synlig.grupp.type}
+            key={synlig.group.type}
             synlig={synlig}
-            onVisaFler={() => onVisaFler(synlig.grupp.type)}
+            onVisaFler={() => onVisaFler(synlig.group.type)}
           />
         ) : null,
       )}
@@ -268,15 +268,15 @@ export const Resultatvy = ({
   )
 }
 
-// Filtervalen härleds ur den delade söktyplistan och gruppetiketterna, så en ny
-// type inte behöver läggas till på fler ställen än sokindex/soklogik.
+// The filter options are derived from the shared search-type list and the group labels, so a new
+// type doesn't need to be added in more places than sokindex/soklogik.
 const TYPVAL: Array<{ värde: SearchType | 'alla'; label: string }> = [
   { värde: 'alla', label: 'Alla' },
-  ...SEARCH_TYPES.map((type) => ({ värde: type, label: RUBRIK[type] })),
+  ...SEARCH_TYPES.map((type) => ({ värde: type, label: HEADINGS[type] })),
 ]
 
-/** Valfria, hopfällda typfilter (search.md, Filters): aldrig krav före sökning,
- * aktivt filter tydligt och lätt att rensa. */
+/** Optional, collapsed type filters (search.md, Filters): never required before searching,
+ * an active filter clear and easy to reset. */
 export const Filter = ({
   aktiv,
   antal,
@@ -291,14 +291,14 @@ export const Filter = ({
     <div className={styles.filter}>
       <button
         type="button"
-        className={styles.filterknapp}
+        className={styles.filterButton}
         aria-expanded={öppen}
         onClick={() => setÖppen((v) => !v)}
       >
         Filtrera
       </button>
       {öppen && (
-        <div className={styles.filterrad}>
+        <div className={styles.filterRow}>
           {TYPVAL.map((val) => {
             const vald = val.värde === 'alla' ? aktiv === undefined : aktiv === val.värde
             return (
@@ -316,9 +316,9 @@ export const Filter = ({
         </div>
       )}
       {aktiv !== undefined && (
-        <p className={styles.filterinfo}>
+        <p className={styles.filterInfo}>
           {hitCount(antal)} ·{' '}
-          <button type="button" className={styles.rensa} onClick={() => onVal(undefined)}>
+          <button type="button" className={styles.clear} onClick={() => onVal(undefined)}>
             Rensa filter
           </button>
         </p>

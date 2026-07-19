@@ -1,6 +1,6 @@
-// Byggstenar för Sparat-ytan (notes-and-saved.md): preview-kort, tomläge och
-// grupper. Korten visar bara restrained metadata — aldrig förlopp, completion,
-// popularitet eller besöksantal.
+// Building blocks for the Saved surface (notes-and-saved.md): preview cards, empty state and
+// groups. The cards show only restrained metadata — never progress, completion,
+// popularity or visit counts.
 import type { ReactNode } from 'react'
 import { ToLink } from '../components/ToLink'
 import type { Path } from '../content/editorial/schema'
@@ -9,14 +9,14 @@ import { findRoomById } from '../lib/content'
 import { dateLabel, utdrag, type Note } from '../lib/personal'
 import styles from './SparatDelar.module.css'
 
-/** Dit en anteckning länkar tillbaka: läsrummet (rum) eller topic-essän. En
- * delmängd av `To` — lokal så Sparat-ytan slipper co-importera de gamla
- * app-typerna (model.ts) tillsammans med redaktionsschemat. */
+/** Where a note links back to: the reading room (rum) or the topic essay. A
+ * subset of `To` — local so the Saved surface avoids co-importing the old
+ * app types (model.ts) together with the editorial schema. */
 export type NoteringsMal =
   | { kind: 'rum'; slug: string }
   | { kind: 'las'; id: string; mode: 'essa' }
 
-/** Ett anteckningskorts data: title, text, datum och ett valfritt ursprungsmål. */
+/** A note card's data: title, text, date and an optional origin target. */
 export type Kort = {
   key: string
   title: string
@@ -25,23 +25,23 @@ export type Kort = {
   to: NoteringsMal | undefined
 }
 
-// Anteckningen kopplad till sitt ursprung (spec Notes and Sources): rum länkas
-// till läsrummet, topic-anteckningar till essän. Hittas inte ursprunget renderas
-// texten ändå — utan länk, men aldrig gömd. Delas av Sparat och söket.
-export const noteToCard = (anteckning: Note): Kort => {
-  const datum = dateLabel(anteckning.updated)
-  const bas = { key: anteckning.ursprungId, text: anteckning.text, datum }
-  if (anteckning.ursprungTyp === 'rum') {
-    const rum = findRoomById(anteckning.ursprungId)
-    const to = rum ? ({ kind: 'rum', slug: rum.slug } as const) : undefined
-    return { ...bas, title: rum?.title ?? 'Sparad tanke', to }
+// The note tied to its origin (spec Notes and Sources): rooms link
+// to the reading room, topic notes to the essay. If the origin isn't found the
+// text still renders — without a link, but never hidden. Shared by Saved and search.
+export const noteToCard = (note: Note): Kort => {
+  const datum = dateLabel(note.updated)
+  const bas = { key: note.originId, text: note.text, datum }
+  if (note.originType === 'room') {
+    const room = findRoomById(note.originId)
+    const to = room ? ({ kind: 'rum', slug: room.slug } as const) : undefined
+    return { ...bas, title: room?.title ?? 'Sparad tanke', to }
   }
-  const topic = findTopic(anteckning.ursprungId)
+  const topic = findTopic(note.originId)
   const to = topic ? ({ kind: 'las', id: topic.id, mode: 'essa' } as const) : undefined
   return { ...bas, title: topic?.title ?? 'Sparad tanke', to }
 }
 
-/** En grupp visas bara när den har innehåll (spec Saved Section). */
+/** A group is shown only when it has content (spec Saved Section). */
 export const Group = ({ rubrik, children }: { rubrik: string; children: ReactNode }) => (
   <section className={styles.grupp}>
     <h2 className="kicker sectionKicker">{rubrik}</h2>
@@ -49,8 +49,8 @@ export const Group = ({ rubrik, children }: { rubrik: string; children: ReactNod
   </section>
 )
 
-/** Vandringens preview-kort: title, kort introduction och — bara för
- * orientering — senast öppnade rum. Aldrig antal rum, procent eller kvarvarande
+/** The path's preview card: title, short introduction and — only for
+ * orientation — the last-opened room. Never room count, percentage or remaining
  * (spec Saved Paths). */
 export const PathCard = ({
   vandring,
@@ -59,16 +59,16 @@ export const PathCard = ({
   vandring: Path
   senastRum: string | undefined
 }) => (
-  <ToLink to={{ kind: 'vandring', slug: vandring.slug }} className={styles.kort}>
-    <span className={styles.kortTitel}>{vandring.title}</span>
-    <span className={styles.kortText}>{utdrag(vandring.introduction, 96)}</span>
-    {senastRum !== undefined && <span className={styles.kortMeta}>Senast: {senastRum}</span>}
+  <ToLink to={{ kind: 'vandring', slug: vandring.slug }} className={styles.card}>
+    <span className={styles.cardTitle}>{vandring.title}</span>
+    <span className={styles.cardText}>{utdrag(vandring.introduction, 96)}</span>
+    {senastRum !== undefined && <span className={styles.cardMeta}>Senast: {senastRum}</span>}
   </ToLink>
 )
 
-/** Anteckningens preview-kort: utdrag, kopplad title och datum. Länkar till
- * ursprunget när det kan slås upp; annars renderas texten utan länk — en
- * anteckning göms aldrig bara för att dess ursprung inte hittas. */
+/** The note's preview card: excerpt, linked title and date. Links to
+ * the origin when it can be resolved; otherwise the text renders without a link — a
+ * note is never hidden just because its origin can't be found. */
 export const NoteCard = ({
   title,
   text,
@@ -82,8 +82,8 @@ export const NoteCard = ({
 }) => {
   const innehåll = (
     <>
-      <span className={styles.noteTitel}>{title}</span>
-      <span className={styles.noteUtdrag}>»{utdrag(text)}«</span>
+      <span className={styles.noteTitle}>{title}</span>
+      <span className={styles.noteExcerpt}>»{utdrag(text)}«</span>
       {datum !== undefined && <span className={styles.noteMeta}>{datum}</span>}
     </>
   )
@@ -95,11 +95,11 @@ export const NoteCard = ({
   )
 }
 
-/** Sparat-ytans tomläge (spec Empty State): lugnt och direkt, ingen uppmaning
- * att bygga en samling. */
+/** The Saved surface's empty state (spec Empty State): calm and direct, no prompt
+ * to build a collection. */
 export const EmptyState = () => (
-  <div className={styles.tomlage}>
-    <p className={styles.tomText}>Du har inte sparat något ännu.</p>
-    <p className={styles.tomHint}>När en text berör dig kan du lägga ett bokmärke här.</p>
+  <div className={styles.emptyState}>
+    <p className={styles.emptyText}>Du har inte sparat något ännu.</p>
+    <p className={styles.emptyHint}>När en text berör dig kan du lägga ett bokmärke här.</p>
   </div>
 )
