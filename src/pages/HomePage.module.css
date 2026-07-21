@@ -1,8 +1,16 @@
 /* Tröskeln — huvudfrågan är skärmens tydligaste element och temana får jämn
    vikt som tysta rader. Biblioteket nås via bottennaven, inte härifrån. */
 
+/* Egen skärmbehållare (i stället för globala .screenTab) så tröskeln får en
+   knappare bottenmarginal — bara nav-klarhet, inte 130px. Tröskeln ska rymmas
+   på en skärm utan onödig scroll; behåller .screenTab:s intoning och sidmått. */
+.screen {
+  animation: vaFade 0.45s ease;
+  padding: 56px 28px 72px;
+}
+
 .hero {
-  margin-top: 68px;
+  margin-top: 48px;
 }
 
 .question {
@@ -22,7 +30,7 @@
 }
 
 .themes {
-  margin-top: 44px;
+  margin-top: 30px;
   display: flex;
   flex-direction: column;
   border-bottom: 1px solid var(--faint);
