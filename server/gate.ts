@@ -95,14 +95,35 @@ const handleLogin = async (c: Context, accessCode: string, token: string): Promi
 }
 
 /**
- * Paths that bypass the cookie: robots.txt (it says Disallow: / anyway) and
- * POST /api/ingest — ingest carries its own protection (INGEST_TOKEN in the
- * router) and must be callable by cron/CI without a browser cookie. Only POST
- * passes; a GET would otherwise fall through to the SPA fallback and leak the
- * shell.
+ * PWA files that must be fetchable without the cookie: Chrome requests the
+ * manifest and icons without credentials when judging installability, so behind
+ * the gate the app degrades to a plain URL shortcut on the home screen. The
+ * service worker is included so updates keep working after the cookie expires.
+ * None of these carry app content — metadata, icons and the precache shell list.
+ */
+const PWA_ASSETS = new Set([
+  '/manifest.webmanifest',
+  '/sw.js',
+  '/icon.svg',
+  '/pwa-192.png',
+  '/pwa-512.png',
+  '/pwa-maskable-512.png',
+])
+
+const isPwaAsset = (path: string): boolean =>
+  PWA_ASSETS.has(path) || (path.startsWith('/workbox-') && path.endsWith('.js'))
+
+/**
+ * Paths that bypass the cookie: robots.txt (it says Disallow: / anyway),
+ * GET for the PWA install files above, and POST /api/ingest — ingest carries
+ * its own protection (INGEST_TOKEN in the router) and must be callable by
+ * cron/CI without a browser cookie. Only POST passes; a GET would otherwise
+ * fall through to the SPA fallback and leak the shell.
  */
 const openPath = (c: Context): boolean =>
-  c.req.path === '/robots.txt' || (c.req.method === 'POST' && c.req.path === INGEST_PATH)
+  c.req.path === '/robots.txt' ||
+  (c.req.method === 'GET' && isPwaAsset(c.req.path)) ||
+  (c.req.method === 'POST' && c.req.path === INGEST_PATH)
 
 /**
  * Builds gate middleware for a given code. Handles the login POST, checks
