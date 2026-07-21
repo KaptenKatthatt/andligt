@@ -89,6 +89,34 @@ describe('createAccessGate', () => {
     expect(res.status).toBe(200)
   })
 
+  // Chrome hämtar manifest/ikoner utan cookie vid PWA-installation — bakom
+  // gaten blir appen annars bara en URL-genväg på hemskärmen.
+  it('släpper igenom PWA-installationsfiler utan cookie', async () => {
+    const app = byggApp()
+    const filer = [
+      '/manifest.webmanifest',
+      '/sw.js',
+      '/workbox-4e9e9954.js',
+      '/icon.svg',
+      '/pwa-192.png',
+      '/pwa-512.png',
+      '/pwa-maskable-512.png',
+    ]
+    for (const fil of filer) app.get(fil, (c) => c.text('ok'))
+    for (const fil of filer) {
+      const res = await app.request(fil)
+      expect(res.status, fil).toBe(200)
+    }
+  })
+
+  it('PWA-undantaget gäller bara GET och läcker inte andra vägar', async () => {
+    const app = byggApp()
+    const post = await app.request('/manifest.webmanifest', { method: 'POST' })
+    expect(post.status).toBe(401)
+    const res = await app.request('/workbox-x.js.map')
+    expect(res.status).toBe(401)
+  })
+
   // Mirrors server/index.ts: the gate is mounted BEFORE routes are registered, otherwise
   // the Hono middleware doesn't cover them.
   it('mountAccessGate lämnar appen öppen utan kod (bakåtkompatibelt)', async () => {
