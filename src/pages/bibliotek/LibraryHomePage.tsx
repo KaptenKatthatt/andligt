@@ -4,47 +4,11 @@ import {
   libraryPeople,
   librarySources,
   libraryTraditions,
-  libraryPaths,
-  roomsForPath,
-  pathReadingTime,
 } from '../../lib/library'
 import { useDocumentTitle } from '../../lib/useDocumentTitle'
-import {
-  allSources,
-  allPeople,
-  allRooms,
-  allTraditions,
-  allPaths,
-  sourceName,
-} from '../../lib/content'
+import { allSources, allPeople, allTraditions, sourceName } from '../../lib/content'
 import styles from './Library.module.css'
-import { Row, roomCount, Section } from './LibraryParts'
-
-// Paths are an optional, quiet entry (paths.md, Discoverability) — they
-// must not stand as an empty, promising section, so it's hidden until published
-// paths exist (the same discipline as the traditions). Drafts are reviewed via
-// a direct link.
-const PathSection = () => {
-  const paths = libraryPaths(allPaths)
-  if (paths.length === 0) return null
-  return (
-    <Section heading="Vandringar">
-      {paths.map((path) => {
-        const rooms = roomsForPath(path, allRooms)
-        const sub = `${roomCount(rooms.length)} · ca ${pathReadingTime(rooms)} min`
-        return (
-          <ToLink
-            key={path.id}
-            to={{ kind: 'vandring', slug: path.slug }}
-            className={styles.row}
-          >
-            <Row title={path.title} sub={sub} />
-          </ToLink>
-        )
-      })}
-    </Section>
-  )
-}
+import { Row, Section } from './LibraryParts'
 
 const SourceSection = () => (
   <Section heading="Källor">
@@ -103,9 +67,11 @@ const Personsektion = () => {
  * The library's landing page (library.md) — the deliberate entry to
  * exploration. Secondary to the reading room; calm, finite, without engagement metrics.
  * Traditions and sources stand at the top as the library's calm frame (editor's
- * decision 2026-07-18). The themes, rooms and questions sections are hidden from
- * the landing (editor's decision 2026-07-21); the entries live on via their routes,
- * themes still reach their rooms, and search still finds them. Saved is reached via the nav tab.
+ * decision 2026-07-18). The themes, rooms, questions and paths sections are hidden
+ * from the landing (editor's decision 2026-07-21); the entries live on via their
+ * routes, themes still reach their rooms, paths remain reachable via the »Vandringar«
+ * nav tab and their direct routes, and search still finds them. Saved is reached via
+ * the nav tab.
  */
 export const LibraryHomePage = () => {
   useDocumentTitle('Biblioteket')
@@ -114,14 +80,13 @@ export const LibraryHomePage = () => {
       <div className="kicker">Visdomsatlasen</div>
       <h1 className={styles.title}>Biblioteket</h1>
       <p className={styles.lede}>
-        För den som vill leta vidare på egen hand — bland traditioner, källor och vandringar.
+        För den som vill leta vidare på egen hand — bland traditioner och källor.
                     </p>
       <Link to="/bibliotek/sok" className={styles.searchEntry}>
         Sök efter en fråga, tanke eller källa
                     </Link>
       <Traditionssektion />
       <SourceSection />
-      <PathSection />
       <Personsektion />
     </div>
   )
