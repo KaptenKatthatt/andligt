@@ -42,7 +42,7 @@ export const HomePage = () => {
     setSelecting(false)
   }
   return (
-    <div className="screenTab">
+    <div className={styles.screen}>
       <div className="kicker">Visdomsatlasen</div>
       <div className={styles.hero}>
         <h1 className={styles.question}>Vad vill du bära med dig idag?</h1>
